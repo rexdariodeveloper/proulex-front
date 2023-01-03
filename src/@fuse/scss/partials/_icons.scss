@@ -1,0 +1,31 @@
+$defaultSize: 16px;
+
+i,
+mat-icon {
+    font-size: $defaultSize;
+    width: $defaultSize;
+    height: $defaultSize;
+    min-width: $defaultSize;
+    min-height: $defaultSize;
+    line-height: $defaultSize;
+
+    @each $breakpoint, $materialBreakpoint in $helper-breakpoints {
+
+        @include media-breakpoint($materialBreakpoint) {
+
+            $infix: if($materialBreakpoint == null, "", "-#{$breakpoint}");
+
+            @for $size from 2 through 128 {
+
+                &.s#{$infix}-#{$size * 2} {
+                    font-size: #{($size * 2) + 'px'} !important;
+                    width: #{($size * 2) + 'px'} !important;
+                    height: #{($size * 2) + 'px'} !important;
+                    min-width: #{($size * 2) + 'px'} !important;
+                    min-height: #{($size * 2) + 'px'} !important;
+                    line-height: #{($size * 2) + 'px'} !important;
+                }
+            }
+        }
+    }
+}

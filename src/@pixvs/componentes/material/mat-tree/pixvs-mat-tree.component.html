@@ -1,0 +1,77 @@
+<mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+  <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding>
+    <button mat-icon-button disabled></button>
+    <mat-checkbox *ngIf="!node.valor?.ocultarSeleccion" [disabled]='isDisabled' class="checklist-leaf-node" [checked]="checklistSelection.isSelected(node)"
+      (change)="todoItemSelectionToggle(node);">
+      <mat-icon *ngIf="node.valor?.icon" class="mat-icon-rtl-mirror ml-12 mr-12" style="font-size: 20px;">
+        {{node.valor?.icon}}
+      </mat-icon>
+      <span>{{node.item}}</span>
+	</mat-checkbox>
+	<ng-container *ngIf="node.valor?.ocultarSeleccion">
+		<mat-icon *ngIf="node.valor?.icon" class="mat-icon-rtl-mirror ml-12 mr-12" style="font-size: 20px;">
+			{{node.valor?.icon}}
+		</mat-icon>{{node.item}}
+	</ng-container>
+
+	<ng-container *ngIf="!node.valor?.ocultarAcciones">
+		<mat-checkbox [disabled]='isDisabled' matTooltip="Crear"
+		[checked]="checklistSelection.isSelected(node) ? node.valor?.rolMenu?.crear : false"
+		(change)="permiso(node, 'crear', $event);" class="checklist-leaf-node ml-12 mr-12" color="primary">
+		</mat-checkbox>
+		<mat-checkbox [disabled]='isDisabled' matTooltip="Editar"
+		[checked]="checklistSelection.isSelected(node) ? node.valor?.rolMenu?.modificar : false"
+		(change)="permiso(node, 'modificar', $event);" class="checklist-leaf-node mr-12" color="accent">
+		</mat-checkbox>
+		<mat-checkbox [disabled]='isDisabled' matTooltip="Eliminar"
+		[checked]="checklistSelection.isSelected(node) ? node.valor?.rolMenu?.eliminar : false"
+		(change)="permiso(node, 'eliminar', $event);" class="checklist-leaf-node" color="warn">
+		</mat-checkbox>
+	</ng-container>
+	
+	<ng-container *ngFor="let accion of (node?.valor?.accionesExtra || [])">
+		<button mat-icon-button (click)="accion.accion(node.valor)" [matTooltip]="accion.tooltip || ''">
+			<mat-icon style="font-size: 20px;">{{accion.icono}}</mat-icon>
+		  </button>
+	</ng-container>
+	
+
+  </mat-tree-node>
+
+  <mat-tree-node *matTreeNodeDef="let node; when: hasNoContent" matTreeNodePadding>
+    <button mat-icon-button disabled></button>
+    <mat-form-field>
+      <mat-label>New item...</mat-label>
+      <input matInput #itemValue placeholder="Ex. PLACEHOLDER">
+    </mat-form-field>
+    <button mat-button (click)="saveNode(node, itemValue.value)">Save</button>
+  </mat-tree-node>
+
+  <mat-tree-node *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding>
+    <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'toggle ' + node.filename">
+      <mat-icon class="mat-icon-rtl-mirror">
+        {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+      </mat-icon>
+    </button>
+    <mat-checkbox *ngIf="!node.valor?.ocultarSeleccion" [disabled]='isDisabled' [checked]="checklistSelection.isSelected(node) || descendantsAllSelected(node)"
+      [indeterminate]="!checklistSelection.isSelected(node) && descendantsPartiallySelected(node)" (change)="todoItemSelectionToggle(node)">
+      <mat-icon *ngIf="node.valor?.icon" class="mat-icon-rtl-mirror ml-12 mr-12" style="font-size: 20px;">
+        {{node.valor?.icon}}
+      </mat-icon>{{node.item}}
+	</mat-checkbox>
+	<ng-container *ngIf="node.valor?.ocultarSeleccion">
+		<mat-icon *ngIf="node.valor?.icon" class="mat-icon-rtl-mirror ml-12 mr-12" style="font-size: 20px;">
+			{{node.valor?.icon}}
+		</mat-icon>{{node.item}}
+	</ng-container>
+    <button *ngIf="crearNuevosNodos" mat-icon-button (click)="addNewItem(node)">
+      <mat-icon>add</mat-icon>
+	</button>
+	
+	<ng-container *ngFor="let accion of (node?.valor?.accionesExtra || [])">
+		<button mat-icon-button (click)="accion.accion(node.valor)">
+			<mat-icon style="font-size: 20px;">{{accion.icono}}</mat-icon>
+		  </button>
+	</ng-container>
+  </mat-tree-node>
+</mat-tree>

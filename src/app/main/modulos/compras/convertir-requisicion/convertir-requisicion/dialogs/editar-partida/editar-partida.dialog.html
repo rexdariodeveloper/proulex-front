@@ -1,0 +1,251 @@
+<div class="dialog-header-bg accent"></div>
+<h1 mat-dialog-title>
+	Editar valores
+</h1>
+<div mat-dialog-content class="contenido-editar-partida" fusePerfectScrollbar>
+	<form
+		focusInvalidInput
+		name="form"
+		id="form"
+		[formGroup]="form"
+		class="product w-100-p"
+		fxLayout="column"
+		fxFlex
+	>
+		<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+			<mat-form-field appearance="outline" floatLabel="auto" fxFlex="100%">
+				<mat-label>Artículo</mat-label>
+				<input matInput [value]="partida?.articulo?.codigoArticulo + ' ' + partida?.articulo?.nombreArticulo" [readonly]="true">
+			</mat-form-field>
+		</div>
+
+		<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+			<pixvs-mat-select #unidadMedidaSelect [matSelectCtrl]="form.get('unidadMedida')" [datos]="unidadesMedida"
+				[appearance]="'outline'"
+				[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+				[campoValor]="'nombre'" [label]="'Unidad de medida'" [required]="isRequired('unidadMedida')"
+				fxFlex="33%">
+			</pixvs-mat-select>
+
+			<mat-form-field appearance="outline" floatLabel="auto" fxFlex="33%">
+				<mat-label>Cantidad</mat-label>
+				<input matInput name="cantidadRequerida" formControlName="cantidadRequerida"
+					required="{{ isRequired('cantidadRequerida') }}"
+					mask="separator.6" thousandSeparator=",">
+				<mat-error *ngIf="(!!form.get('cantidadRequerida').errors)">
+					{{validatorService.getMessage(form.get('cantidadRequerida'))}}
+				</mat-error>
+			</mat-form-field>
+
+			<mat-form-field appearance="outline" floatLabel="auto" fxFlex="33%">
+				<mat-label>Precio unitario</mat-label>
+				<input matInput name="precio" formControlName="precio"
+					required="{{ isRequired('precio') }}"
+					prefix="$ " mask="separator.2" thousandSeparator=",">
+				<mat-error *ngIf="(!!form.get('precio').errors)">
+					{{validatorService.getMessage(form.get('precio'))}}
+				</mat-error>
+			</mat-form-field>
+		</div>
+
+		<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+			<mat-accordion fxFlex="100%">
+				<mat-expansion-panel>
+					<mat-expansion-panel-header>
+						<mat-panel-title>
+							<h3 class="font-weight-900">Historial de compras</h3>
+						</mat-panel-title>
+					</mat-expansion-panel-header>
+					<mat-table #tableHistorialCompras [dataSource]="dataSourceHistorialCompras" id="tabla-historial-compras" class="ficha-table">
+						<ng-container matColumnDef="fecha">
+							<mat-header-cell *matHeaderCellDef>
+								<span class="text-nowrap w-100-p">Fecha</span>
+							</mat-header-cell>
+							<mat-cell *matCellDef="let ordenCompra">
+								<div class="w-100-p" fxLayout="row" fxLayoutAlign="center center">
+									{{ ordenCompra.fecha | date:'dd/MM/yyyy' }}
+								</div>
+							</mat-cell>
+						</ng-container>
+						<ng-container matColumnDef="ordenCompra">
+							<mat-header-cell *matHeaderCellDef>
+								<span class="text-nowrap w-100-p">Orden de compra</span>
+							</mat-header-cell>
+							<mat-cell *matCellDef="let ordenCompra">
+								<div class="w-100-p" fxLayout="row" fxLayoutAlign="center center">
+									{{ ordenCompra.codigoOC }}
+								</div>
+							</mat-cell>
+						</ng-container>
+						<ng-container matColumnDef="precioUnitario">
+							<mat-header-cell *matHeaderCellDef>
+								<span class="text-right text-nowrap w-100-p">Precio unitario</span>
+							</mat-header-cell>
+							<mat-cell *matCellDef="let ordenCompra">
+								<div class="w-100-p" fxLayout="row" fxLayoutAlign="end center">
+									{{ ordenCompra.precio | NumeroFormatoPipe }}
+								</div>
+							</mat-cell>
+						</ng-container>
+
+						<mat-header-row *matHeaderRowDef="displayedColumnsHistorialCompras; sticky:true"></mat-header-row>
+						<mat-row *matRowDef="let row; columns: displayedColumnsHistorialCompras;" class="element" matRipple></mat-row>
+					</mat-table>
+				</mat-expansion-panel>
+			</mat-accordion>
+		</div>
+
+		<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid" class="pt-20">
+			<mat-accordion fxFlex="100%">
+				<mat-expansion-panel [expanded]="true" #impuestosPanel>
+					<mat-expansion-panel-header>
+						<mat-panel-title>
+							<div class="w-100-p" fxLayout="row" fxLayoutGap="10px grid">
+								<div fxFlex="30%">
+									<h3 class="font-weight-900">Impuestos</h3>
+								</div>
+								<ng-container *ngIf="!impuestosPanel?.expanded">
+									<div fxFlex="30%">
+										<h3 class="font-weight-900 secondary-text text-right">
+											IVA: 
+											<span monto [requerido]="'iva'" prefijo="$" [cantidad]="form.get('cantidadRequerida').value" [precioUnitario]="form.get('precio').value" [descuento]="form.get('descuento').value" [ivaPorcentaje]="form.get('iva').value || 0" [iepsPorcentaje]="!iepsCuotaFijaCheckControl.value ? iepsControl.value : null" [cuotaFija]="iepsCuotaFijaCheckControl.value ? iepsCuotaFijaControl.value : null"></span>
+										</h3>
+									</div>
+									<div fxFlex="30%">
+										<h3 class="font-weight-900 secondary-text text-right">
+											IEPS: 
+											<span monto [requerido]="'ieps'" prefijo="$" [cantidad]="form.get('cantidadRequerida').value" [precioUnitario]="form.get('precio').value" [descuento]="form.get('descuento').value" [ivaPorcentaje]="form.get('iva').value || 0" [iepsPorcentaje]="!iepsCuotaFijaCheckControl.value ? iepsControl.value : null" [cuotaFija]="iepsCuotaFijaCheckControl.value ? iepsCuotaFijaControl.value : null"></span>
+										</h3>
+									</div>
+								</ng-container>
+							</div>
+						</mat-panel-title>
+					</mat-expansion-panel-header>
+					
+					<div fxLayout="column" class="w-100-p">
+						<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+							<mat-form-field appearance="outline" floatLabel="auto" fxFlex="33%">
+								<mat-label>IVA</mat-label>
+								<input matInput name="iva" formControlName="iva"
+									required="{{ isRequired('iva') }}"
+									prefix="% " mask="999"
+									[readonly]="form.get('ivaExento').value">
+								<mat-error *ngIf="(!!form.get('iva').errors)">
+									{{validatorService.getMessage(form.get('iva'))}}
+								</mat-error>
+							</mat-form-field>
+
+							<mat-form-field appearance="outline" floatLabel="auto" fxFlex="33%">
+								<mat-label>Importe</mat-label>
+								<input *ngIf="!!form" matInput [readonly]="true" monto [requerido]="'iva'" prefijo="$" [cantidad]="form.get('cantidadRequerida').value" [precioUnitario]="form.get('precio').value" [descuento]="form.get('descuento').value" [ivaPorcentaje]="form.get('iva').value || 0" [iepsPorcentaje]="!iepsCuotaFijaCheckControl.value ? iepsControl.value : null" [cuotaFija]="iepsCuotaFijaCheckControl.value ? iepsCuotaFijaControl.value : null">
+							</mat-form-field>
+				
+							<div fxFlex="33%" fxLayout="row" fxLayoutAlign="center center" class="mb-20">
+								<mat-checkbox color="primary" name="ivaExento" formControlName="ivaExento">
+									IVA exento
+								</mat-checkbox>
+							</div>
+						</div>
+
+						<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+							<mat-form-field appearance="outline" floatLabel="auto" fxFlex="33%" *ngIf="!iepsCuotaFijaCheckControl.value">
+								<mat-label>IEPS</mat-label>
+								<input matInput name="ieps" [formControl]="iepsControl"
+									required="{{ isRequired('ieps') }}"
+									prefix="% " mask="999">
+								<mat-error *ngIf="(!!form.get('ieps').errors)">
+									{{validatorService.getMessage(form.get('ieps'))}}
+								</mat-error>
+							</mat-form-field>
+
+							<mat-form-field appearance="outline" floatLabel="auto" fxFlex="33%" *ngIf="iepsCuotaFijaCheckControl.value">
+								<mat-label>IEPS cuota fija</mat-label>
+								<input matInput name="iepsCuotaFija" [formControl]="iepsCuotaFijaControl"
+									required="{{ isRequired('iepsCuotaFija') }}"
+									prefix="$ " mask="separator.2" thousandSeparator=",">
+								<mat-error *ngIf="(!!form.get('iepsCuotaFija').errors)">
+									{{validatorService.getMessage(form.get('iepsCuotaFija'))}}
+								</mat-error>
+							</mat-form-field>
+
+							<mat-form-field appearance="outline" floatLabel="auto" fxFlex="33%">
+								<mat-label>Importe</mat-label>
+								<input *ngIf="!!form" matInput [readonly]="true" monto [requerido]="'ieps'" prefijo="$" [cantidad]="form.get('cantidadRequerida').value" [precioUnitario]="form.get('precio').value" [descuento]="form.get('descuento').value" [ivaPorcentaje]="form.get('iva').value || 0" [iepsPorcentaje]="!iepsCuotaFijaCheckControl.value ? iepsControl.value : null" [cuotaFija]="iepsCuotaFijaCheckControl.value ? iepsCuotaFijaControl.value : null">
+							</mat-form-field>
+				
+							<div fxFlex="33%" fxLayout="row" fxLayoutAlign="center center" class="mb-20">
+								<mat-checkbox color="primary" [formControl]="iepsCuotaFijaCheckControl">
+									Cuota fija
+								</mat-checkbox>
+							</div>
+						</div>
+					</div>
+				</mat-expansion-panel>
+			</mat-accordion>
+		</div>
+
+		<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid" class="pt-20">
+			<mat-form-field appearance="outline" floatLabel="auto" fxFlex="50%">
+				<mat-label>Descuento</mat-label>
+				<input matInput name="descuento" formControlName="descuento"
+					required="{{ isRequired('descuento') }}"
+					prefix="$ " mask="separator.2" thousandSeparator=",">
+				<mat-error *ngIf="(!!form.get('descuento').errors)">
+					{{validatorService.getMessage(form.get('descuento'))}}
+				</mat-error>
+			</mat-form-field>
+
+			<mat-form-field appearance="outline" floatLabel="auto" fxFlex="50%">
+				<mat-label>Total</mat-label>
+				<input *ngIf="!!form" matInput [readonly]="true" monto prefijo="$" [cantidad]="form.get('cantidadRequerida').value" [precioUnitario]="form.get('precio').value" [descuento]="form.get('descuento').value" [ivaPorcentaje]="form.get('iva').value || 0" [iepsPorcentaje]="!iepsCuotaFijaCheckControl.value ? iepsControl.value : null" [cuotaFija]="iepsCuotaFijaCheckControl.value ? iepsCuotaFijaControl.value : null">
+			</mat-form-field>
+		</div>
+
+		<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+			<pixvs-mat-select [matSelectCtrl]="form.get('proveedor')" [datos]="proveedores"
+				[appearance]="'outline'"
+				[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+				[campoValor]="'nombre'" [label]="'Proveedor'" [required]="isRequired('proveedor')"
+				fxFlex="100%">
+			</pixvs-mat-select>
+		</div>
+
+		<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+			<mat-form-field appearance="outline" floatLabel="auto" fxFlex="100%">
+				<mat-label>Cuenta compras</mat-label>
+				<input matInput name="cuentaCompras" formControlName="cuentaCompras"
+					required="{{ isRequired('cuentaCompras') }}">
+				<mat-error *ngIf="(!!form.get('cuentaCompras').errors)">
+					{{validatorService.getMessage(form.get('cuentaCompras'))}}
+				</mat-error>
+			</mat-form-field>
+		</div>
+
+		<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+			<mat-form-field appearance="outline" floatLabel="auto" fxFlex="100%">
+				<mat-label>Comentario requisición</mat-label>
+				<textarea matInput [readonly]="true" [value]="partida?.comentarios || 'Partida sin comentarios'"></textarea>
+			</mat-form-field>
+		</div>
+
+		<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+			<mat-form-field appearance="outline" floatLabel="auto" fxFlex="100%">
+				<mat-label>Comentario compras</mat-label>
+				<textarea matInput name="comentariosCompras" formControlName="comentariosCompras" required="{{ isRequired('comentariosCompras') }}"></textarea>
+			</mat-form-field>
+			<mat-error *ngIf="(!!form.get('comentariosCompras').errors)">
+				{{validatorService.getMessage(form.get('comentariosCompras'))}}
+			</mat-error>
+		</div>
+	</form>
+</div>
+<div mat-dialog-actions>
+	<button
+		mat-button
+		(click)="cancelar()"
+	>Cancelar</button>
+	<button
+		mat-button
+		(click)="aceptar()"
+	>Aceptar</button>
+</div>

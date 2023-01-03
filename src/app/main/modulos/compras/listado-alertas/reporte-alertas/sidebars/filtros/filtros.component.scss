@@ -1,0 +1,49 @@
+filtros-sidebar {
+    display: flex;
+    flex: 1 0 auto;
+    flex-direction: column;
+    height: 100%;
+
+    .options-selector {
+        margin-left: 2px;
+        opacity: 0.8;
+        border-radius: 0px 8px 8px 0;
+        padding-left: 1px !important;
+        padding-right: 1px !important;
+        min-width: 30px;
+
+        mat-icon {
+            color: #ffffff;
+        }
+    }
+
+    .boton-selector {
+        border-radius: 8px 0 0 8px;
+        min-width: 80px;
+
+        mat-icon {
+          color: #ffffff;
+        }
+      }
+
+    .header {
+        height: 150px !important;
+        min-height: 150px !important;
+        max-height: 150px !important;
+
+        .logo {
+            .logo-icon {
+                margin: 0 16px 0 0;
+            }
+
+            .logo-text {
+                font-size: 24px;
+                line-height: 24px;
+            }
+        }
+
+        .account {
+            width: 100%;
+        }
+    }
+}

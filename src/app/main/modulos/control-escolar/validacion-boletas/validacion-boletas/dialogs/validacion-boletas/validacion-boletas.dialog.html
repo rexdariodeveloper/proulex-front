@@ -1,0 +1,88 @@
+<div mat-dialog-content fxLayout="column" fxLayoutGap="20px" class="mb-20">
+    <div fxLayout="column" fxLayoutAlign="center center" fxFlex>
+        <mat-icon role="img" class="mat-icon secondary-text s-200 material-icons" [ngClass]="data.esValidar ? 'dialogo-verde' : 'dialogo-rojo'">{{ data.esValidar ? 'check_circle_outline' : 'cancel' }}</mat-icon>
+    </div>
+    <div *ngIf="!data.esValidar" class="background-rojo" >
+        <span class="h2">El alumno de este QR no esta activo.</span>
+    </div>
+    <div *ngIf="data.esValidar" fxLayout="column" fxLayoutGap="20px">
+        <table class="table table-striped text-uppercase">
+            <thead>
+                <tr class="accent-800 h-40">
+                    <th scope="col" colspan="2">DATOS DEL ALUMNO</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="h-20 grey-200-bg">
+                    <th scope="row" [width]="100" class="text-left">CÓDIGO:</th>
+                    <td>{{ data.alumnoGrupoBoleta.codigo }}</td>
+                </tr>
+                <tr class="h-20 grey-200-bg">
+                    <th scope="row" [width]="100" class="text-left">NOMBRE:</th>
+                    <td>{{ data.alumnoGrupoBoleta.alumno }}</td>
+                </tr>
+            </tbody>
+        </table>
+    
+        <table class="table table-striped text-uppercase">
+            <thead>
+                <tr class="accent-800 h-40">
+                    <th scope="col" colspan="2">DATOS DEL CURSO</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="h-20 grey-200-bg">
+                    <th scope="row" [width]="100" class="text-left">CURSO:</th>
+                    <td>{{ data.alumnoGrupoBoleta.programaCorto + ' ' + data.alumnoGrupoBoleta.idioma + ' ' + data.alumnoGrupoBoleta.modalidad + ' (' + data.alumnoGrupoBoleta.tipo + ')' }}</td>
+                </tr>
+                <tr class="h-20 grey-200-bg">
+                    <th scope="row" [width]="100" class="text-left">NIVEL:</th>
+                    <td>{{ data.alumnoGrupoBoleta.nivel }}</td>
+                </tr>
+                <tr class="h-20 grey-200-bg">
+                    <th scope="row" [width]="100" class="text-left">INICIO:</th>
+                    <td>{{ data.alumnoGrupoBoleta.inicio }}</td>
+                </tr>
+                <tr class="h-20 grey-200-bg">
+                    <th scope="row" [width]="100" class="text-left">TERMINO:</th>
+                    <td>{{ data.alumnoGrupoBoleta.fin }}</td>
+                </tr>
+                <tr class="h-20 grey-200-bg">
+                    <th scope="row" [width]="100" class="text-left">HORARIO:</th>
+                    <td>{{ data.alumnoGrupoBoleta.horario }}</td>
+                </tr>
+                <tr class="h-20 grey-200-bg">
+                    <th scope="row" [width]="100" class="text-left">INSTRUCTOR:</th>
+                    <td>{{ data.alumnoGrupoBoleta.instructor }}</td>
+                </tr>
+                <tr class="h-20 grey-200-bg">
+                    <th scope="row" [width]="100" class="text-left">SEDE:</th>
+                    <td>{{ data.alumnoGrupoBoleta.sede }}</td>
+                </tr>
+            </tbody>
+        </table>
+    
+        <table class="table table-striped text-uppercase">
+            <thead>
+                <tr class="accent-800 h-40">
+                    <th scope="col" class="w-25-p">CALIFICACIÓN FINAL</th>
+                    <th scope="col" class="w-25-p">CALIFICACIÓN CON LETRA</th>
+                    <th scope="col" class="w-25-p">SIGUIENTE NIVEL</th>
+                    <th scope="col" class="w-25-p">NUEVO NIVEL CON LETRA</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="h-80 text-center grey-200-bg h2">
+                    <td>{{ data.alumnoGrupoBoleta.calificacion }}</td>
+                    <td>{{ data.alumnoGrupoBoleta.calificacionLetra }}</td>
+                    <td>{{ data.alumnoGrupoBoleta.programaCorto + ' ' + data.alumnoGrupoBoleta.siguiente + ' ' + data.alumnoGrupoBoleta.idioma }}</td>
+                    <td>{{ data.alumnoGrupoBoleta.programaLargo + ' ' + data.alumnoGrupoBoleta.siguiente }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+	
+</div>
+<div mat-dialog-actions fxLayout="row" fxLayoutAlign="center center">
+	<button mat-button (click)="cerrarModal()">Cerrar</button>
+</div>

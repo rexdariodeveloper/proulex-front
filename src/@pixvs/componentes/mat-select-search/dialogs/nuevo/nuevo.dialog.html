@@ -1,0 +1,14 @@
+<h1 mat-dialog-title>Nuevo registro</h1>
+<div mat-dialog-content>
+	<pixvs-dynamic-components #camposDinamicos *ngIf="!!campos?.length" [regConfig]="campos"></pixvs-dynamic-components>
+</div>
+<div mat-dialog-actions>
+	<button
+		mat-button
+		(click)="cancelar()"
+	>Cancelar</button>
+	<button
+		mat-button
+		(click)="aceptar()"
+	>Aceptar</button>
+</div>

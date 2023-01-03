@@ -1,0 +1,29 @@
+<mat-toolbar color="primary">
+	<mat-toolbar-row>
+		<span class="title dialog-title">Agregar categoría</span>
+	</mat-toolbar-row>
+</mat-toolbar>
+<div mat-dialog-content fxLayout="column" style="height: 100px; margin-top: 5%;">
+	<div fxLayout="row wrap" fxLayoutGap="20px grid">
+		<pixvs-mat-select [matSelectCtrl]="categoriaControl" [datos]="categorias"
+	        [appearance]="'outline'"
+	        [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+	        [campoValor]="'categoria'" [label]="'Categoria'"
+	        fxFlex="45">
+	    </pixvs-mat-select>
+	    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+	        <mat-label>Salario</mat-label>
+	        <input matInput name="salario" [(ngModel)]="salario" [ngModelOptions]="{standalone: true}" type="text" prefix="$ " mask="separator.2" thousandSeparator=",">
+	    </mat-form-field>
+    </div>
+</div>
+<div mat-dialog-actions align="end">
+	<button
+		mat-button
+		(click)="cancelar()"
+	>Cerrar</button>
+	<button
+		mat-raised-button class="mat-accent mr-16"
+		(click)="aceptar()"
+	>Aceptar</button>
+</div>

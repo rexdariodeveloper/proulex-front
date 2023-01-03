@@ -1,0 +1,70 @@
+<h1 mat-dialog-title>Adjuntar documento</h1>
+<div mat-dialog-content>
+	<form
+		focusInvalidInput
+		name="form"
+		id="form"
+		[formGroup]="form"
+		class="product w-100-p"
+		fxLayout="column"
+		fxFlex
+	>
+		<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+			<pixvs-mat-select [matSelectCtrl]="tipoControl" [datos]="tipos"
+				[appearance]="'outline'"
+				[matError]="''"
+				[campoValor]="'valor'" [label]="'Tipo'" [required]="false"
+				fxFlex="1 0 auto">
+			</pixvs-mat-select>
+		</div>
+		<div *ngIf="!archivosCargando.length && tipoControl?.value?.id == CMM_OCR_TipoArchivo?.EVIDENCIA" fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+			<a
+				(click)="fileInput.click()"
+				mat-button
+				color="accent"
+				style="width: 100%;"
+			>
+				<mat-icon class="s-16">attach_file</mat-icon>
+				<span> Adjuntar </span>
+				<input
+					#fileInput
+					type="file"
+					multiple="multiple"
+					(change)="fileChangeEvent($event)"
+					style="display:none;"
+				/>
+			</a>
+		</div>
+		<div *ngIf="!archivosCargando.length && tipoControl?.value?.id == CMM_OCR_TipoArchivo?.FACTURA" fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+			<a
+				(click)="fileInput.click()"
+				mat-button
+				color="accent"
+				style="width: 100%;"
+			>
+				<mat-icon class="s-16">attach_file</mat-icon>
+				<span> Adjuntar </span>
+				<input
+					#fileInput
+					type="file"
+					accept=".pdf,.xml"
+					multiple="multiple"
+					(change)="fileChangeEvent($event)"
+					style="display:none;"
+				/>
+			</a>
+		</div>
+		<div *ngFor="let archivo of archivos" fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid" class="h-32">
+			<a color="accent">{{ archivo.nombreOriginal }}</a>
+		</div>
+		<div *ngFor="let archivoCargando of archivosCargando" fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid" class="h-32">
+			<mat-spinner [diameter]="20"></mat-spinner>
+		</div>
+	</form>
+</div>
+<div mat-dialog-actions>
+	<button
+		mat-button
+		(click)="cancelar()"
+	>Cancelar</button>
+</div>

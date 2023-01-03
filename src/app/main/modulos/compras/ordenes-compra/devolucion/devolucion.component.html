@@ -1,0 +1,179 @@
+<div
+	id="ficha-CRUD"
+	class="pixvs-theme-listado page-layout carded fullwidth inner-scroll"
+>
+
+	<!-- TOP BACKGROUND -->
+	<div class="top-bg accent"></div>
+	<!-- / TOP BACKGROUND -->
+
+	<!-- CENTER -->
+	<div class="center">
+
+		<!-- HEADER -->
+		<ficha-crud
+			*ngIf="config"
+			[config]="config"
+			[isGuardadoPersonalizado]="true"
+			(output)="guardar()"
+			[mostrarBorrar]="false"
+			[mostrarEditar]="false"
+			[mostrarEnviar]="false"
+			[titulo]="titulo"
+			[subTituloTraduccion]="pageType"
+			[form]="form"
+			[currentId]="currentId"
+			[pageType]="pageType"
+			[dataService]="_devolverOrdenCompraService"
+			class="header accent"
+			fxLayout="column"
+			fxLayoutAlign="center center"
+			fxLayout.gt-sm="row"
+			fxLayoutAlign.gt-sm="space-between center"
+		>
+		</ficha-crud>
+		<!-- / HEADER -->
+
+		<!-- CONTENT CARD -->
+		<div class="content-card">
+			<mat-progress-bar
+				*ngIf="_devolverOrdenCompraService?.cargando"
+				[color]="'primary'"
+				[mode]="'query'"
+			>
+			</mat-progress-bar>
+
+			<!-- CONTENT -->
+			<div class="content">
+
+				<form
+					focusInvalidInput
+					name="form"
+					id="form"
+					[formGroup]="form"
+					class="product w-100-p"
+					fxLayout="column"
+					fxFlex
+				>
+
+					<mat-tab-group>
+
+						<mat-tab label="Recibos anteriores">
+
+							<div
+								class="tab-content p-24"
+								fusePerfectScrollbar
+							>
+
+								<div
+									fxLayout="row wrap"
+									fxLayoutGap="20px grid"
+								>
+									<div
+										fxLayout="column"
+										fxFlex="100"
+										fxFlex.gt-sm="100"
+										fxFlex.gt-md="100"
+									>
+
+										<div fxLayout="column" class="w-100-p h-100-p">
+											<mat-table #tableRecibos
+												fxFlex="fill"
+												[dataSource]="dataSourceRecibos"
+												matSort
+												[@animateStagger]="{value:'50'}"
+												id="tableRecibos"
+												fusePerfectScrollbar
+											>
+												
+												<ng-container matColumnDef="codigoArticulo">
+													<mat-header-cell *matHeaderCellDef> Código artículo </mat-header-cell>
+													<mat-cell *matCellDef="let recibo"> {{recibo.articulo?.codigoArticulo}} </mat-cell>
+												</ng-container>
+
+												<ng-container matColumnDef="nombre">
+													<mat-header-cell *matHeaderCellDef> Nombre </mat-header-cell>
+													<mat-cell *matCellDef="let recibo"> {{recibo.articulo?.nombreArticulo}} </mat-cell>
+												</ng-container>
+
+												<ng-container matColumnDef="um">
+													<mat-header-cell *matHeaderCellDef> UM </mat-header-cell>
+													<mat-cell *matCellDef="let recibo"> {{recibo.unidadMedida?.nombre}} </mat-cell>
+												</ng-container>
+
+												<ng-container matColumnDef="cantidad">
+													<mat-header-cell *matHeaderCellDef> Cantidad </mat-header-cell>
+													<mat-cell *matCellDef="let recibo"> {{recibo.cantidadRequerida}} </mat-cell>
+												</ng-container>
+
+												<ng-container matColumnDef="cantidadRecibida">
+													<mat-header-cell *matHeaderCellDef> Cantidad recibida </mat-header-cell>
+													<mat-cell *matCellDef="let recibo"> {{(recibo.cantidadPendienteDevolver || 0)}} </mat-cell>
+												</ng-container>
+
+												<ng-container matColumnDef="almacen">
+													<mat-header-cell *matHeaderCellDef> Almacén </mat-header-cell>
+													<mat-cell *matCellDef="let recibo"> {{recibo.almacen?.nombre}} </mat-cell>
+												</ng-container>
+
+												<ng-container matColumnDef="fechaRecibo">
+													<mat-header-cell *matHeaderCellDef> Fecha de recibo </mat-header-cell>
+													<mat-cell *matCellDef="let recibo"> {{recibo.fechaRecibo | date:'dd/MM/yyyy'}} </mat-cell>
+												</ng-container>
+
+												<ng-container matColumnDef="usuarioRecibo">
+													<mat-header-cell *matHeaderCellDef> Usuario recibio </mat-header-cell>
+													<mat-cell *matCellDef="let recibo"> {{recibo.creadoPor?.nombreCompleto}} </mat-cell>
+												</ng-container>
+
+												<ng-container matColumnDef="cantidadDevolver">
+													<mat-header-cell *matHeaderCellDef> Cantidad devolver </mat-header-cell>
+													<mat-cell *matCellDef="let recibo">
+														<mat-form-field *ngIf="(recibo.cantidadPendienteDevolver || 0) > 0"
+															appearance="outline"
+															floatLabel="auto"
+															fxFlex="90%"
+														>
+															<mat-label>Cantidad devolver</mat-label>
+															<input
+																type="text"
+																matInput
+																[formControl]="recibo.cantidadDevolverControl"
+																mask="separator.6" thousandSeparator=","
+															>
+															<mat-error *ngIf="(!!recibo.cantidadDevolverControl.errors)">
+																{{validatorService.getMessage(recibo.cantidadDevolverControl)}}
+															</mat-error>
+														</mat-form-field>
+													</mat-cell>
+												</ng-container>
+												
+												
+												<mat-header-row *matHeaderRowDef="displayedColumnsRecibos; sticky:true"></mat-header-row>
+												<mat-row *matRowDef="let row; columns: displayedColumnsRecibos;"></mat-row>
+											</mat-table>
+										</div>
+
+									</div>
+
+								</div>
+
+							</div>
+
+						</mat-tab>
+
+					</mat-tab-group>
+
+				</form>
+
+
+			</div>
+			<!-- / CONTENT -->
+
+		</div>
+		<!-- / CONTENT CARD -->
+
+
+	</div>
+	<!-- / CENTER -->
+</div>

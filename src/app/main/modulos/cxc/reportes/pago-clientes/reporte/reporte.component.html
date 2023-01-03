@@ -1,0 +1,77 @@
+<div>
+    <pixvs-bloqueo-pantalla [style.z-index]="10000" *ngIf="!!_reporteService.cargando"></pixvs-bloqueo-pantalla>
+</div>
+<div id="estado-cuenta-proveedor" class="pixvs-theme-listado page-layout carded left-sidebar fullwidth inner-scroll">
+
+	<!-- TOP BACKGROUND -->
+	<div class="top-bg accent"></div>
+	<!-- / TOP BACKGROUND -->
+
+	<!-- SIDEBAR -->
+	<fuse-sidebar *ngIf="filtros?.length" class="sidebar" name="filtros-sidebar" position="left" lockedOpen="gt-lg">
+		<filtros-sidebar #filtrado [regConfig]="filtros" [titulo]="'TITULO' | translate "
+			[modulo]="'MODULO' | translate " [icon]="'toc'" [listadoMenuOpciones]="filtrosOpciones"
+			[_FichasDataService]="_reporteService">
+		</filtros-sidebar>
+	</fuse-sidebar>
+	<!-- / SIDEBAR -->
+
+	<!-- CENTER -->
+	<div class="center" [ngClass]="{'px-0': filtros}">
+		<!-- HEADER -->
+		<div class="header accent" fxLayout="column" fxLayoutAlign="center center" fxLayout.gt-sm="row"
+			fxLayoutAlign.gt-sm="space-between center">
+
+			<!-- APP TITLE -->
+			<div fxLayout="column" fxLayoutAlign="center start" fxShow fxHide.gt-lg="{{filtros?.length > 0}}">
+				<div fxLayout="row" fxLayoutAlign="start center" fxHide fxShow.gt-xs>
+					<mat-icon class="secondary-text s-18">home</mat-icon>
+					<mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+					<span class="secondary-text">{{ 'MODULO' | translate }}</span>
+				</div>
+
+				<div class="logo mb-12 mb-md-0" fxLayout="row" fxLayoutAlign="start center">
+					<mat-icon class="logo-icon s-32 mr-16" [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
+						toc
+					</mat-icon>
+
+					<span class="logo-text h1" [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+						{{ 'TITULO' | translate }}
+					</span>
+				</div>
+			</div>
+			<div fxHide fxShow.gt-lg="{{filtros?.length > 0}}" style="width: 10%;"></div>
+			<!-- / APP TITLE -->
+
+			<!-- ADD BUTTON -->
+			<div fxLayout="row">
+			</div>
+		</div>
+		<!-- / HEADER -->
+
+		<!-- CONTENT CARD -->
+		<div class="content-card">
+			<mat-progress-bar *ngIf="_reporteService?.cargando" [color]="'primary'" [mode]="'query'">
+			</mat-progress-bar>
+
+			<!-- BOTON FILTROS -->
+			<button *ngIf="filtros" mat-icon-button fxHide.gt-lg class="primary sidebar-button sidebar-toggle"
+				matTooltip="{{ 'INTERFAZ.FILTROS' | translate  }}"
+				(click)="toggleSidebar('filtros-sidebar')">
+				<mat-icon class="mb-4">tune</mat-icon>
+			</button>
+			<!-- BOTON FILTROS -->
+
+			<!-- CONTENT -->
+            <pixvs-mat-accordion class="h-100-p" *ngIf="data.length > 0"
+				[columnaId]="'id'"
+				[headers]="headers"
+				[details]="details"
+				[data]="data">
+			</pixvs-mat-accordion>
+            <!-- / CONTENT -->
+		</div>
+		<!-- / CONTENT CARD -->
+	</div>
+	<!-- / CENTER -->
+</div>

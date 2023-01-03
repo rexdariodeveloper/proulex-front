@@ -1,0 +1,291 @@
+<div id="ficha-CRUD" class="pixvs-theme-listado page-layout carded fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <ficha-crud *ngIf="config" [config]="config" [cargando]="_usuarioService?.cargando"
+            [isGuardadoPersonalizado]="true" (output)="guardar()" [mostrarBorrar]="usuario?.estatusId == 1000001"
+            [mostrarEditar]="true" [titulo]="titulo" [subTituloTraduccion]="pageType" [form]="form"
+            [currentId]="currentId" [pageType]="pageType" [dataService]="_usuarioService" class="header accent"
+            fxLayout="column" fxLayoutAlign="center center" fxLayout.gt-sm="row"
+            fxLayoutAlign.gt-sm="space-between center">
+        </ficha-crud>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <mat-progress-bar *ngIf="_usuarioService?.cargando" [color]="'primary'" [mode]="'query'">
+            </mat-progress-bar>
+
+            <div style="height: 0px;">
+                <button debounceClick mat-mini-fab class="boton-refresh" (debounceClick)="recargar()"
+                    matTooltip="{{ 'INTERFAZ.RECARGAR' | translate  }}">
+                    <mat-icon class="s-16">refresh</mat-icon>
+                </button>
+            </div>
+
+            <!-- CONTENT -->
+            <div class="content">
+
+                <form name="form" id="form" [formGroup]="form" class="product w-100-p" fxLayout="column" fxFlex>
+
+                    <mat-tab-group>
+
+                        <mat-tab label="Datos Generales">
+
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+
+                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                    <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="55" fxFlex.gt-md="65">
+
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <pixvs-mat-select [matSelectCtrl]="form.get('tipoId')"
+                                                [datos]="tiposUsuarios" [appearance]="'outline'"
+                                                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                                [campoValor]="'valor'" [label]="'Tipo usuario'"
+                                                [required]="isRequired('tipoId')" fxFlex="1 0 auto">
+                                            </pixvs-mat-select>
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Nombre</mat-label>
+                                                <input matInput name="nombre" formControlName="nombre"
+                                                    required="{{ isRequired('nombre') }}">
+                                                <mat-error *ngIf="(!!form.get('nombre').errors)">
+                                                    {{validatorService.getMessage(form.get('nombre'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                        </div>
+
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Primer Apellido</mat-label>
+                                                <input matInput name="primerApellido" formControlName="primerApellido"
+                                                    required="{{ isRequired('primerApellido') }}">
+                                                <mat-error *ngIf="(!!form.get('primerApellido').errors)">
+                                                    {{validatorService.getMessage(form.get('primerApellido'))}}
+                                                </mat-error>
+
+                                            </mat-form-field>
+
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Segundo Apellido</mat-label>
+                                                <input matInput name="segundoApellido" formControlName="segundoApellido"
+                                                    required="{{ isRequired('segundoApellido') }}">
+                                                <mat-error *ngIf="(!!form.get('segundoApellido').errors)">
+                                                    {{validatorService.getMessage(form.get('segundoApellido'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+
+                                        </div>
+
+                                        <div *ngIf="usuarioSIIAU==false" fxLayout="row wrap"
+                                            fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Correo Electrónico</mat-label>
+                                                <input matInput name="correoElectronico"
+                                                    formControlName="correoElectronico"
+                                                    required="{{ isRequired('correoElectronico') }}" readonly="readonly"
+                                                    onfocus="this.removeAttribute('readonly');">
+                                                <mat-error *ngIf="(!!form.get('correoElectronico').errors)">
+                                                    {{validatorService.getMessage(form.get('correoElectronico'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                        </div>
+
+                                        <div *ngIf="pageType !== 'nuevo' && usuarioSIIAU" fxLayout="row wrap"
+                                            fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Código SIIAU</mat-label>
+                                                <input matInput name="codigo" formControlName="codigo"
+                                                    required="{{ isRequired('codigo') }}" readonly="readonly"
+                                                    onfocus="this.removeAttribute('readonly');">
+                                                <mat-error *ngIf="(!!form.get('codigo').errors)">
+                                                    {{validatorService.getMessage(form.get('codigo'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                        </div>
+
+                                        <div *ngIf="pageType == 'nuevo' && usuarioSIIAU" fxLayout="row wrap"
+                                            fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Código SIIAU</mat-label>
+                                                <input matInput name="codigo" formControlName="codigo"
+                                                    required="{{ isRequired('codigo') }}" readonly="readonly"
+                                                    onfocus="this.removeAttribute('readonly');">
+                                                <mat-error *ngIf="(!!form.get('codigo').errors)">
+                                                    {{validatorService.getMessage(form.get('codigo'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Confirmar Código SIIAU</mat-label>
+                                                <input matInput name="codigoConfirmar" formControlName="codigoConfirmar"
+                                                    required="{{ isRequired('codigoConfirmar') }}">
+                                                <mat-error *ngIf="(!!form.get('codigoConfirmar').errors)">
+                                                    {{validatorService.getMessage(form.get('codigoConfirmar'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                        </div>
+
+                                        <div *ngIf="pageType == 'nuevo' && usuarioSIIAU" fxLayout="row wrap"
+                                            fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Correo Electrónico</mat-label>
+                                                <input matInput name="correoElectronico"
+                                                    formControlName="correoElectronico"
+                                                    required="{{ isRequired('correoElectronico') }}" readonly="readonly"
+                                                    onfocus="this.removeAttribute('readonly');">
+                                                <mat-error *ngIf="(!!form.get('correoElectronico').errors)">
+                                                    {{validatorService.getMessage(form.get('correoElectronico'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Confirmación Correo Electrónico</mat-label>
+                                                <input matInput name="confirmacionCorreoElectronico"
+                                                    formControlName="confirmacionCorreoElectronico"
+                                                    required="{{ isRequired('confirmacionCorreoElectronico') }}"
+                                                    readonly="readonly" onfocus="this.removeAttribute('readonly');">
+                                                <mat-error *ngIf="(!!form.get('confirmacionCorreoElectronico').errors)">
+                                                    {{validatorService.getMessage(form.get('confirmacionCorreoElectronico'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                        </div>
+
+                                        <div *ngIf="pageType == 'nuevo' && usuarioSIIAU==false" fxLayout="row wrap"
+                                            fxLayoutAlign="start center" fxLayoutGap="10px grid">
+
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Contraseña</mat-label>
+                                                <input matInput type="password" name="contrasenia"
+                                                    formControlName="contrasenia"
+                                                    required="{{ isRequired('contrasenia') }}">
+                                                <mat-error *ngIf="(!!form.get('contrasenia').errors)">
+                                                    {{validatorService.getMessage(form.get('contrasenia'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Confirmar Contraseña</mat-label>
+                                                <input matInput type="password" name="contraseniaConfirmar"
+                                                    formControlName="contraseniaConfirmar"
+                                                    required="{{ isRequired('contraseniaConfirmar') }}">
+                                                <mat-error *ngIf="(!!form.get('contraseniaConfirmar').errors)">
+                                                    {{validatorService.getMessage(form.get('contraseniaConfirmar'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+
+                                        </div>
+
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+
+                                            <pixvs-mat-select [matSelectCtrl]="rolControl" [datos]="roles"
+                                                [appearance]="'outline'"
+                                                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                                [campoValor]="'nombre'" [label]="'Rol'" [required]="isRequired('rol')"
+                                                fxFlex="1 0 auto">
+                                            </pixvs-mat-select>
+
+                                            <pixvs-mat-select *ngIf="this.pageType != 'nuevo'"
+                                                [matSelectCtrl]="estatusControl" [datos]="estatus"
+                                                [appearance]="'outline'"
+                                                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                                [campoValor]="'valor'" [label]="'Estatus'"
+                                                [required]="isRequired('estatus')" fxFlex="1 0 auto">
+                                            </pixvs-mat-select>
+
+                                        </div>
+
+                                        <div *ngIf="this.pageType != 'nuevo' && usuarioSIIAU==false" fxLayout="row wrap"
+                                            fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <div class="content">
+                                                <div class="info-line">
+                                                    <button mat-raised-button class="boton-nuevo"
+                                                        (click)="cambiarPassword()">Cambiar Contraseña
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="45" fxFlex.gt-md="35">
+
+                                        <mat-card fxLayout="column" style="min-height: 330px;">
+                                            <mat-card-header fxLayoutAlign="center">
+                                                <mat-card-title fxLayoutAlign="center" style="text-align: center;">Foto
+                                                    de Perfil
+                                                </mat-card-title>
+                                                <mat-card-subtitle fxLayoutAlign="center"
+                                                    style="text-align: center; display: block; margin-left: auto;margin-right: auto;">
+                                                    <div *ngIf="croppedImage" mat-card-avatar
+                                                        [ngStyle]="{'background-image': 'url('+croppedImage+')'}"
+                                                        style="background-size: cover;" class="example-header-image">
+                                                    </div>
+                                                </mat-card-subtitle>
+                                            </mat-card-header>
+
+                                            <mat-card-content class="h-200">
+                                                <image-cropper style="height: 100%;" *ngIf="imageChangedEvent"
+                                                    [imageChangedEvent]="imageChangedEvent"
+                                                    [backgroundColor]="'#148999'" [maintainAspectRatio]="true"
+                                                    [aspectRatio]="4 / 4" [resizeToWidth]="100" [cropperMinWidth]="100"
+                                                    format="png" (imageCropped)="imageCropped($event)">
+                                                </image-cropper>
+
+                                                <img *ngIf="!imageChangedEvent"
+                                                    style="display: block; margin-left: auto; margin-right: auto; height: 60%;"
+                                                    src="{{usuario?.archivoId != null ? apiUrl + '/v1/archivo/' + (usuario.archivoId | hashId) : 'assets/images/avatars/profile.jpg' }}" />
+
+
+                                            </mat-card-content>
+                                            <mat-card-actions>
+                                                <div class="px-16" fxLayout="row" fxLayoutAlign="space-between center">
+
+                                                    <div></div>
+
+                                                    <a *ngIf="form.enabled" (click)="fileInput.click()" mat-button
+                                                        color="accent" style="width: 100%;">
+                                                        <mat-icon class="s-16">add_a_photo</mat-icon>
+                                                        <span> Cambiar </span>
+                                                        <input #fileInput type="file" (change)="fileChangeEvent($event)"
+                                                            style="display:none;" />
+                                                    </a>
+                                                </div>
+                                            </mat-card-actions>
+                                        </mat-card>
+                                    </div>
+
+
+                                </div>
+
+
+                            </div>
+
+                        </mat-tab>
+                        <mat-tab label="Datos Adicionales" [disabled]="!datosAdicionalesComponent?.mostrar">
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <usuario-datos-adicionales #datosAdicionalesComponent [form]="form"
+                                    [permiteEditar]="form.enabled" [datosAdicionales]="datosAdicionalesMap">
+                                </usuario-datos-adicionales>
+                            </div>
+                        </mat-tab>
+
+
+                    </mat-tab-group>
+
+                </form>
+
+
+            </div>
+            <!-- / CONTENT -->
+
+        </div>
+        <!-- / CONTENT CARD -->
+
+
+    </div>
+    <!-- / CENTER -->
+</div>

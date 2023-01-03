@@ -1,0 +1,22 @@
+@import "@fuse/scss/fuse";
+
+:host {
+}
+
+.info-table {
+    thead {
+        th {
+            padding-top: 0px;
+            padding-bottom: 0px;
+        }
+    }
+    
+    tbody {
+        td {
+            padding-top: 0px;
+            padding-bottom: 0px;
+        }
+    }
+
+    padding-top: 1em;
+}

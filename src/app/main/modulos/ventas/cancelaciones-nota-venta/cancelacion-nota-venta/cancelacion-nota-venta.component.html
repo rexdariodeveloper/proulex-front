@@ -1,0 +1,385 @@
+<div id="ficha-CRUD" class="pixvs-theme-listado page-layout carded fullwidth inner-scroll">
+	<!-- TOP BACKGROUND -->
+	<div class="top-bg accent"></div>
+	<!-- / TOP BACKGROUND -->
+
+	<!-- CENTER -->
+	<div class="center">
+		<!-- HEADER -->
+		<ficha-crud *ngIf="config" [config]="config" [isGuardadoPersonalizado]="true" (output)="guardar()"
+			[mostrarBorrar]="true" [mostrarEditar]="false" [mostrarEnviar]="false" [titulo]="titulo"
+			[subTituloTraduccion]="pageType == 'nuevo' ? pageType : null" [form]="form" [currentId]="currentId"
+			[pageType]="pageType" [dataService]="_cancelacionNotaVentaService" class="header accent" fxLayout="column"
+			fxLayoutAlign="center center" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center">
+		</ficha-crud>
+		<!-- / HEADER -->
+
+		<!-- CONTENT CARD -->
+		<div class="content-card">
+			<mat-progress-bar *ngIf="_cancelacionNotaVentaService?.cargando" [color]="'primary'" [mode]="'query'"></mat-progress-bar>
+
+			<div style="height: 0px;">
+				<button debounceClick mat-mini-fab class="boton-refresh" (debounceClick)="recargar()"
+					matTooltip="{{ 'INTERFAZ.RECARGAR' | translate  }}">
+					<mat-icon class="s-16">refresh</mat-icon>
+				</button>
+			</div>
+
+			<!-- CONTENT -->
+			<div class="content">
+				<form *ngIf="!!this.form" focusInvalidInput name="form" id="form" [formGroup]="form"
+					class="product w-100-p" fxLayout="column" fxFlex>
+					<mat-tab-group>
+						<mat-tab label="Datos Generales">
+							<div class="tab-content p-24" fusePerfectScrollbar>
+								<div fxLayout="row wrap" fxLayoutGap="20px grid">
+									<pixvs-mat-select [matSelectCtrl]="tipoMovimientoControl" [datos]="tiposMovimiento"
+										[appearance]="'outline'"
+										[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+										[campoValor]="'valor'" [label]="'Tipo movimiento'" [required]="true"
+										[isDisabled]="ordenVentaCancelacion?.id"
+										fxFlex="1 0 auto">
+									</pixvs-mat-select>
+
+									<pixvs-mat-select [matSelectCtrl]="sucursalControl" [datos]="sucursales"
+										[appearance]="'outline'"
+										[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+										[campoValor]="'nombre'" [label]="'Sede'" [required]="false"
+										[isDisabled]="ordenVentaCancelacion?.id"
+										fxFlex="1 0 auto">
+									</pixvs-mat-select>
+
+									<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+										<mat-label>Nota de venta</mat-label>
+										<input type="text" matInput name="notaVenta"
+											[formControl]="notaVentaControl"
+											(keyup.enter)="$event.preventDefault(); onBuscarNotaVenta();"
+											(keydown.enter)="$event.preventDefault();"
+											[readonly]="!!ordenVentaCancelacion?.id">
+										<button *ngIf="!ordenVentaCancelacion?.id && notaVentaControl?.value"
+											type="button" matSuffix mat-icon-button aria-label="Buscar"
+											(click)="onBuscarNotaVenta()">
+											<mat-icon>search</mat-icon>
+										</button>
+									</mat-form-field>
+
+									<pixvs-mat-select *ngIf="tipoMovimientoControl.value && tipoMovimientoControl.value.id === CMM_OVC_TipoMovimiento.DEVOLUCION"
+										[matSelectCtrl]="motivoDevolucionControl"
+										[datos]="motivosDevolucion" [appearance]="'outline'"
+										[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+										[campoValor]="'valor'" [label]="'Motivo de devolución'"
+										[required]="isRequired('motivoDevolucion')"
+										[isDisabled]="ordenVentaCancelacion?.id" fxFlex="1 0 auto">
+									</pixvs-mat-select>
+
+									<pixvs-mat-select *ngIf="tipoMovimientoControl.value && tipoMovimientoControl.value.id === CMM_OVC_TipoMovimiento.CANCELACION"
+										[matSelectCtrl]="motivoCancelacionControl"
+										[datos]="motivosCancelacion" [appearance]="'outline'"
+										[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+										[campoValor]="'valor'" [label]="'Motivo de cancelación'"
+										[required]="isRequired('motivoCancelacion')"
+										[isDisabled]="ordenVentaCancelacion?.id" fxFlex="1 0 auto">
+									</pixvs-mat-select>
+								</div>
+
+								<div fxLayout="row wrap" fxLayoutGap="20px grid">
+									<div fxLayout="column" fxFlex="60" fxFlex.gt-sm="60" fxFlex.gt-md="60">
+										<div fxLayout="row" fxFlex="0 0 70%">
+											<mat-table fxFlex="100" style="max-height: 100%;"
+												class="tabla-detalles ficha-table" #tablaDetalles
+												[dataSource]="dataSourceDetalles" matSort
+												[@animateStagger]="{value:'50'}" cdkDropList id="tablaDetalles">
+												<ng-container matColumnDef="check">
+													<mat-header-cell *matHeaderCellDef>
+														<div class="w-100-p" fxLayout="row"
+															fxLayoutAlign="center center"
+															*ngIf="!ordenVentaCancelacion?.id && dataSourceDetalles.filteredData?.length && tipoMovimientoControl.value?.id == CMM_OVC_TipoMovimiento.DEVOLUCION">
+															<mat-checkbox #chkDetalles id="r0"
+																(change)="onSeleccionarTodosDetalles(chkDetalles)"
+																class="d-none" [checked]="true"></mat-checkbox>
+															<button [disabled]="tipoMovimientoControl.value?.id == CMM_OVC_TipoMovimiento.CANCELACION" type="button" class="btn-chk" mat-icon-button
+																(click)="onClickMatCheckbox(chkDetalles)">
+																<mat-icon *ngIf="!chkDetalles?.checked && !chkDetalles?.indeterminate">crop_square</mat-icon>
+																<mat-icon *ngIf="chkDetalles?.indeterminate" class="orange-900-fg">indeterminate_check_box</mat-icon>
+																<mat-icon *ngIf="chkDetalles?.checked" class="orange-900-fg">check_box</mat-icon>
+															</button>
+														</div>
+													</mat-header-cell>
+													<mat-cell *matCellDef="let detalle">
+														<div class="w-100-p" fxLayout="row"
+															fxLayoutAlign="center center"
+															*ngIf="!ordenVentaCancelacion?.id && !detallesCanceladosMap[detalle.id] && tipoMovimientoControl.value?.id == CMM_OVC_TipoMovimiento.DEVOLUCION && (detalle.esInscripcion || detalle.esExamenUbicacion)">
+															<mat-checkbox #chkDetalle id="r{{detalle.id}}"
+																(change)="onSeleccionarDetalle(detalle,chkDetalle)"
+																class="d-none" [checked]="detallesSeleccionadosMap[detalle.id]"></mat-checkbox>
+															<button [disabled]="tipoMovimientoControl.value?.id == CMM_OVC_TipoMovimiento.CANCELACION" type="button" class="btn-chk" mat-icon-button
+																(click)="onClickMatCheckbox(chkDetalle)">
+																<mat-icon *ngIf="!chkDetalle?.checked && !chkDetalle?.indeterminate">crop_square</mat-icon>
+																<mat-icon *ngIf="chkDetalle?.indeterminate" class="orange-900-fg">indeterminate_check_box</mat-icon>
+																<mat-icon *ngIf="chkDetalle?.checked" class="orange-900-fg">check_box</mat-icon>
+															</button>
+														</div>
+														<div class="w-100-p" fxLayout="row"
+															fxLayoutAlign="center center"
+															*ngIf="!!ordenVentaCancelacion?.id && detallesCanceladosMap[detalle.id] && tipoMovimientoControl.value?.id == CMM_OVC_TipoMovimiento.DEVOLUCION">
+															<button type="button" class="btn-chk" mat-icon-button>
+																<mat-icon class="orange-900-fg">check_box</mat-icon>
+															</button>
+														</div>
+													</mat-cell>
+												</ng-container>
+
+												<ng-container matColumnDef="nombre">
+													<mat-header-cell *matHeaderCellDef mat-sort-header>Nombre
+													</mat-header-cell>
+													<mat-cell *matCellDef="let detalle">
+														<p>
+															<span class="font-weight-900">{{ detalle.conceptoLinea1
+																}}</span>
+															<br>
+															{{ detalle.conceptoLinea2 }}
+														</p>
+													</mat-cell>
+												</ng-container>
+
+												<ng-container matColumnDef="cantidad">
+													<mat-header-cell *matHeaderCellDef mat-sort-header>Cantidad
+													</mat-header-cell>
+													<mat-cell *matCellDef="let detalle">
+														<p class="w-100-p text-right">{{ detalle.cantidad }}</p>
+													</mat-cell>
+												</ng-container>
+
+												<ng-container matColumnDef="precio">
+													<mat-header-cell *matHeaderCellDef mat-sort-header>Precio
+													</mat-header-cell>
+													<mat-cell *matCellDef="let detalle">
+														<p class="w-100-p text-right">{{ detalle.precio |
+															NumeroFormatoPipe }}</p>
+													</mat-cell>
+												</ng-container>
+
+												<ng-container matColumnDef="descuento">
+													<mat-header-cell *matHeaderCellDef mat-sort-header>Descuento
+													</mat-header-cell>
+													<mat-cell *matCellDef="let detalle">
+														<p class="w-100-p text-right">{{ detalle.descuento |
+															NumeroFormatoPipe }}</p>
+													</mat-cell>
+												</ng-container>
+
+												<ng-container matColumnDef="total">
+													<mat-header-cell *matHeaderCellDef mat-sort-header>Total
+													</mat-header-cell>
+													<mat-cell *matCellDef="let detalle">
+														<p class="w-100-p text-right">{{ detalle.montoTotal |
+															NumeroFormatoPipe }}</p>
+													</mat-cell>
+												</ng-container>
+
+												<ng-container matColumnDef="regresaLibro">
+													<mat-header-cell *matHeaderCellDef mat-sort-header class="pl-12">
+														{{ tipoMovimientoControl.value?.id == CMM_OVC_TipoMovimiento.DEVOLUCION ? 'Regresa libro' : '' }}
+													</mat-header-cell>
+													<mat-cell *matCellDef="let detalle">
+														<div class="w-100-p" fxLayout="row" fxLayoutAlign="center center"
+															*ngIf="!ordenVentaCancelacion?.id && !detallesCanceladosMap[detalle.id] && detalle.esInscripcion && tipoMovimientoControl.value?.id == CMM_OVC_TipoMovimiento.DEVOLUCION">
+															<mat-checkbox #chkLibro id="l{{detalle.id}}" (change)="onSeleccionarLibro(detalle,chkLibro)" class="d-none"
+																[checked]="detallesLibrosSeleccionadosMap[detalle.id]"></mat-checkbox>
+															<button [disabled]="tipoMovimientoControl.value?.id == CMM_OVC_TipoMovimiento.CANCELACION" type="button" class="btn-chk"
+																mat-icon-button (click)="onClickMatCheckbox(chkLibro)">
+																<mat-icon *ngIf="!chkLibro?.checked && !chkLibro?.indeterminate">crop_square</mat-icon>
+																<mat-icon *ngIf="chkLibro?.indeterminate" class="blue-fg">indeterminate_check_box</mat-icon>
+																<mat-icon *ngIf="chkLibro?.checked" class="blue-fg">check_box</mat-icon>
+															</button>
+														</div>
+														<div class="w-100-p" fxLayout="row" fxLayoutAlign="center center"
+															*ngIf="!!ordenVentaCancelacion?.id && detallesRegresoLibroMap[detalle.id] && tipoMovimientoControl.value?.id == CMM_OVC_TipoMovimiento.DEVOLUCION">
+															<button type="button" class="btn-chk" mat-icon-button>
+																<mat-icon class="blue-fg">check_box</mat-icon>
+															</button>
+														</div>
+													</mat-cell>
+												</ng-container>
+
+												<mat-header-row
+													*matHeaderRowDef="displayedColumnsDetalles; sticky:true">
+												</mat-header-row>
+												<mat-row *matRowDef="let row; columns: displayedColumnsDetalles;"
+													class="element">
+												</mat-row>
+											</mat-table>
+										</div>
+
+										<div fxFlex="0 0 15%" fxLayout="column">
+											<div fxLayout="row" fxLayoutAlign="space-between center">
+												<span class="font-weight-900">Usuario:</span>
+												<span class="text-nowrap">{{ ordenVentaHistorial?.usuario }}</span>
+											</div>
+
+											<div fxLayout="row" fxLayoutAlign="space-between center">
+												<span class="font-weight-900">Fecha:</span>
+												<span class="text-nowrap">{{ ordenVentaHistorial?.fecha | date :
+													'dd/MM/yyyy HH:mm' }}</span>
+											</div>
+
+											<div fxLayout="row" fxLayoutAlign="space-between center">
+												<span class="font-weight-900">Total pagado:</span>
+												<span class="text-nowrap">{{ ordenVentaHistorial?.montoTotal |
+													NumeroFormatoPipe }}</span>
+											</div>
+
+											<div fxLayout="row" fxLayoutAlign="space-between center">
+												<span class="font-weight-900">Forma pago:</span>
+												<span class="text-nowrap">{{ ordenVentaHistorial?.medioPago }}</span>
+											</div>
+										</div>
+									</div>
+
+									<div *ngIf="tipoMovimientoControl.value && tipoMovimientoControl.value.id === CMM_OVC_TipoMovimiento.DEVOLUCION"
+										fxLayout="column" fxFlex="40" fxFlex.gt-sm="40" fxFlex.gt-md="40">
+										<div fxlayout="row" fxlayoutalign="start center" class="my-20" style="display: flex; border-bottom: solid 1px lightgray;">
+											<mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font">local_atm</mat-icon>
+											<div class="h2 secondary-text ng-tns-c345-79">Datos bancarios</div>
+										</div>
+
+										<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+											<mat-form-field appearance="outline" floatLabel="auto" fxFlex="100%">
+												<mat-label>Banco</mat-label>
+												<input matInput name="banco" formControlName="banco"
+													required="{{ isRequired('banco') }}">
+												<mat-error *ngIf="(!!form.get('banco').errors)">
+													{{validatorService.getMessage(form.get('banco'))}}
+												</mat-error>
+											</mat-form-field>
+										</div>
+
+										<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+											<mat-form-field appearance="outline" floatLabel="auto" fxFlex="100%">
+												<mat-label>Beneficiario</mat-label>
+												<input matInput name="beneficiario" formControlName="beneficiario"
+													required="{{ isRequired('beneficiario') }}">
+												<mat-error *ngIf="(!!form.get('beneficiario').errors)">
+													{{validatorService.getMessage(form.get('beneficiario'))}}
+												</mat-error>
+											</mat-form-field>
+										</div>
+
+										<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+											<mat-form-field appearance="outline" floatLabel="auto" fxFlex="50%">
+												<mat-label>Número de cuenta</mat-label>
+												<input matInput name="numeroCuenta" formControlName="numeroCuenta"
+													required="{{ isRequired('numeroCuenta') }}">
+												<mat-error *ngIf="(!!form.get('numeroCuenta').errors)">
+													{{validatorService.getMessage(form.get('numeroCuenta'))}}
+												</mat-error>
+											</mat-form-field>
+
+											<mat-form-field appearance="outline" floatLabel="auto" fxFlex="50%">
+												<mat-label>CLABE</mat-label>
+												<input matInput name="clabe" formControlName="clabe"
+													required="{{ isRequired('clabe') }}">
+												<mat-error *ngIf="(!!form.get('clabe').errors)">
+													{{validatorService.getMessage(form.get('clabe'))}}
+												</mat-error>
+											</mat-form-field>
+										</div>
+
+										<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+											<mat-form-field appearance="outline" floatLabel="auto" fxFlex="50%">
+												<mat-label>Teléfono de contacto</mat-label>
+												<input matInput name="telefonoContacto"
+													formControlName="telefonoContacto"
+													required="{{ isRequired('telefonoContacto') }}"
+													mask="(00) 0000 0000">
+												<mat-error *ngIf="(!!form.get('telefonoContacto').errors)">
+													{{validatorService.getMessage(form.get('telefonoContacto'))}}
+												</mat-error>
+											</mat-form-field>
+
+											<mat-form-field appearance="outline" floatLabel="auto" fxFlex="50%">
+												<mat-label>Importe a reembolsar</mat-label>
+												<input matInput name="importeReembolsar"
+													formControlName="importeReembolsar"
+													required="{{ isRequired('importeReembolsar') }}" prefix="$ "
+													mask="separator.2" thousandSeparator=",">
+												<mat-error *ngIf="(!!form.get('importeReembolsar').errors)">
+													{{validatorService.getMessage(form.get('importeReembolsar'))}}
+												</mat-error>
+											</mat-form-field>
+										</div>
+
+										<div fxlayout="row" fxlayoutalign="start center" class="my-20" style="display: flex; border-bottom: solid 1px lightgray;">
+											<mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font">folder_open</mat-icon>
+											<div class="h2 secondary-text ng-tns-c345-79">Documentos necesario para el expediente</div>
+										</div>
+
+										<div *ngIf="!ordenVentaCancelacion?.id" fxLayout="row wrap"
+											fxLayoutAlign="start center" fxLayoutGap="10px grid"
+											style="width: 100%; position: relative;">
+											<button mat-mini-fab type="button" class="btn-nuevo"
+												(click)="onNuevoDocumento()">
+												<mat-icon>add</mat-icon>
+											</button>
+										</div>
+
+										<div fxLayout="row" fxFlex="0 0 70%">
+											<mat-table fxFlex="100" style="max-height: 100%;"
+												class="tabla-documentos ficha-table" #tablaDocumentos
+												[dataSource]="dataSourceDocumentos" matSort
+												[@animateStagger]="{value:'50'}" cdkDropList id="tablaDocumentos">
+												<ng-container matColumnDef="archivo">
+													<mat-header-cell *matHeaderCellDef mat-sort-header>Archivo
+													</mat-header-cell>
+													<mat-cell *matCellDef="let documento">
+														<p>
+															<span class="font-weight-900">{{
+																documento.archivo.nombreOriginal }}</span>
+														</p>
+													</mat-cell>
+												</ng-container>
+
+												<ng-container matColumnDef="tipoDocumento">
+													<mat-header-cell *matHeaderCellDef mat-sort-header>Tipo de documento
+													</mat-header-cell>
+													<mat-cell *matCellDef="let documento">
+														<p>{{ documento.tipoDocumento.valor }}</p>
+													</mat-cell>
+												</ng-container>
+
+												<ng-container matColumnDef="codigo">
+													<mat-header-cell *matHeaderCellDef mat-sort-header>Código
+													</mat-header-cell>
+													<mat-cell *matCellDef="let documento">
+														<p>{{ documento.valor }}</p>
+													</mat-cell>
+												</ng-container>
+
+												<ng-container matColumnDef="borrar">
+													<mat-header-cell *matHeaderCellDef mat-sort-header>
+													</mat-header-cell>
+													<mat-cell *matCellDef="let documento">
+													</mat-cell>
+												</ng-container>
+
+												<mat-header-row
+													*matHeaderRowDef="displayedColumnsDocumentos; sticky:true">
+												</mat-header-row>
+												<mat-row *matRowDef="let row; columns: displayedColumnsDocumentos;"
+													class="element">
+												</mat-row>
+											</mat-table>
+										</div>
+									</div>
+								</div>
+							</div>
+						</mat-tab>
+					</mat-tab-group>
+				</form>
+			</div>
+			<!-- / CONTENT -->
+		</div>
+		<!-- / CONTENT CARD -->
+	</div>
+	<!-- / CENTER -->
+</div>

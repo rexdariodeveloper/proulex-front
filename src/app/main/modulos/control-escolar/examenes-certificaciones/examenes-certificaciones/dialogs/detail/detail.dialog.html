@@ -1,0 +1,80 @@
+<ng-container *ngIf="!isLoading; then thenTemplate; else elseTemplate"></ng-container>
+<ng-template #thenTemplate>
+    <h1 mat-dialog-title>
+        Captura resultado de examen de {{isExamen ? 'ubicación' : 'certificación'}}
+    </h1>
+    <div mat-dialog-content class="font-size-20 pb-12">
+        <div class="w-100-p" fxLayout="column" >
+            <ng-container *ngIf="!!form">
+                <form focusInvalidInput name="form" id="form" [formGroup]="form">
+                    <div fxLayout="row wrap" fxLayoutGap="10px grid">
+                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="50%">
+                            <mat-label>Fecha de venta</mat-label>
+                            <input matInput name="fecha" formControlName="fecha">
+                            <mat-error *ngIf="(!!form.get('fecha').errors)">
+                                {{validatorService.getMessage(form.get('fecha'))}}
+                            </mat-error>
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="50%">
+                            <mat-label>Código de OV</mat-label>
+                            <input matInput name="codigo" formControlName="codigo">
+                            <mat-error *ngIf="(!!form.get('codigo').errors)">
+                                {{validatorService.getMessage(form.get('codigo'))}}
+                            </mat-error>
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="100%">
+                            <mat-label>Alumno</mat-label>
+                            <input matInput name="alumnoMostrar" formControlName="alumnoMostrar">
+                            <mat-error *ngIf="(!!form.get('alumnoMostrar').errors)">
+                                {{validatorService.getMessage(form.get('alumnoMostrar'))}}
+                            </mat-error>
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="100%">
+                            <mat-label>Articulo</mat-label>
+                            <input matInput name="articuloMostrar" formControlName="articuloMostrar">
+                            <mat-error *ngIf="(!!form.get('articuloMostrar').errors)">
+                                {{validatorService.getMessage(form.get('articuloMostrar'))}}
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div fxLayout="row wrap" fxLayoutGap="10px grid">
+                        <pixvs-mat-select [matSelectCtrl]="form.get('curso')" [datos]="cursos"
+                            [appearance]="'outline'"
+                            [matError]="'Este campo es requerido.'"
+                            [campoValor]="'nombre'" [label]="'Curso'" [required]="isRequired('curso')"
+                            fxFlex="1 0 50%">
+                        </pixvs-mat-select>
+                        <ng-container *ngIf="!isExamen; then calificacion; else nivel"></ng-container>
+                        <ng-template #calificacion>
+                            <mat-form-field appearance="outline" floatLabel="auto">
+                                <mat-label>Calificación</mat-label>
+                                <input matInput class="w-100-p" name="calificacion" formControlName="calificacion" mask="000.00" [dropSpecialCharacters]="false">
+                                <mat-error *ngIf="(!!form.get('fecha').errors)">
+                                    {{validatorService.getMessage(form.get('fecha'))}}
+                                </mat-error>
+                            </mat-form-field>
+                        </ng-template>
+                        <ng-template #nivel>
+                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 50%">
+                                <mat-label>Nivel</mat-label>
+                                <input matInput class="w-100-p" name="nivel" formControlName="nivel" mask="00">
+                                <mat-error *ngIf="(!!form.get('codigo').errors)">
+                                    {{validatorService.getMessage(form.get('codigo'))}}
+                                </mat-error>
+                            </mat-form-field>
+                        </ng-template>
+                    </div>
+                </form>
+            </ng-container>
+        </div>
+    </div>
+    <div mat-dialog-actions align="end" fxLayout="row" fxLayoutAlign="space-between center">
+        <button mat-button (debounceClick)="cancelar()"> Cancelar </button>
+        <button mat-raised-button class="mat-primary" (debounceClick)="onAceptar()" [disabled]="isDisabled"> Aceptar </button>
+    </div>
+</ng-template>
+<ng-template #elseTemplate>
+    <div fxLayoutAlign="center center" class="w-100-p h-100">
+        <mat-spinner></mat-spinner>
+    </div>
+</ng-template>

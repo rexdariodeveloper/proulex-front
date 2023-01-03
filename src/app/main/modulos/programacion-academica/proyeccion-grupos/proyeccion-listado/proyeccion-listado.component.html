@@ -1,0 +1,81 @@
+<pixvs-bloqueo-pantalla [style.z-index]="10000" *ngIf="_fichasDataService.cargando"></pixvs-bloqueo-pantalla>
+<ng-container *ngIf="listado; else elseTemplate">
+	<ficha-listado #ficha class="page-layout carded fullwidth inner-scroll" [config]="config" [filtros]="regConfig" [filtrosOpciones]="[]" [selection]="selection" (outputMenu)="generarProyecciones($event)"></ficha-listado>	
+</ng-container>
+<ng-template #elseTemplate>
+	<div id="pixvs-listado" class="page-layout carded fullwidth inner-scroll">
+		<div class="top-bg accent"></div>
+		<div class="center">
+			<div class="accent" fxLayout="row" fxLayoutAlign="space-between center" style="min-height: 75px;">
+				<div fxLayout="column" fxLayoutAlign="start start">
+					<div fxLayout="column" fxLayoutAlign="center start">
+						<div class="logo mb-12 mb-md-0" fxLayout="row" fxLayoutAlign="start center">
+							<button mat-icon-button (click)="regresar()">
+								<mat-icon>arrow_back</mat-icon>
+							</button>
+							<span class="logo-text h1"> Proyección de grupos </span>
+						</div>
+						<div fxLayout="row" class="subtitle secondary-text mx-28">
+							<span>{{ numeroGrupos }} Grupos, {{ numeroInscripciones}} Inscripciones</span>
+						</div>
+					</div>
+				</div>
+				<div fxLayout="column">
+					<button mat-raised-button class="boton-nuevo mt-12" (debounceClick)="proyectar()">
+						<span>Crear proyecciones</span>
+					</button>
+				</div>
+			</div>
+			<div class="content-card">
+				<mat-table class="ficha-table" [dataSource]="proyecciones" fusePerfectScrollbar>
+					<ng-container matColumnDef="codigoAnterior">
+						<mat-header-cell *matHeaderCellDef> Grupo Anterior </mat-header-cell>
+						<mat-cell *matCellDef="let element"> {{element.actual}} </mat-cell>
+					</ng-container>
+					<ng-container matColumnDef="codigoGrupo">
+						<mat-header-cell *matHeaderCellDef> Código Grupo </mat-header-cell>
+						<mat-cell *matCellDef="let element"> {{element.siguiente}} </mat-cell>
+					</ng-container>
+					<ng-container matColumnDef="curso">
+						<mat-header-cell *matHeaderCellDef> Curso </mat-header-cell>
+						<mat-cell *matCellDef="let element"> {{element.curso}} </mat-cell>
+					</ng-container>
+					<ng-container matColumnDef="modalidad">
+						<mat-header-cell *matHeaderCellDef> Modalidad </mat-header-cell>
+						<mat-cell *matCellDef="let element"> {{element.modalidad}} </mat-cell>
+					</ng-container>
+					<ng-container matColumnDef="fechaInicio">
+						<mat-header-cell *matHeaderCellDef> Fecha Inicio </mat-header-cell>
+						<mat-cell *matCellDef="let element"> {{element.fechaInicio}} </mat-cell>
+					</ng-container>
+					<ng-container matColumnDef="fechaFin">
+						<mat-header-cell *matHeaderCellDef> Fecha Fin </mat-header-cell>
+						<mat-cell *matCellDef="let element"> {{element.fechaFin}} </mat-cell>
+					</ng-container>
+					<ng-container matColumnDef="nivel">
+						<mat-header-cell *matHeaderCellDef> Nivel </mat-header-cell>
+						<mat-cell *matCellDef="let element"> {{element.nivel}} </mat-cell>
+					</ng-container>
+					<ng-container matColumnDef="horario">
+						<mat-header-cell *matHeaderCellDef> Horario </mat-header-cell>
+						<mat-cell *matCellDef="let element"> {{element.horario}} </mat-cell>
+					</ng-container>
+					<ng-container matColumnDef="cupo">
+						<mat-header-cell *matHeaderCellDef> Cupo </mat-header-cell>
+						<mat-cell *matCellDef="let element"> {{element.cupo}} </mat-cell>
+					</ng-container>
+					<ng-container matColumnDef="totalInscritos">
+						<mat-header-cell *matHeaderCellDef> Total Inscritos </mat-header-cell>
+						<mat-cell *matCellDef="let element"> {{element.inscritos}} </mat-cell>
+					</ng-container>
+					<ng-container matColumnDef="profesor">
+						<mat-header-cell *matHeaderCellDef> Profesor </mat-header-cell>
+						<mat-cell *matCellDef="let element"> {{element.profesor}} </mat-cell>
+					</ng-container>
+					<mat-header-row *matHeaderRowDef="displayedColumns; sticky:true"></mat-header-row>
+					<mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+				</mat-table>
+			</div>
+		</div>
+	</div>
+</ng-template>

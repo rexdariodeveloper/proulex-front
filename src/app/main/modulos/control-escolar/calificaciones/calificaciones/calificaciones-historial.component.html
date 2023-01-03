@@ -1,0 +1,33 @@
+<div id="timeline" (click)="openLink(null)">
+    <div class="timeline-sidebar" fxLayout="column" fxFlex="100">
+
+        <div class="profile-box latest-activity" fxLayout="column">
+
+            <div class="content" fxLayout="row wrap">
+                <div class="activities">
+                    <div class="activity" fxLayout="row" fxLayoutAlign="start start" *ngFor="let log of historial">
+<!-- 
+                        <button mat-mini-fab color="{{ isWarn(log.tipo.id) ? 'warn' : 'accent' }}" class="avatar">
+                            <mat-icon>{{log.tipo.icono}}</mat-icon>
+                        </button> -->
+
+                        <div class="small-circle app-logo avatar" [style.background-color]="log.tipo.colorFondo" [class.mat-elevation-z8]="true"  fxLayout="column" fxLayoutAlign="center center">
+                            <mat-icon>{{log.tipo.icono}}</mat-icon>
+                        </div>
+
+                        <div fxLayout="column">
+                            <div>
+                                <span class="message"> {{log.tipo.nombre}} por </span>
+                                <span class="username">{{log.creadoPor}}</span>
+
+                            </div>
+                            <small class="time secondary-text">{{ log.texto }}</small>
+                            <span class="time secondary-text">{{ log.fechaCreacion | dateLocale:'MMMM D YYYY, h:mm:ss a'  | capitalizeFirst }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

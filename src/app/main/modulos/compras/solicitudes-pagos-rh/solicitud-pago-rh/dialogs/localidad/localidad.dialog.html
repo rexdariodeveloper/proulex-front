@@ -1,0 +1,20 @@
+<h1 mat-dialog-title>
+	{{
+		esNuevo
+		? 'Nueva localidad'
+		: 'Actualizar localidad'
+	}}
+</h1>
+<div mat-dialog-content>
+	<pixvs-dynamic-components #camposDinamicos [regConfig]="camposListado"></pixvs-dynamic-components>
+</div>
+<div mat-dialog-actions>
+	<button
+		mat-button
+		(click)="cancelar()"
+	>Cancelar</button>
+	<button
+		mat-button
+		(click)="aceptar()"
+	>Aceptar</button>
+</div>

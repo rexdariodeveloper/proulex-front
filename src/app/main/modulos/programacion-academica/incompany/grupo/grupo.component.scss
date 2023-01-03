@@ -1,0 +1,408 @@
+@import "@fuse/scss/fuse";
+
+#ficha-programa {
+	.btn-nuevo{
+		position: absolute;
+		top: 5px;
+		right: 5px;
+		z-index: 200;
+	}
+
+	.clickable{
+		cursor: pointer;
+		&:hover{
+			background-color: #F0F0F0;
+		}
+	}
+    .mat-row:hover {
+      background-color: #DADDDE;
+      cursor: pointer;
+    }
+
+    
+}
+
+.mat-column-acciones {
+    width: 150px !important;
+}
+
+.mat-column-boton {
+    width: 100px !important;
+}
+
+#academy-course {
+    .mat-row:hover {
+      background-color: #DADDDE;
+      //cursor: pointer;
+    }
+    .tooltip-list {
+      white-space: pre-line;
+    }
+
+    .sidebar {
+
+        .steps {
+            padding: 16px 0;
+
+            .step {
+                position: relative;
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+                padding: 16px;
+                cursor: pointer;
+
+                &.current {
+
+                    .index {
+
+                        span {
+                            border: 2px solid;
+                        }
+                    }
+
+                    .title {
+                        font-weight: bold;
+                    }
+                }
+
+                &.completed {
+
+                    .index {
+
+                        span {
+                            border: 2px solid;
+                        }
+                    }
+                }
+
+                &.first {
+
+                    .index {
+
+                        &:before {
+                            display: none;
+                        }
+                    }
+                }
+
+                &.last {
+
+                    .index {
+
+                        &:after {
+                            display: none;
+                        }
+                    }
+                }
+
+                .index {
+                    display: flex;
+                    margin-right: 12px;
+
+                    &:before,
+                    &:after {
+                        position: absolute;
+                        display: block;
+                        content: ' ';
+                        border-left: 1px solid;
+                        width: 1px;
+                        height: 50%;
+                        left: 29px;
+                        z-index: 8;
+                    }
+
+                    &:before {
+                        top: 0;
+                    }
+
+                    &:after {
+                        bottom: 0;
+                    }
+
+                    span {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        position: relative;
+                        width: 28px;
+                        min-width: 28px;
+                        max-width: 28px;
+                        height: 28px;
+                        border-radius: 100%;
+                        border: 2px solid;
+                        font-weight: bold;
+                        font-size: 12px;
+                        z-index: 10;
+                    }
+                }
+
+                .title {
+                    display: flex;
+                }
+            }
+        }
+    }
+
+    .center {
+        position: relative;
+        overflow: hidden;
+
+        .header {
+            height: 72px;
+            min-height: 72px;
+            max-height: 72px;
+        }
+
+        .content {
+            position: relative;
+            display: flex;
+
+            .course-step {
+
+                &.ng-animating {
+                    overflow: hidden;
+                }
+
+                @media (max-width: 720px) {
+                    padding: 0 0 120px 0;
+                }
+
+                .course-step-content {
+                    //max-width: 720px;
+                    width: 95%;
+                    border-radius: 8px;
+                    @include mat-elevation(1);
+                }
+            }
+        }
+
+        .step-navigation {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            bottom: 2px;
+            max-width: 944px;
+            padding: 0 24px;
+            width: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+
+            .previous {
+                margin-right: auto;
+            }
+
+            .next,
+            .done {
+                margin-left: auto;
+            }
+        }
+    }
+
+    table.tabla-calificaciones{
+        .header {
+            font-weight: 600;
+            font-size: 1.5em;
+            padding: 8px;
+            background-color: white;
+        }
+        
+        
+        
+        th.mat-header-cell, td.mat-cell {
+            text-align: center;
+            border: 1px solid #CCC;
+            padding: 0 !important;
+            min-width: 150px;
+        }
+        
+        .group-header {
+            text-align: center !important;
+            font-weight: bold;
+            font-size: 2em;
+        }
+        
+        .table-header {
+            text-align: center !important;
+            font-weight: bold;
+            font-size: 1.5em;
+        }
+
+        .align-left{
+            text-align: left;
+            padding-right: 8px;
+            padding-left: 8px;
+        }
+    }
+
+    mat-table.tabla-alumnos{
+        
+        .cdk-column-menu{
+            width: 50px;
+            min-width: 50px;
+            max-width: 50px;
+            padding: 0 0 0 10px;
+        }
+
+        .cdk-column-imagen{
+            width: 75px;
+            min-width: 75px;
+            max-width: 75px;
+            padding: 0 0 0 10px;
+        }
+
+        .cdk-column-codigo,
+        .cdk-column-codigoUDG,
+        .cdk-column-telefono{
+            width: 100px;
+            min-width: 100px;
+            max-width: 100px;
+            padding: 0 0 0 10px;
+        }
+
+        .cdk-column-primerApellido,
+        .cdk-column-segundoApellido,
+        .cdk-column-centroUniversitario,
+        .cdk-column-edad,
+        .cdk-column-inscripcion,
+        .cdk-column-ordenVenta{
+            width: 150px;
+            min-width: 150px;
+            max-width: 150px;
+            padding: 0 0 0 10px;
+        }
+
+        .cdk-column-nombre{
+            width: 200px;
+            min-width: 200px;
+            max-width: 200px;
+            padding: 0 0 0 10px;
+        }
+
+        .cdk-column-preparatoria,
+        .cdk-column-correoElectronico{
+            width: 250px;
+            min-width: 250px;
+            max-width: 250px;
+            padding: 0 0 0 10px;
+        }
+
+        .cdk-column-carrera{
+            width: 350px;
+            min-width: 350px;
+            max-width: 350px;
+            padding: 0 0 0 10px;
+        }
+
+        .cdk-column-bachillerato{
+            width: 600px;
+            min-width: 600px;
+            max-width: 600px;
+            padding: 0 0 0 10px;
+        }
+
+        &.ambos{
+            mat-header-row,mat-row{
+                min-width: calc(75px + 100px + 100px + 150px + 150px + 200px + 150px + 350px + 150px + 250px + 100px + 150px + 150px + 50px);
+            }
+        }
+
+        &.jobs{
+            mat-header-row,mat-row{
+                min-width: calc(75px + 100px + 100px + 150px + 150px + 200px + 150px + 350px + 250px + 100px + 150px + 150px + 50px);
+            }
+        }
+
+        &.jobs-sems{
+            mat-header-row,mat-row{
+                min-width: calc(75px + 100px + 100px + 150px + 150px + 200px + 250px + 600px + 250px + 100px + 150px + 150px + 50px);
+            }
+        }
+
+        &.ninguno{
+            mat-header-row,mat-row{
+                min-width: calc(75px + 100px + 100px + 150px + 150px + 200px + 150px + 250px + 100px + 150px + 150px + 50px);
+            }
+        }
+    }
+    
+    .asistencias{
+
+        ficha-crud {
+            min-height: 80px !important;
+            max-height: 80px !important;
+        }
+        
+        .text-bold {
+            font-weight: 600;
+        }
+
+        .text-center {
+            text-align: center !important;
+        }
+
+        .text-right {
+            text-align: right !important;
+        }
+
+        .relative {
+            position: relative !important;
+        }
+
+        .absolute {
+            position: absolute; 
+            top: 10px; 
+            left: 14px;
+            mat-icon {
+                float: right; 
+                height: 32px; 
+                width: 32px; 
+                font-size: 36px;
+            }
+        }
+
+        .absolute-tooltip {
+            position: absolute;
+            top: 20px;
+            left: 0px;
+            transform: rotate(-45deg);
+            mat-icon {
+                float: right; 
+                font-size: 36px;
+            }
+        }
+
+        .cell {
+            min-width: 100px;
+        }
+        .cell-end {
+            border-right: 1px solid lightgray;
+            padding: 8px !important;
+        }
+        .header {
+            font-size: 1.5em;
+            padding: 8px;
+            background-color: white;
+        }
+        
+        .calendar-header {
+            button {
+                height:36px !important;
+                width:36px !important;
+                font-size:36px !important;
+        
+                .mat-icon {
+                    height:28px !important;
+                    width:36px !important;
+                    font-size:36px !important;
+                }
+            }
+            span {
+                height:24px !important;
+                font-size:24px !important;
+            }
+        }
+    }
+}
+

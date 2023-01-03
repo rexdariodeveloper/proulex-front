@@ -1,0 +1,53 @@
+<mat-form-field
+	class="chip-list"
+	appearance="{{appearance}}"
+	floatLabel="auto"
+	fxFlex="1 0 auto"
+>
+	<mat-label>{{label}}</mat-label>
+	<mat-chip-list
+		#chipList
+		aria-label="Selección"
+		required="true"
+		cdkDropList
+		cdkDropListOrientation="horizontal"
+		(cdkDropListDropped)="drop($event)"
+	>
+		<mat-chip
+			cdkDrag
+			*ngFor="let element of selectedElements"
+			[selectable]="selectable"
+			[removable]="removable"
+			(removed)="remove(element)"
+		>
+			{{ ( campoValor2 ? element[campoValor][campoValor2] : element[campoValor] ) }}
+			<mat-icon
+				matChipRemove
+				*ngIf="removable && formControl?.enabled"
+			>cancel</mat-icon>
+		</mat-chip>
+		<input
+			placeholder="{{placeholder}}"
+			#elementInput
+			[formControl]="matCtrl"
+			[matAutocomplete]="auto"
+			[matChipInputFor]="chipList"
+			[matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+			[readonly]="formControl?.disabled"
+			(matChipInputTokenEnd)="add($event)"
+		>
+	</mat-chip-list>
+	<mat-autocomplete
+		#auto="matAutocomplete"
+		(optionSelected)="selected($event)"
+	>
+		<ng-container *ngFor="let element of ((filteredElements | async) | PixvsMatChipAutocompletePipe : formControl?.value)">
+			<mat-option
+				[value]="element"
+			>
+				{{ ( campoValor2 ? element[campoValor][campoValor2] : element[campoValor] ) }}
+			</mat-option>
+		</ng-container>
+	</mat-autocomplete>
+	<mat-error>{{matError}}</mat-error>
+</mat-form-field>

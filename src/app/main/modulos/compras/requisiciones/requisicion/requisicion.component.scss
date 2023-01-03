@@ -1,0 +1,33 @@
+@import "@fuse/scss/fuse";
+
+table.tabla-imprimir{
+	border-spacing: 0;;
+	thead{
+		tr{
+			th{
+				background-color: #C0C0C0;
+			}
+			&:first-child{
+				th{
+					border-top: solid black 3px;
+				}
+				th[rowspan="2"]{
+					border-top: solid black 3px;
+					border-bottom: solid black 1px;
+				}
+			}
+			&:last-child{
+				th{
+					border-bottom: solid black 1px;
+				}
+			}
+		}
+	}
+	tbody{
+		tr{
+			td:not(.no-border){
+				border-bottom: solid black 1px;
+			}
+		}
+	}
+}

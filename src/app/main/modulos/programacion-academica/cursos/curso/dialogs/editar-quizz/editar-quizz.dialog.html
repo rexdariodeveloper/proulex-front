@@ -1,0 +1,33 @@
+
+<mat-toolbar>
+	<mat-toolbar-row>
+		<span style="text-align: center;width: 100%">Editar grupo de tareas</span>
+	</mat-toolbar-row>
+</mat-toolbar>
+<div mat-dialog-content>
+	<div class="tab-content p-24" fusePerfectScrollbar>
+        <div fxLayout="row wrap" fxLayoutGap="20px grid">
+        	<mat-label style="margin: auto;">Nombre del grupo: </mat-label>
+        	<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                <mat-label></mat-label>
+                <input type="text" matInput name="nombre" id="nombre" [(ngModel)]="nombre">
+            </mat-form-field>
+        </div>
+        <div fxLayout="row wrap" fxLayoutGap="20px grid" style="display: inline-block;">
+        	<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                <mat-label></mat-label>
+                <input type="number" matInput name="porcentaje" id="porcentaje" [(ngModel)]="porcentaje">
+            </mat-form-field><mat-label style="margin: auto;">% de la calificación total</mat-label>
+        </div>
+    </div>
+</div>
+<div mat-dialog-actions align="end">
+	<button
+		mat-button
+		(click)="cancelar()"
+	>Cerrar</button>
+	<button
+		mat-raised-button class="mat-accent mr-16"
+		(click)="aceptar()"
+	>Aceptar</button>
+</div>

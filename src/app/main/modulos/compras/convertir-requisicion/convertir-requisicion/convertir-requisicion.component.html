@@ -1,0 +1,456 @@
+<invoice-print></invoice-print>
+<div id="convertir-requisicion" class="pixvs-theme-listado page-layout carded left-sidebar fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- SIDEBAR -->
+    <fuse-sidebar *ngIf="filtros?.length" class="sidebar" name="filtros-sidebar" position="left" lockedOpen="gt-lg">
+        <filtros-sidebar #filtrado [regConfig]="filtros" [titulo]="'TITULO' | translate "
+			[modulo]="'MODULO' | translate " [icon]="'toc'" [listadoMenuOpciones]="filtrosOpciones"
+			[_FichasDataService]="_convertirRequisicionService">
+        </filtros-sidebar>
+    </fuse-sidebar>
+    <!-- / SIDEBAR -->
+
+    <!-- CENTER -->
+    <div class="center" [ngClass]="{'layout-pad0': filtros}">
+
+        <!-- HEADER -->
+
+        <div class="header accent compacto" fxLayout="column" fxLayoutAlign="center center" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center">
+
+            <!-- APP TITLE -->
+            <div style="width: 10%;"></div>
+            <!-- / APP TITLE -->
+
+            <!-- ADD BUTTON -->
+            <div fxLayout="row">
+				<div debounceClick fxLayout="column" fxLayoutAlign="start start"
+					[@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+					<button mat-raised-button type="submit" form="form" [disabled]="_convertirRequisicionService.cargando"
+						class="boton-guardar" (debounceClick)="guardar()">
+						<span>{{ _convertirRequisicionService.cargando ? ('INTERFAZ.CONVIRTIENDO' | translate ) + '...' : 'INTERFAZ.CONVERTIR' | translate }}</span>
+					</button>
+				</div>
+            </div>
+			<!-- / ADD BUTTON -->
+
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <mat-progress-bar *ngIf="_convertirRequisicionService?.cargando" [color]="'primary'" [mode]="'query'">
+			</mat-progress-bar>
+
+			<!-- BOTON FILTROS -->			
+			<button *ngIf="filtros" mat-icon-button fxHide.gt-lg class="primary sidebar-button sidebar-toggle"
+				matTooltip="{{ 'INTERFAZ.FILTROS' | translate  }}"
+				(click)="toggleSidebar('filtros-sidebar')">
+				<mat-icon class="mb-4">tune</mat-icon>
+			</button>
+			<!-- BOTON FILTROS -->
+			
+			<div fxFlex="45%" fxLayout="column" class="marco">
+				<mat-table class="ficha-table tabla-requis" #tableDetalle [dataSource]="dataSourceRequisiciones" matSort [@animateStagger]="{value:'50'}" id="table1" fusePerfectScrollbar>
+
+					<ng-container matColumnDef="checkConvertir">
+						<mat-header-cell *matHeaderCellDef>
+							<div class="w-100-p" fxLayout="row" fxLayoutAlign="center center" *ngIf="dataSourceRequisiciones.filteredData?.length">
+								<mat-checkbox #chkRequisiciones id="r0" (change)="onSeleccionarTodasRequisiciones(chkRequisiciones)" class="d-none"></mat-checkbox>
+								<button type="button" class="btn-chk" mat-icon-button (click)="onClickMatCheckbox(chkRequisiciones)">
+									<mat-icon *ngIf="!chkRequisiciones?.checked && !chkRequisiciones?.indeterminate">crop_square</mat-icon>
+									<mat-icon class="blue-fg" *ngIf="chkRequisiciones?.indeterminate">indeterminate_check_box</mat-icon>
+									<mat-icon class="blue-fg" *ngIf="chkRequisiciones?.checked">check_box</mat-icon>
+								</button>
+							</div>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let requisicion">
+							<div class="w-100-p" fxLayout="row" fxLayoutAlign="center center">
+								<mat-checkbox #chk id="r{{requisicion.id}}" (change)="onSeleccionarRequisicion(requisicion,chk)" class="d-none"></mat-checkbox>
+								<button type="button" class="btn-chk" mat-icon-button (click)="onClickMatCheckbox(chk)">
+									<mat-icon *ngIf="!chk?.checked && !chk?.indeterminate">crop_square</mat-icon>
+									<mat-icon class="blue-fg" *ngIf="chk?.indeterminate">indeterminate_check_box</mat-icon>
+									<mat-icon class="blue-fg" *ngIf="chk?.checked">check_box</mat-icon>
+								</button>
+							</div>
+						</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="codigo">
+						<mat-header-cell *matHeaderCellDef>
+							<span class="text-center text-nowrap w-100-p">Código requisición</span>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let requisicion">
+							<div class="w-100-p" fxLayout="row" fxLayoutAlign="center center">
+								{{ requisicion.codigo }}
+							</div>
+						</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="fecha">
+						<mat-header-cell *matHeaderCellDef>
+							<span class="text-center text-nowrap w-100-p">Fecha requisición</span>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let requisicion">
+							<div class="w-100-p" fxLayout="row" fxLayoutAlign="center center">
+								{{ requisicion.fecha | date:'dd/MM/yyyy' }}
+							</div>
+						</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="sucursal">
+						<mat-header-cell *matHeaderCellDef>
+							<span class="text-center text-nowrap w-100-p">Sede</span>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let requisicion">
+							<div class="w-100-p" fxLayout="row" fxLayoutAlign="center center">
+								{{ requisicion.sucursal?.nombre }}
+							</div>
+						</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="departamento">
+						<mat-header-cell *matHeaderCellDef>
+							<span class="text-center text-nowrap w-100-p">Departamento</span>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let requisicion">
+							<div class="w-100-p" fxLayout="row" fxLayoutAlign="center center">
+								{{ requisicion.departamento?.nombre }}
+							</div>
+						</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="comentarios">
+						<mat-header-cell *matHeaderCellDef>
+							<span class="text-center text-nowrap w-100-p">Comentarios</span>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let requisicion" fxLayout="row" fxLayoutAlign="center center">
+							<button
+								mat-icon-button
+								matTooltip="Comentarios"
+								(click)="onModalComentariosRequisicion(requisicion)"
+							>
+								<mat-icon>message</mat-icon>
+							</button>
+						</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="estadoRequisicion">
+						<mat-header-cell *matHeaderCellDef>
+							<span class="text-center text-nowrap w-100-p">Estatus</span>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let requisicion">
+							<div class="w-100-p" fxLayout="row" fxLayoutAlign="center center">
+								{{ requisicion.estadoRequisicion?.valor }}
+							</div>
+						</mat-cell>
+					</ng-container>
+					
+					<ng-container>
+						<mat-header-row *matHeaderRowDef="displayedColumnsRequisiciones; sticky:true"></mat-header-row>
+						<mat-row *matRowDef="let row; columns: displayedColumnsRequisiciones;" class="element" matRipple></mat-row>
+					</ng-container>
+	
+				</mat-table>
+			</div>
+
+			<div fxFlex="55%" fxLayout="column" class="marco">
+
+				<div fxFlex="auto" fxLayout="row" fxLayoutAlign="start center" class="px-12">
+					<!-- <pixvs-mat-select #selectFamilias [matSelectCtrl]="articuloFamiliasControl" [datos]="articuloFamilias"
+						[appearance]="'outline'" [multiple]="true"
+						[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+						[campoValor]="['nombre']" [label]="'Familias'" [required]="false"
+						fxFlex="24%">
+					</pixvs-mat-select>
+	
+					<pixvs-mat-select #selectCategorias [matSelectCtrl]="articuloCategoriasControl" [datos]="articuloCategorias"
+						[appearance]="'outline'" [multiple]="true"
+						[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+						[campoValor]="['nombre']" [label]="'Categorías'" [required]="false"
+						fxFlex="24%">
+					</pixvs-mat-select>
+	
+					<pixvs-mat-select #selectSubcategorias [matSelectCtrl]="articuloSubcategoriasControl" [datos]="articuloSubcategorias"
+						[appearance]="'outline'" [multiple]="true"
+						[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+						[campoValor]="['nombre']" [label]="'Subcategorías'" [required]="false"
+						fxFlex="24%">
+					</pixvs-mat-select>
+	
+					<pixvs-mat-select #selectArticulos [matSelectCtrl]="articulosControl" [datos]="articulos"
+						[appearance]="'outline'" [multiple]="true"
+						[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+						[campoValor]="['nombreArticulo']" [label]="'Artículos'" [required]="false"
+						fxFlex="24%">
+					</pixvs-mat-select> -->
+
+					<pixvs-buscador-amazon [opciones]="opcionesBuscadorAmazon" (onBuscar)="onBuscarPartidas($event)" fxFlex="100%"></pixvs-buscador-amazon>
+				</div>
+	
+				<div fxFlex="fill" fxLayout="column" class="w-100-p">
+					<form
+						focusInvalidInput
+						name="form"
+						id="form"
+						[formGroup]="form"
+						class="product w-100-p h-100-p"
+						fxLayout="row"
+						fxFlex style="overflow-x: auto;"
+					>
+						<mat-table class="ficha-table h-100-p tabla-requis" #tableDetalle [dataSource]="dataSourcePartidas" matSort [@animateStagger]="{value:'50'}" id="tabla-partidas" fusePerfectScrollbar>
+	
+							<ng-container matColumnDef="checkConvertir">
+								<mat-header-cell *matHeaderCellDef>
+									<div class="w-100-p" fxLayout="row" fxLayoutAlign="center center" *ngIf="dataSourcePartidas.filteredData?.length">
+										<mat-checkbox #chkPartidas id="p0" (change)="onSeleccionarTodasPartidas(chkPartidas)" class="d-none"></mat-checkbox>
+										<button type="button" class="btn-chk" mat-icon-button (click)="onClickMatCheckbox(chkPartidas)">
+											<mat-icon *ngIf="!chkPartidas?.checked && !chkPartidas?.indeterminate">crop_square</mat-icon>
+											<mat-icon class="blue-fg" *ngIf="chkPartidas?.indeterminate">indeterminate_check_box</mat-icon>
+											<mat-icon class="blue-fg" *ngIf="chkPartidas?.checked">check_box</mat-icon>
+										</button>
+									</div>
+								</mat-header-cell>
+								<mat-cell *matCellDef="let partida">
+									<div class="w-100-p" fxLayout="row" fxLayoutAlign="center center">
+										<mat-checkbox #chkPartida id="p{{partida.id}}" (change)="onSeleccionarPartida(partida,chkPartida)" class="d-none"></mat-checkbox>
+										<button type="button" class="btn-chk" mat-icon-button (click)="onClickMatCheckbox(chkPartida)">
+											<mat-icon *ngIf="!chkPartida?.checked && !chkPartida?.indeterminate">crop_square</mat-icon>
+											<mat-icon class="blue-fg" *ngIf="chkPartida?.indeterminate">indeterminate_check_box</mat-icon>
+											<mat-icon class="blue-fg" *ngIf="chkPartida?.checked">check_box</mat-icon>
+										</button>
+									</div>
+								</mat-cell>
+							</ng-container>
+	
+							<ng-container matColumnDef="codigoRequisicion">
+								<mat-header-cell *matHeaderCellDef>
+									<span class="text-center text-nowrap w-100-p">Código requisición</span>
+								</mat-header-cell>
+								<mat-cell *matCellDef="let partida">
+									<div class="w-100-p" fxLayout="row" fxLayoutAlign="center center">
+										{{ partida.requisicion.codigo }}
+									</div>
+								</mat-cell>
+							</ng-container>
+	
+							<ng-container matColumnDef="fechaPartida">
+								<mat-header-cell *matHeaderCellDef>
+									<span class="text-center text-nowrap w-100-p">Fecha artículo</span>
+								</mat-header-cell>
+								<mat-cell *matCellDef="let partida">
+									<div class="w-100-p" fxLayout="row" fxLayoutAlign="center center">
+										{{ partida.fechaRequerida | date:'dd/MM/yyyy' }}
+									</div>
+								</mat-cell>
+							</ng-container>
+	
+							<ng-container matColumnDef="codigoArticulo">
+								<mat-header-cell *matHeaderCellDef>
+									<span class="text-center text-nowrap w-100-p">Código artículo</span>
+								</mat-header-cell>
+								<mat-cell *matCellDef="let partida">
+									<div class="w-100-p" fxLayout="row" fxLayoutAlign="center center">
+										{{ partida.articulo.codigoArticulo }}
+									</div>
+								</mat-cell>
+							</ng-container>
+	
+							<ng-container matColumnDef="nombreArticulo">
+								<mat-header-cell *matHeaderCellDef>
+									<span class="text-center text-nowrap w-100-p">Nombre artículo</span>
+								</mat-header-cell>
+								<mat-cell *matCellDef="let partida">
+									<div class="w-100-p" fxLayout="row" fxLayoutAlign="center center">
+										{{ partida.articulo.nombreArticulo }}
+									</div>
+								</mat-cell>
+							</ng-container>
+	
+							<ng-container matColumnDef="um">
+								<mat-header-cell *matHeaderCellDef>
+									<span class="text-center text-nowrap w-100-p">UM</span>
+								</mat-header-cell>
+								<mat-cell *matCellDef="let partida">
+									<div class="w-100-p" fxLayout="row" fxLayoutAlign="center center">
+										{{ umControls[partida.id]?.value?.nombre || '' }}
+									</div>
+								</mat-cell>
+							</ng-container>
+	
+							<ng-container matColumnDef="cantidad">
+								<mat-header-cell *matHeaderCellDef>
+									<span class="text-center text-nowrap w-100-p">Cantidad</span>
+								</mat-header-cell>
+								<mat-cell *matCellDef="let partida">
+									<div class="w-100-p" fxLayout="row" fxLayoutAlign="center center">
+										{{ form.get('cantidad' + partida.id)?.value || 0 }}
+									</div>
+								</mat-cell>
+							</ng-container>
+	
+							<ng-container matColumnDef="precioUnitario">
+								<mat-header-cell *matHeaderCellDef>
+									<span class="text-center text-nowrap w-100-p">Precio unitario</span>
+								</mat-header-cell>
+								<mat-cell *matCellDef="let partida">
+									<div class="w-100-p" fxLayout="row" fxLayoutAlign="center center">
+										$ {{ form.get('precio' + partida.id)?.value || 0 }}
+									</div>
+								</mat-cell>
+							</ng-container>
+	
+							<ng-container matColumnDef="ultimasCompras">
+								<mat-header-cell *matHeaderCellDef>
+									<span class="text-center text-nowrap w-100-p"></span>
+								</mat-header-cell>
+								<mat-cell *matCellDef="let partida">
+									<div class="w-100-p" fxLayout="row" fxLayoutAlign="center center">
+										<button mat-icon-button matTooltip="Últimas compras" type="button" (click)="onUltimasCompras(partida.articulo)" class="green-fg">
+											<mat-icon>attach_money</mat-icon>
+										</button>
+									</div>
+								</mat-cell>
+							</ng-container>
+	
+							<ng-container matColumnDef="iva">
+								<mat-header-cell *matHeaderCellDef>
+									<span class="text-center text-nowrap w-100-p">IVA</span>
+								</mat-header-cell>
+								<mat-cell *matCellDef="let partida">
+									<div class="w-100-p" fxLayout="row" fxLayoutAlign="center center">
+										<span
+											monto
+											requerido="iva"
+											prefijo="$"
+											[cantidad]="cantidadControls[partida.id]?.value"
+											[precioUnitario]="precioUnitarioControls[partida.id]?.value"
+											[ivaPorcentaje]="partida.articulo.ivaExento ? 0 : partida.articulo.iva"
+											[iepsPorcentaje]="!partida.articulo.iepsCuotaFija ? partida.articulo.ieps : partida.articulo.iepsCuotaFija"
+											[cuotaFija]="partida.articulo.iepsCuotaFija || null"
+										></span>
+									</div>
+								</mat-cell>
+							</ng-container>
+	
+							<ng-container matColumnDef="ieps">
+								<mat-header-cell *matHeaderCellDef>
+									<span class="text-center text-nowrap w-100-p">IEPS</span>
+								</mat-header-cell>
+								<mat-cell *matCellDef="let partida">
+									<div class="w-100-p" fxLayout="row" fxLayoutAlign="center center">
+										<span
+											monto
+											requerido="ieps"
+											prefijo="$"
+											[cantidad]="cantidadControls[partida.id]?.value"
+											[precioUnitario]="precioUnitarioControls[partida.id]?.value"
+											[ivaPorcentaje]="partida.articulo.ivaExento ? 0 : partida.articulo.iva"
+											[iepsPorcentaje]="!partida.articulo.iepsCuotaFija ? partida.articulo.ieps : partida.articulo.iepsCuotaFija"
+											[cuotaFija]="partida.articulo.iepsCuotaFija || null"
+										></span>
+									</div>
+								</mat-cell>
+							</ng-container>
+	
+							<ng-container matColumnDef="total">
+								<mat-header-cell *matHeaderCellDef>
+									<span class="text-center text-nowrap w-100-p">Total</span>
+								</mat-header-cell>
+								<mat-cell *matCellDef="let partida">
+									<div class="w-100-p" fxLayout="row" fxLayoutAlign="center center">
+										<span
+											monto
+											prefijo="$"
+											[cantidad]="cantidadControls[partida.id]?.value"
+											[precioUnitario]="precioUnitarioControls[partida.id]?.value"
+											[ivaPorcentaje]="partida.articulo.ivaExento ? 0 : partida.articulo.iva"
+											[iepsPorcentaje]="!partida.articulo.iepsCuotaFija ? partida.articulo.ieps : partida.articulo.iepsCuotaFija"
+											[cuotaFija]="partida.articulo.iepsCuotaFija || null"
+										></span>
+									</div>
+								</mat-cell>
+							</ng-container>
+	
+							<ng-container matColumnDef="proveedor">
+								<mat-header-cell *matHeaderCellDef>
+									<span class="text-center text-nowrap w-100-p">Proveedor</span>
+								</mat-header-cell>
+								<mat-cell *matCellDef="let partida">
+									<div class="w-100-p" fxLayout="row" fxLayoutAlign="center center">
+										{{ proveedorControls[partida.id]?.value?.nombre || '' }}
+									</div>
+								</mat-cell>
+							</ng-container>
+	
+							<ng-container matColumnDef="lugarEntrega">
+								<mat-header-cell *matHeaderCellDef>
+									<span class="text-center text-nowrap w-100-p">Lugar de entrega</span>
+								</mat-header-cell>
+								<mat-cell *matCellDef="let partida">
+									<div class="w-100-p" fxLayout="row" fxLayoutAlign="center center">
+										{{ partida.requisicion.almacen.nombre }}
+									</div>
+								</mat-cell>
+							</ng-container>
+	
+							<ng-container matColumnDef="cuentaCompras">
+								<mat-header-cell *matHeaderCellDef>
+									<span class="text-center text-nowrap w-100-p">Cuenta compras</span>
+								</mat-header-cell>
+								<mat-cell *matCellDef="let partida">
+									<div class="w-100-p" fxLayout="row" fxLayoutAlign="center center">
+										{{ cuentaComprasControls[partida.id]?.value || '' }}
+									</div>
+								</mat-cell>
+							</ng-container>
+	
+							<ng-container matColumnDef="rechazar">
+								<mat-header-cell *matHeaderCellDef>
+									<span class="text-center text-nowrap w-100-p"></span>
+								</mat-header-cell>
+								<mat-cell *matCellDef="let partida">
+									<div class="w-100-p" fxLayout="row" fxLayoutAlign="center center">
+										<button
+											mat-icon-button
+											matTooltip="Comentarios"
+											(click)="onModalComentariosPartida(partida)"
+										>
+											<mat-icon>message</mat-icon>
+										</button>
+										<button *ngIf="partida?.imagenArticulo" mat-icon-button matTooltip="Descargar imagen" (click)="onMostrarImagen(partida.imagenArticulo)">
+											<mat-icon>image</mat-icon>
+										</button>
+										<button *ngIf="partidasSeleccionadasMap[partida?.id]"
+											mat-icon-button
+											matTooltip="Editar valores"
+											(click)="onModalEditarPartida(partida)"
+										>
+											<mat-icon>edit</mat-icon>
+										</button>
+										<button mat-icon-button color="warn" matTooltip="Rechazar" type="button" (click)="onRechazar(partida)">
+											<mat-icon>cancel</mat-icon>
+										</button>
+									</div>
+								</mat-cell>
+							</ng-container>
+							
+							<ng-container>
+								<mat-header-row *matHeaderRowDef="displayedColumnsPartidas; sticky:true"></mat-header-row>
+								<mat-row *matRowDef="let row; columns: displayedColumnsPartidas;" class="element" matRipple></mat-row>
+							</ng-container>
+			
+						</mat-table>
+					</form>
+				</div>
+
+			</div>
+
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

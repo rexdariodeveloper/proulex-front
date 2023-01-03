@@ -1,0 +1,114 @@
+
+<mat-toolbar color="primary">
+	<mat-toolbar-row>
+		<span style="text-align: center;width: 100%">Agregar test a {{titulo}}</span>
+	</mat-toolbar-row>
+</mat-toolbar>
+
+<div mat-dialog-content style="height: 350px;">
+    <div fxLayout="row wrap">
+        <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="30" fxFlex.gt-md="30">
+            <pixvs-stepper-vertical class="w-100-p h-100-p" [pasos]="pasosStepper" [contenedorFicha]="contenedorFicha" (onPaso)="cambiarVista($event)" [pasoCurrent]="pasoSeleccionado"></pixvs-stepper-vertical>
+        </div>
+        <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="70" fxFlex.gt-md="70" style="padding: 10px 10px 10px 10px;">
+            <form focusInvalidInput name="form" id="form" [formGroup]="form" class="product w-100-p" style="padding: 0px 10px 10px 0px" *ngIf="form">
+                <ng-container *ngIf="pasoSeleccionado == 0">
+                    <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                        <pixvs-mat-select [matSelectCtrl]="form.get('actividadEvaluacion')" [datos]="test"
+                            [appearance]="'outline'"
+                            [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                            [campoValor]="'actividad'" [label]="'Test'" [required]="true"
+                            fxFlex="1 0 auto">
+                        </pixvs-mat-select>
+                        <pixvs-mat-select [matSelectCtrl]="form.get('test')" [datos]="testFormat"
+                            [appearance]="'outline'"
+                            [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                            [campoValor]="'valor'" [label]="'Test Format'" [required]="true"
+                            fxFlex="1 0 auto">
+                        </pixvs-mat-select>
+                    </div>
+                    <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                        <pixvs-mat-select [matSelectCtrl]="modalidadControl" [datos]="modalidades"
+                            [appearance]="'outline'"
+                            [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                            [campoValor]="'nombre'" [label]="'Modalidad'" [required]="true"
+                            fxFlex="1 0 auto" [multiple]="true">
+                        </pixvs-mat-select>
+                    </div>
+                    <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                            <mat-label>Puntos</mat-label>
+                            <input type="number" matInput name="puntaje" formControlName="puntaje">
+                            <mat-error *ngIf="(!!form.get('puntaje').errors)">
+                                {{validatorService.getMessage(form.get('puntaje'))}}
+                            </mat-error>
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                            <mat-label>Time</mat-label>
+                            <input type="number" matInput name="time" formControlName="time"  [readonly]="form.get('continuos').value"><span matSuffix>Minuto(s)</span>
+                            <mat-error *ngIf="(!!form.get('time').errors)">
+                                {{validatorService.getMessage(form.get('time'))}}
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div fxLayout="row" fxLayoutAlign="end end" class="mb-20">
+                        <mat-checkbox color="primary" name="continuos" formControlName="continuos">
+                            Continuous
+                        </mat-checkbox>
+                    </div>
+                </ng-container>
+                <ng-container *ngIf="pasoSeleccionado == 1">
+                    <ng-container *ngFor="let formModalidad of modalidadesArray?.controls; let i = index;">
+                        <form focusInvalidInput name="formModalidad{{i}}" id="formModalidad{{i}}" [formGroup]="formModalidad" style="display: table;">
+                            <span style="width: 20%;margin-right: 15%; display: flex; align-items: center; justify-content: center;">{{formModalidad.get('modalidad').value.nombre}}</span>
+                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                <mat-label>Dias</mat-label>
+                                <input type="text" matInput name="dias" formControlName="dias">
+                            </mat-form-field>
+                        </form>
+                    </ng-container>
+                </ng-container>
+                <ng-container *ngIf="pasoSeleccionado == 2">
+                    <mat-accordion>
+                        <mat-expansion-panel [expanded]="true" [@.disabled]="true">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    <span><b>Unidades</b></span>
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                <ng-container *ngFor="let formNivel of unidadesArray.controls; let i=index">
+                                    <form focusInvalidInput name="formNivel" id="formNivel{{i}}" [formGroup]="formNivel" style="display: table; width: 100%">
+                                        <span style="width: 15%;margin-right: 15%; display: flex; align-items: center; justify-content: center;">{{'Nivel '+formNivel.get('libroMaterial').value?.nivel}}</span>
+                                        <span style="width: 15%;margin-right: 15%; display: flex; align-items: center; justify-content: center;">{{formNivel.get('libroMaterial').value?.articulo?.nombreArticulo}}</span>
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                            <mat-label>Unidad</mat-label>
+                                            <input type="text" matInput name="descripcion" formControlName="descripcion">
+                                        </mat-form-field>
+                                    </form>
+                                </ng-container>
+                            </div>
+                        </mat-expansion-panel>
+                    </mat-accordion>
+                </ng-container>
+            </form>
+        </div>
+</div>
+<div mat-dialog-actions align="end">
+	<button *ngIf="pasoSeleccionado == 0"
+		mat-button
+		(click)="cancelar()"
+	>Cerrar</button>
+    <button *ngIf="pasoSeleccionado == 1 || pasoSeleccionado == 2"
+        mat-button
+        (click)="pasoSeleccionado = pasoSeleccionado-1"
+    >Anterior</button>
+    <button *ngIf="pasoSeleccionado == 0 || pasoSeleccionado == 1"
+        mat-raised-button class="mat-accent mr-16"
+        (click)="pasoSeleccionado = pasoSeleccionado+1"
+    >Siguiente</button>
+	<button *ngIf="pasoSeleccionado == 2"
+		mat-raised-button class="mat-accent mr-16"
+		(click)="aceptar()"
+	>Aceptar</button>
+</div>

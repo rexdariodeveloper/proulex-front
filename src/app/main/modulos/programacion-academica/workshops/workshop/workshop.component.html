@@ -1,0 +1,296 @@
+<div id="ficha-workshop" class="pixvs-theme-listado page-layout carded fullwidth inner-scroll">
+    <div class="top-bg accent"></div>
+    <div class="center">
+        <ficha-crud *ngIf="config" [config]="config" [isGuardadoPersonalizado]="true" (output)="guardar()"
+            [mostrarBorrar]="workshop?.activo" [mostrarEditar]="true" [titulo]="titulo"
+            [subTituloTraduccion]="pageType" [form]="form" [currentId]="currentId" [pageType]="pageType"
+            [dataService]="_cursoService" class="header accent" fxLayout="column" fxLayoutAlign="center center"
+            fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center">
+        </ficha-crud>
+        <div class="content-card">
+            <mat-progress-bar *ngIf="_cursoService?.cargando" [color]="'primary'" [mode]="'query'">
+            </mat-progress-bar>
+            <div style="height: 0px;">
+                <button debounceClick mat-mini-fab class="boton-refresh" (debounceClick)="recargar()"
+                    matTooltip="{{ 'INTERFAZ.RECARGAR' | translate  }}">
+                    <mat-icon class="s-16">refresh</mat-icon>
+                </button>
+            </div>
+            <div class="content" *ngIf="form">
+                <form focusInvalidInput name="form" id="form" [formGroup]="form" class="product w-100-p" fxLayout="column" fxFlex>
+                    <mat-tab-group class="h-100-p">
+                        <mat-tab label="Datos Generales">
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+                                    <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                        <pixvs-mat-select [matSelectCtrl]="form.get('tipoWorkshop')" [datos]="tipos"
+                                            [appearance]="'outline'" [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                            [campoValor]="'valor'" [label]="'Tipo'" [required]="isRequired('tipoWorkshop',form)"
+                                            [seleccionarUnicaOpcion]="!workshop?.id"
+                                            fxFlex="1 0 auto" [ngStyle]="{'pointer-events': (workshop?.id == null) ? '' : 'none'}">
+                                        </pixvs-mat-select>
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                            <mat-label>Codigo</mat-label>
+                                            <input type="text" matInput name="codigo" formControlName="codigo"  [readonly]="pageType != 'nuevo'">
+                                            <mat-error *ngIf="(!!form.get('codigo').errors)">
+                                                {{validatorService.getMessage(form.get('codigo'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                            <mat-label>Nombre</mat-label>
+                                            <input type="text" matInput name="nombre" formControlName="nombre"  [readonly]="pageType != 'nuevo'">
+                                            <mat-error *ngIf="(!!form.get('nombre').errors)">
+                                                {{validatorService.getMessage(form.get('nombre'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+                                    <div fxlayout="row" fxlayoutalign="start center" class="my-20" style="display: flex; border-bottom: solid 1px lightgray;">
+                                        <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font">account_circle</mat-icon>
+                                        <div class="h2 secondary-text ng-tns-c345-79">Datos generales</div>
+                                    </div>
+                                    <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="33">
+                                            <mat-label>Horas Totales</mat-label>
+                                            <input type="number" matInput name="horasTotales" formControlName="horasTotales"
+                                            pattern="\d*" min="1" step="1"
+                                            required="{{ isRequired('horasTotales', form) }}">
+                                            <mat-error *ngIf="(!!form.get('horasTotales').errors)">
+                                                {{validatorService.getMessage(form.get('horasTotales'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+                                        <pixvs-mat-select [matSelectCtrl]="form.get('modalidades')" [datos]="modalidades"
+                                            [appearance]="'outline'"
+                                            [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                            [campoValor]="'nombre'" [label]="'Modalidades'" [required]="isRequired('modalidades',form)" [multiple]="true"
+                                            [seleccionarUnicaOpcion]="!workshop?.id"
+                                            fxFlex="66">
+                                        </pixvs-mat-select>
+                                        <pixvs-mat-select [matSelectCtrl]="form.get('plataforma')" [datos]="plataformas"
+                                            [appearance]="'outline'"
+                                            [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                            [campoValor]="'valor'" [label]="'Plataforma'" [required]="isRequired('plataforma',form)"
+                                            [seleccionarUnicaOpcion]="!workshop?.id"
+                                            fxFlex="33">
+                                        </pixvs-mat-select>
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="33">
+                                            <mat-label>Calificación mínima aprobatoria</mat-label>
+                                            <input type="number" matInput name="calificacionMinima" formControlName="calificacionMinima" max="100" min="0" 
+                                            pattern="^\d*(\.\d{0,2})?$"
+                                                required="{{ isRequired('calificacionMinima', form) }}">
+                                            <mat-error *ngIf="(!!form.get('calificacionMinima').errors)">
+                                                {{validatorService.getMessage(form.get('calificacionMinima'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="33">
+                                            <mat-label>Porcentaje de Faltas permitidas</mat-label>
+                                            <input type="text" matInput name="faltasPermitidas" formControlName="faltasPermitidas"
+                                            required="{{ isRequired('faltasPermitidas', form) }}">
+                                            <mat-error *ngIf="(!!form.get('faltasPermitidas').errors)">
+                                                {{validatorService.getMessage(form.get('faltasPermitidas'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="100">
+                                            <mat-label>Descripción del curso</mat-label>
+                                            <input type="text" matInput name="descripcion" formControlName="descripcion"
+                                                required="{{ isRequired('descripcion', form) }}" placeholder="Descripción del curso">
+                                            <mat-error *ngIf="(!!form.get('descripcion').errors)">
+                                                {{validatorService.getMessage(form.get('descripcion'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+                                    <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                        <mat-label>Sedes*</mat-label>
+                                        <pixvs-mat-chip-autocomplete [datos]="sucursales" [label]="'Agregar sede...'" [matCtrl]="form.get('sucursales')" [required]="isRequired('sucursales', form)" [selectedElements]="form.get('sucursales').value" [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate" style="width: 100%"></pixvs-mat-chip-autocomplete>
+                                    </div>
+                                    <div fxlayout="row" fxlayoutalign="start center" class="my-20" style="display: flex; border-bottom: solid 1px lightgray;">
+                                        <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font">query_builder</mat-icon>
+                                        <div class="h2 secondary-text ng-tns-c345-79">Impuestos</div>
+                                    </div>
+                                    <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                        <pixvs-mat-select [matSelectCtrl]="form.get('unidadMedida')" [datos]="unidadesMedidas"
+                                            [appearance]="'outline'"
+                                            [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                            [campoValor]="'nombre'" [label]="'Unidad de medida'" [required]="isRequired('unidadMedida',form)"
+                                            [seleccionarUnicaOpcion]="!workshop?.id"
+                                            fxFlex="20">
+                                        </pixvs-mat-select>
+                                        <pixvs-mat-select [matSelectCtrl]="form.get('objetoImpuesto')" [datos]="objetosImpuestoSAT"
+                                            [appearance]="'outline'"
+                                            [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                            [campoValor]="'valor'" [label]="'Objeto Impuesto SAT'" [required]="isRequired('objetoImpuesto',form)"
+                                            [seleccionarUnicaOpcion]="!workshop?.id"
+                                            fxFlex="20">
+                                        </pixvs-mat-select>
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="20">
+                                            <mat-label>Clave del producto</mat-label>
+                                            <input type="text" matInput name="clave" formControlName="clave"
+                                                required="{{ isRequired('clave', form) }}" maxlength="8">
+                                                <mat-hint align="end">{{form?.get('clave')?.value?.length? form.get('clave').value.length : '0'}} / 8</mat-hint>
+                                            <mat-error *ngIf="(!!form.get('clave').errors)">
+                                                {{validatorService.getMessage(form.get('clave'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="20">
+                                            <mat-label>IVA</mat-label>
+                                            <input type="number" matInput name="iva" formControlName="iva"
+                                                required="{{ isRequired('iva', form) }}" [readonly]="form.get('ivaExento').value">
+                                            <mat-error *ngIf="(!!form.get('iva').errors)">
+                                                {{validatorService.getMessage(form.get('iva'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="20">
+                                            <mat-label>IEPS</mat-label>
+                                            <input type="number" matInput name="ieps" formControlName="ieps"
+                                                required="{{ isRequired('ieps', form) }}" [readonly]="form.get('cuotaFija').value">
+                                            <mat-error *ngIf="(!!form.get('ieps').errors)">
+                                                {{validatorService.getMessage(form.get('ieps'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+                                        <mat-checkbox color="primary" name="ivaExento" formControlName="ivaExento" (click)="form.get('iva').setValue(0)" fxFlexOffset="60" fxFlex="20">
+                                            IVA Exento
+                                        </mat-checkbox>
+                                        <mat-checkbox color="primary" name="cuotaFija" formControlName="cuotaFija" (click)="form.get('ieps').setValue(0)" fxFlex="20">
+                                            Cuota fija
+                                        </mat-checkbox>
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-tab>
+                        <mat-tab label="Libros y materiales">
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+                                    <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                        <table mat-table [dataSource]="librosDataSource" class="w-100-p">
+                                            <ng-container matColumnDef="articulo">
+                                                <th mat-header-cell *matHeaderCellDef> Artículos </th>
+                                                <td mat-cell *matCellDef="let element"> 
+                                                    <span> {{ element?.articulo?.nombreArticulo }} </span>
+                                                </td>
+                                            </ng-container>
+                                            <ng-container matColumnDef="borrar">
+                                                <th mat-header-cell *matHeaderCellDef>
+                                                    <button mat-fab color="primary" (click)="abrirModalLibro()" style="float: right;" [disabled]="form.disabled">
+                                                    <mat-icon>add</mat-icon>
+                                                    </button>
+                                                </th>
+                                                <td mat-cell *matCellDef="let element; let i = index" align="end">
+                                                    <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font" (click)="borrarLibro(i)" style="cursor: pointer; color: red" [ngStyle]="{'pointer-events': form.disabled ? 'none' : ''}">delete</mat-icon> 
+                                                 </td>
+                                            </ng-container>
+                                            <tr mat-header-row *matHeaderRowDef="['articulo', 'borrar']"></tr>
+                                            <tr mat-row *matRowDef="let row; columns: ['articulo', 'borrar'];" [hidden]="row.borrado"></tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-tab>
+                        <mat-tab label="Criterios de evaluación">
+                            <div fxLayout="row wrap">
+                                <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="20" fxFlex.gt-md="20" style="background-color: #d3d3d338">
+                                    <div class="tab-content p-24" fusePerfectScrollbar>
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <pixvs-mat-select [matSelectCtrl]="filtroModalidadesCtrl" [datos]="form.get('modalidades').value"
+                                            [appearance]="'outline'"
+                                            [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                            [campoValor]="'nombre'" [label]="'Modalidades'"
+                                            [seleccionarUnicaOpcion]="false"
+                                            fxFlex="1 0 auto">
+                                            </pixvs-mat-select>
+                                        </div>
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid" style="width: 100%">
+                                            <button mat-button color="primary" style="bottom: 15%; padding: inherit;margin-left: 70%;" (click)="addNivel()" [disabled]="form.disabled">Agregar</button>         
+                                        </div>
+                                        <hr>
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid" style="width: 100%">
+                                            <div class="nav material2" *ngFor="let nivel of nivelesDataSource.data; let i = index">
+                                                <div class="nav-item" aria-label="inbox" *ngIf="nivel?.activo">
+                                                    <a class="nav-link" matRipple
+                                                       [ngClass]="{'active accent':nivelSeleccionado?.modalidadId === nivel?.modalidadId}" (click)="selectItem(nivel)">
+                                                        <span class="title">{{nivel.modalidad?.nombre}}</span>
+                                                        <button mat-icon-button>
+                                                            <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font" (click)="borrarNivel(i)" style="cursor: pointer; color: red" [ngStyle]="{'pointer-events': (form.disabled) ? 'none' : ''}">delete
+                                                            </mat-icon>
+                                                        </button>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div> 
+                                <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="80" fxFlex.gt-md="80" align="right" style="padding: 10px">
+                                    <ng-container *ngIf="!!nivelSeleccionado">
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid" style="width: 100%">
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto" style="max-width: 360px">
+                                                <mat-label>Buscar tarea</mat-label>
+                                                <input matInput type="text" [ngModelOptions]="{standalone: true}" style="max-width: 200px">
+                                            </mat-form-field>
+                                            <div style="height: 80%; width: 60%">
+                                                <button mat-raised-button (click)="abrirModalGrupo(null, null)" [disabled]="form.disabled">+&nbsp;Grupo</button>
+                                                <button mat-icon-button [disabled]="form.disabled" [matMenuTriggerFor]="menu">
+                                                    <mat-icon>more_vert</mat-icon>
+                                                </button>
+                                                <mat-menu #menu="matMenu">
+                                                    <button mat-menu-item (click)="ponderarTareas(nivelSeleccionado?.examenes)">Ponderación de los grupos de tareas</button>
+                                                </mat-menu>
+                                            </div>
+                                        </div>
+                                        <mat-divider></mat-divider>
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid" style="width: 100%">
+                                            <ng-container *ngFor="let examen of nivelSeleccionado?.examenes; let i = index">
+                                                <ng-container *ngIf="examen.activo">
+                                                    <mat-accordion class="example-headers-align" multi style="width: 100%" [hideToggle]="true">
+                                                        <mat-expansion-panel [expanded]="true" #myPanel [disabled]="true" style="text-align: start" aria-disabled="false">
+                                                            <mat-expansion-panel-header style="position: relative;background-color: #d3d3d338;">
+                                                                <mat-panel-title style="position: absolute;">
+                                                                    <mat-label style="padding: 5px;color: black;"><b>⦿&nbsp;{{examen.nombre}}</b></mat-label>
+                                                                </mat-panel-title>
+                                                                <mat-panel-description style="text-align: center;margin-left: 75%;">
+                                                                    <button mat-stroked-button [disabled]="true">{{examen.porcentaje}} % del total&nbsp;</button>
+                                                                    <button mat-icon-button style="top: 10%;" (click)="abrirModalTest(i,null)" [disabled]="form.disabled" style="color: black;">
+                                                                        <mat-icon>add</mat-icon>
+                                                                    </button>
+                                                                    <button mat-icon-button style="top: 10%;" [disabled]="form.disabled" [matMenuTriggerFor]="editarExamen" style="color: black;">
+                                                                        <mat-icon>more_vert</mat-icon>
+                                                                    </button>
+                                                                    <mat-menu #editarExamen="matMenu">
+                                                                    <button mat-menu-item (click)="abrirModalGrupo(examen,i)">Editar</button>
+                                                                    <button mat-menu-item (click)="borrarGrupo(i)">Eliminar</button>
+                                                                </mat-menu>
+                                                                 <div class="actions" fxLayout>
+                                                                    <button mat-icon-button color="primary" (click)="expandPannel()" [disableRipple]="true">
+                                                                        <mat-icon>{{matIcon}}</mat-icon>
+                                                                    </button>
+                                                                  </div>
+                                                                </mat-panel-description>
+                                                            </mat-expansion-panel-header>
+                                                            <p *ngIf="!examen.detalles || examen.detalles.length == 0" style="width: 100%; text-align: center;">No hay tareas en este grupo</p>
+                                                            <ng-container *ngFor="let detalle of examen.detalles; let detalleIndex = index">
+                                                                <ng-container *ngIf="detalle.activo">
+                                                                    <mat-icon>receipt</mat-icon>
+                                                                    <mat-label style="display: inline-block;"><b>{{detalle.actividadEvaluacion.actividad}}</b><br>&nbsp;{{detalle.puntaje}} pts</mat-label>
+                                                                    <button mat-icon-button style="float: right;" [disabled]="form.disabled" [matMenuTriggerFor]="editarDetalle">
+                                                                        <mat-icon>more_vert</mat-icon>
+                                                                    </button>
+                                                                    <mat-menu #editarDetalle="matMenu">
+                                                                        <button mat-menu-item (click)="abrirModalTest(i,detalleIndex)">Editar</button>
+                                                                        <button mat-menu-item (click)="borrarDetalle(i,detalleIndex)">Eliminar</button>
+                                                                    </mat-menu>
+                                                                    <mat-divider></mat-divider>
+                                                                </ng-container>
+                                                            </ng-container>
+                                                        </mat-expansion-panel>
+                                                    </mat-accordion>
+                                                </ng-container>
+                                            </ng-container>
+                                        </div>
+                                    </ng-container>
+                                </div>
+                            </div>
+                        </mat-tab>
+                    </mat-tab-group>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

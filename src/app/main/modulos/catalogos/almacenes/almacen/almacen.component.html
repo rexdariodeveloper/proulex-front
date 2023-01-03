@@ -1,0 +1,287 @@
+<div
+	id="almacen"
+	class="page-layout carded left-sidebar fullwidth inner-scroll"
+>
+
+	<!-- TOP BACKGROUND -->
+	<div class="top-bg accent"></div>
+	<!-- / TOP BACKGROUND -->
+
+	<!-- CENTER -->
+	<div class="center layout-pad0">
+
+		<!-- HEADER -->
+		<ficha-crud
+			*ngIf="config"
+			[config]="config"
+			[cargando]="_almacenService?.cargando"
+			[isGuardadoPersonalizado]="true"
+			(output)="guardar($event)"
+			[mostrarBorrar]="false"
+			[mostrarEditar]="true"
+			[titulo]="titulo"
+			[subTituloTraduccion]="pageType"
+			[form]="form"
+			[currentId]="currentId"
+			[pageType]="pageType"
+			[dataService]="_almacenService"
+			class="header accent"
+			fxLayout="column"
+			fxLayoutAlign="center center"
+			fxLayout.gt-sm="row"
+			fxLayoutAlign.gt-sm="space-between center"
+		>
+		</ficha-crud>
+		<!-- / HEADER -->
+
+		<!-- CONTENT CARD -->
+		<div class="content-card p-0">
+			<mat-tab-group #tabs class="h-100-p">
+				<mat-tab label="Datos Generales">
+					<div
+						class="tab-content p-24"
+						fusePerfectScrollbar
+					>
+						<form
+							*ngIf="!!form"
+							name="form"
+							id="form"
+							[formGroup]="form"
+							class="product w-100-p"
+							fxLayout="column"
+							fxFlex
+						>
+							<div fxLayout="row" fxLayoutAlign="start center" class="pb-16">
+								<mat-icon class="m-0 mr-16">location_city</mat-icon>
+								<div class="h2 secondary-text">Almacén</div>
+							</div>
+						
+							<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+								<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+									<mat-label>Código almacén</mat-label>
+									<input matInput name="codigoAlmacen" formControlName="codigoAlmacen"
+										required="{{ isRequired(form,'codigoAlmacen') }}">
+									<mat-error *ngIf="(!!form.get('codigoAlmacen').errors)">
+										{{validatorService.getMessage(form.get('codigoAlmacen'))}}
+									</mat-error>
+								</mat-form-field>
+
+								<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+									<mat-label>Nombre de almacén</mat-label>
+									<input matInput name="nombre" formControlName="nombre"
+										required="{{ isRequired(form,'nombre') }}">
+									<mat-error *ngIf="(!!form.get('nombre').errors)">
+										{{validatorService.getMessage(form.get('nombre'))}}
+									</mat-error>
+								</mat-form-field>
+							</div>
+							
+							<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+								<!--<pixvs-mat-select #sucursalSelect [matSelectCtrl]="sucursalControl" [datos]="sucursales"
+									[appearance]="'outline'"
+									[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+									[campoValor]="'nombre'" [label]="'Sede'" [required]="isRequired(form,'sucursal')"
+									[seleccionarUnicaOpcion]="!almacen?.id"
+									fxFlex="1 0 auto">
+								</pixvs-mat-select>-->
+
+								<pixvs-mat-select #responsableSelect [matSelectCtrl]="responsableControl" [datos]="usuarios"
+									[appearance]="'outline'"
+									[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+									[campoValor]="'nombreCompleto'" [label]="'Responsable'" [required]="isRequired(form,'responsable')"
+									[seleccionarUnicaOpcion]="!almacen?.id"
+									fxFlex="1 0 auto">
+								</pixvs-mat-select>
+							</div>
+
+							<div *ngIf="esConsignacionCliente" fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+								<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+									<mat-label>Cliente</mat-label>
+									<input matInput name="cliente" [value]="almacen.cliente?.nombre" [readonly]="true">
+								</mat-form-field>
+							</div>
+
+							<div fxLayout="row" fxLayoutAlign="start center" class="pb-16">
+								<mat-icon class="m-0 mr-16">location_on</mat-icon>
+								<div class="h2 secondary-text">Domicilio</div>
+
+								<!--<div fxLayout="row" fxLayoutAlign="center center" class="ml-20">
+									<mat-checkbox *ngIf="!esConsignacionCliente" color="primary" name="mismaDireccionSucursal" formControlName="mismaDireccionSucursal">
+										Misma dirección que en sede
+									</mat-checkbox>
+									<mat-checkbox *ngIf="esConsignacionCliente" color="primary" name="mismaDireccionCliente" formControlName="mismaDireccionCliente">
+										Misma dirección que el cliente
+									</mat-checkbox>
+								</div>-->
+							</div>
+
+							<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+								<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+									<mat-label>Domicilio</mat-label>
+									<input matInput name="domicilio" formControlName="domicilio"
+										required="{{ isRequired(form,'domicilio') }}">
+									<mat-error *ngIf="(!!form.get('domicilio').errors)">
+										{{validatorService.getMessage(form.get('domicilio'))}}
+									</mat-error>
+								</mat-form-field>
+
+								<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+									<mat-label>Código postal</mat-label>
+									<input matInput name="cp" formControlName="cp"
+										required="{{ isRequired(form,'cp') }}"
+										mask="99999">
+									<mat-error *ngIf="(!!form.get('cp').errors)">
+										{{validatorService.getMessage(form.get('cp'))}}
+									</mat-error>
+								</mat-form-field>
+
+								<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+									<mat-label>Colonia</mat-label>
+									<input matInput name="colonia" formControlName="colonia"
+										required="{{ isRequired(form,'colonia') }}">
+									<mat-error *ngIf="(!!form.get('colonia').errors)">
+										{{validatorService.getMessage(form.get('colonia'))}}
+									</mat-error>
+								</mat-form-field>
+
+								<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+									<mat-label>Ciudad</mat-label>
+									<input matInput name="ciudad" formControlName="ciudad"
+										required="{{ isRequired(form,'ciudad') }}">
+									<mat-error *ngIf="(!!form.get('ciudad').errors)">
+										{{validatorService.getMessage(form.get('ciudad'))}}
+									</mat-error>
+								</mat-form-field>
+							</div>
+
+							<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid" *ngIf="(!esConsignacionCliente && !mismaDireccionSucursalControl?.value) || (esConsignacionCliente && !form.get('mismaDireccionCliente')?.value)">
+								<pixvs-mat-select #paisSelect [matSelectCtrl]="paisControl" [datos]="paises"
+									[appearance]="'outline'"
+									[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+									[campoValor]="'nombre'" [label]="'País'" [required]="isRequired(form,'pais')"
+									[seleccionarUnicaOpcion]="!almacen?.id"
+									fxFlex="1 0 auto">
+								</pixvs-mat-select>
+
+								<pixvs-mat-select #estadoSelect [matSelectCtrl]="estadoControl" [datos]="estados"
+									[appearance]="'outline'"
+									[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+									[campoValor]="'nombre'" [label]="'Estado'" [required]="isRequired(form,'estado')"
+									[seleccionarUnicaOpcion]="!almacen?.id"
+									fxFlex="1 0 auto">
+								</pixvs-mat-select>
+
+								<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+									<mat-label>Teléfono</mat-label>
+									<input matInput name="telefono" formControlName="telefono"
+										required="{{ isRequired(form,'telefono') }}"
+										mask="(00) 0000 0000">
+									<mat-error *ngIf="(!!form.get('telefono').errors)">
+										{{validatorService.getMessage(form.get('telefono'))}}
+									</mat-error>
+								</mat-form-field>
+
+								<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+									<mat-label>Extensión</mat-label>
+									<input matInput name="extension" formControlName="extension"
+										required="{{ isRequired(form,'extension') }}"
+										mask="999">
+									<mat-error *ngIf="(!!form.get('extension').errors)">
+										{{validatorService.getMessage(form.get('extension'))}}
+									</mat-error>
+								</mat-form-field>
+							</div>
+
+							<div fxLayout="row" fxLayoutAlign="start center">
+								<div fxLayout="row" fxLayoutAlign="center center" class="mb-20">
+									<mat-checkbox color="primary" name="activo" formControlName="activo">
+										Activo
+									</mat-checkbox>
+								</div>
+
+								<div *ngIf="!esConsignacionCliente" fxLayout="row" fxLayoutAlign="center center" class="mb-20 ml-80">
+									<mat-checkbox color="primary" name="predeterminado" formControlName="predeterminado">
+										Predeterminado
+									</mat-checkbox>
+								</div>
+
+								<div *ngIf="!esConsignacionCliente" fxLayout="row" fxLayoutAlign="center center" class="mb-20 ml-80">
+									<mat-checkbox color="primary" name="esCedi" formControlName="esCedi">
+										Centro de distribución
+									</mat-checkbox>
+								</div>
+
+								<div *ngIf="esConsignacionCliente" fxLayout="row" fxLayoutAlign="center center" class="mb-20 ml-80">
+									<mat-checkbox color="primary" name="consignacion" [checked]="esConsignacionCliente" [disabled]="true">
+										Consignación
+									</mat-checkbox>
+								</div>
+
+								<div *ngIf="!esConsignacionCliente" fxLayout="row" fxLayoutAlign="center center" class="mb-20 ml-80">
+									<mat-checkbox color="primary" name="localidadesBandera" formControlName="localidadesBandera">
+										Localidades
+									</mat-checkbox>
+								</div>
+							</div>
+						</form>
+					</div>
+				</mat-tab>
+				<mat-tab label="Localidades" class="h-100-p" *ngIf="form.get('localidadesBandera')?.value">
+					<div
+						class="tab-content p-24 h-100-p" style="display: inherit;"
+						fusePerfectScrollbar
+					>
+						<button *ngIf="form?.enabled && !esConsignacionCliente" mat-mini-fab class="btn-nuevo" (click)="nuevaLocalidad()">
+							<mat-icon>add</mat-icon>
+						</button>
+						<div fxLayout="row" fxLayoutAlign="space-between start" class="h-100-p">
+							<div fxFlex="100" class="h-100-p">
+								<table mat-table [dataSource]="localidadesFormArray.value" class="mat-elevation-z8" style="width: 100%">
+									<!-- Position Column -->
+								  	<ng-container matColumnDef="codigoLocalidad">
+								    	<th mat-header-cell *matHeaderCellDef> Código </th>
+								    	<td mat-cell *matCellDef="let element"> {{element.codigoLocalidad}} </td>
+								  	</ng-container>
+
+								  	<ng-container matColumnDef="nombre">
+								    	<th mat-header-cell *matHeaderCellDef> Nombre </th>
+								    	<td mat-cell *matCellDef="let element"> {{element.nombre}} </td>
+								  	</ng-container>
+
+								  	<ng-container matColumnDef="activo">
+								    	<th mat-header-cell *matHeaderCellDef> Activo </th>
+								    	<td mat-cell *matCellDef="let element">
+								    		<mat-icon *ngIf="element.activo"
+												class="active-icon green-600 s-16">check
+											</mat-icon>
+											<mat-icon *ngIf="!element.activo"
+												class="active-icon red-500 s-16">close
+											</mat-icon>
+								    	</td>
+								  	</ng-container>
+
+								  	<tr mat-header-row *matHeaderRowDef="displayedColumnsTablaLocalidadesCatalogo"></tr>
+  									<tr mat-row *matRowDef="let row; columns: displayedColumnsTablaLocalidadesCatalogo; let i = index;" (click)="abrirModalLocalidad(row, i)" style="cursor: pointer;" [ngStyle]="{'pointer-events': form?.enabled ? '' : 'none'}"></tr>
+								</table>
+								<!--<pixvs-tabla-simple
+									*ngIf="!!_localidadService"
+									[service]="_localidadService"
+									[localeEN]="localeEN"
+									[localeES]="localeES"
+									[columnas]="columnasTablaLocalidadesCatalogo"
+									[columnasFechas]="columnasFechasTablaLocalidadesCatalogo"
+									[displayedColumns]="displayedColumnsTablaLocalidadesCatalogo"
+									[reordenamiento]="false"
+									[columnaId]="'id'"
+									(onSeleccionarRegistro)="onEditarLocalidad($event)"
+								></pixvs-tabla-simple>-->
+							</div>
+						</div>
+					</div>
+				</mat-tab>
+			</mat-tab-group>
+		</div>
+
+	</div>
+
+</div>

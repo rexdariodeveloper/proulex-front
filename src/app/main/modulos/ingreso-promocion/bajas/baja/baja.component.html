@@ -1,0 +1,219 @@
+<pixvs-bloqueo-pantalla [style.z-index]="10000" *ngIf="!!isLoading || _bajaService.cargando"></pixvs-bloqueo-pantalla>
+<div id="ficha-baja" class="pixvs-theme-listado page-layout carded fullwidth inner-scroll">
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <ficha-crud *ngIf="config" [config]="config" [is] [isGuardadoPersonalizado]="true" (output)="guardar()"
+            [titulo]="titulo" [mostrarEnviar]="true" [isEnviarPersonalizado]="true" (outputEnviar)="enviar()"
+            [subTituloTraduccion]="pageType" [form]="form" [currentId]="currentId" [pageType]="pageType"
+            [dataService]="_bajaService" class="header accent" fxLayout="column" fxLayoutAlign="center center"
+            fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center" (outputDesHabilitarCampos)="deshabilitarCampos()" [isDesHabilitarPersonalizado]="true">
+        </ficha-crud>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <mat-progress-bar *ngIf="_bajaService?.cargando" [color]="'primary'" [mode]="'query'">
+            </mat-progress-bar>
+
+            <!-- CONTENT -->
+            <div class="content p-20" *ngIf="form">
+                <form focusInvalidInput name="form" id="form" [formGroup]="form" class="product w-100-p" fxLayout="column" fxFlex>
+                    <div class="row wrap" fxLayoutGap="20px grid">
+                        <div *ngIf="!form.get('empleado')?.value?.id" @aSeleccionaEmpleado fxLayout="row wrap" fxLayoutGap="20px grid">
+                            <span class="h1 text-center" fxFlex="1 0 auto">Por favor seleciona el empleado al que se le desea aplicar la baja</span>
+                        </div>
+                        <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                            <pixvs-mat-select #listaEmpleadoSelect
+                                [matSelectCtrl]="form.get('empleado')"
+                                [datos]="listaEmpleado"
+                                [appearance]="'outline'"
+                                [campoValor]="'nombreCompleto'"
+                                [label]="'Empleado'"
+                                [required]="isRequired('empleado', form)"
+                                fxFlex="33.3">
+                            </pixvs-mat-select>
+                        </div>
+                    </div>
+                    <div *ngIf="empleado" fxLayout="row">
+                        <div class="column" fxFlex>
+                            <div fxlayout="row" fxlayoutalign="center center" class="my-20" style="display: flex; border-bottom: solid 1px lightgray; justify-content: center;">
+                                <div class="h2 secondary-text ng-tns-c345-79 text-center">Datos del empleado</div>
+                            </div>
+                            <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="20px grid">
+                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                    <mat-label>Código</mat-label>
+                                    <input matInput [value]="empleado.codigoEmpleado" readonly>
+                                </mat-form-field>
+                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                    <mat-label>Nombre(s)</mat-label>
+                                    <input matInput [value]="empleado.nombre" readonly>
+                                </mat-form-field>
+                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                    <mat-label>Primer apellido</mat-label>
+                                    <input matInput [value]="empleado.primerApellido" readonly>
+                                </mat-form-field>
+                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                    <mat-label>Segundo apellido</mat-label>
+                                    <input matInput [value]="empleado.segundoApellido" readonly>
+                                </mat-form-field>
+                            </div>
+                            <div fxlayout="row" fxlayoutalign="center center" class="my-20" style="display: flex; border-bottom: solid 1px lightgray; justify-content: center;">
+                                <div class="h2 secondary-text ng-tns-c345-79 text-center">Contratos</div>
+                            </div>
+                            <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="20px grid">
+                                <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+                                    <mat-table #tableContratos [dataSource]="listaEmpleadoContrato" fxFlex="fill" matSort [@animateStagger]="{value:'50'}" id="tableContratos" fusePerfectScrollbar>
+                                        <!-- Checkbox Column -->
+                                        <ng-container matColumnDef="selecciona">
+                                            <th mat-header-cell *matHeaderCellDef></th>
+                                            <td mat-cell *matCellDef="let empleadoContrato">
+                                                <mat-checkbox *ngIf="!this.esLectura" (click)="$event.stopPropagation()"
+                                                    (change)="$event.checked ? changeSelecciona(empleadoContrato) : changeSelecciona(null)"
+                                                    [checked]="seleccionaEmpleadoContrato == empleadoContrato">
+                                                </mat-checkbox>
+                                            </td>
+                                        </ng-container>
+    
+                                        <!-- Fecha de alta Column -->
+                                        <ng-container matColumnDef="fechaAlta">
+                                            <mat-header-cell *matHeaderCellDef> Fecha de alta </mat-header-cell>
+                                            <mat-cell *matCellDef="let empleadoContrato"> {{ empleadoContrato.empleado.fechaAlta | date: 'dd/MM/yyyy' }} </mat-cell>
+                                        </ng-container>
+    
+                                        <!-- Tipo de Contrato Column -->
+                                        <ng-container matColumnDef="tipoContrato">
+                                            <mat-header-cell *matHeaderCellDef> Tipo de contrato</mat-header-cell>
+                                            <mat-cell *matCellDef="let empleadoContrato"> {{ empleadoContrato.tipoContrato.valor }} </mat-cell>
+                                        </ng-container>
+    
+                                        <!-- Fecha inicio Column -->
+                                        <ng-container matColumnDef="fechaInicio">
+                                            <mat-header-cell *matHeaderCellDef> Fecha inicio </mat-header-cell>
+                                            <mat-cell *matCellDef="let empleadoContrato"> {{ empleadoContrato.fechaInicio | date: 'dd/MM/yyyy' }} </mat-cell>
+                                        </ng-container>
+    
+                                        <!-- Fecha fin Column -->
+                                        <ng-container matColumnDef="fechaFin">
+                                            <mat-header-cell *matHeaderCellDef> Fecha din </mat-header-cell>
+                                            <mat-cell *matCellDef="let empleadoContrato"> {{ empleadoContrato.fechaFin | date: 'dd/MM/yyyy' }} </mat-cell>
+                                        </ng-container>
+    
+                                        <!-- Sueldo mensual Column -->
+                                        <ng-container matColumnDef="sueldoMensual">
+                                            <mat-header-cell *matHeaderCellDef> Sueldo mensual </mat-header-cell>
+                                            <mat-cell *matCellDef="let empleadoContrato"> {{ empleadoContrato.sueldoMensual | currency }} </mat-cell>
+                                        </ng-container>
+    
+                                        <!-- Acciones Column -->
+                                        <ng-container matColumnDef="ver">
+                                            <mat-header-cell *matHeaderCellDef>
+                                                <span class="text-center text-nowrap w-100-p">Ver</span>
+                                            </mat-header-cell>
+                                            <mat-cell *matCellDef="let empleadoContrato">
+                                                <!-- <div class="w-100-p" fxLayout="row" fxLayoutAlign="center center">
+                                                    <button mat-icon-button matTooltip="Eliminar" (click)="eliminaArchivoEmpleadoDocumento(empleadoDocumento)">
+                                                        <mat-icon>delete</mat-icon>
+                                                    </button>
+                                                </div> -->
+                                            </mat-cell>
+                                        </ng-container>
+    
+                                        <mat-header-row *matHeaderRowDef="displayedColumnsEmpleadoContrato; sticky:true"></mat-header-row>
+                                        <mat-row *matRowDef="let row; columns: displayedColumnsEmpleadoContrato;"></mat-row>
+                                    </mat-table>
+                                </div>
+                            </div>
+                            <div fxlayout="row" fxlayoutalign="center center" class="my-20" style="display: flex; border-bottom: solid 1px lightgray; justify-content: center;">
+                                <div class="h2 secondary-text ng-tns-c345-79 text-center">Baja</div>
+                            </div>
+                            <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="20px grid">
+                                <pixvs-mat-select 
+                                    [matSelectCtrl]="form.get('tipoMotivo')" 
+                                    [datos]="listaTipoMotivo"
+                                    [appearance]="'outline'"
+                                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                    [campoValor]="'valor'" [label]="'Motivo'" [required]="isRequired('tipoMotivo', form)"
+                                    fxFlex="33.3" [isDisabled]="form.get('empleadoContrato') == null ? true : false">
+                                </pixvs-mat-select>
+                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="33.3">
+                                    <mat-label>Fecha separación</mat-label>
+                                    <input matInput type="date" name="fechaSeparacion" formControlName="fechaSeparacion" [max]="fechaMax" [min]="fechaMin" [readonly]="form.get('empleadoContrato').value?.id ? false : true">
+                                    <mat-error *ngIf="(!!form.get('fechaSeparacion').errors)">
+                                        {{_validatorService.getMessage(form.get('fechaSeparacion'))}}
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                            <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="20px grid">
+                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                    <mat-label>Comentario</mat-label>
+                                    <textarea matInput  name="comentario" formControlName="comentario" maxlength="500"></textarea>
+                                </mat-form-field>
+                            </div>
+                            <div fxlayout="row" fxlayoutalign="center center" class="my-20" style="display: flex; border-bottom: solid 1px lightgray; justify-content: center;">
+                                <div class="h2 secondary-text ng-tns-c345-79 text-center">Documentos</div>
+                            </div>
+                            <div  fxLayout="row wrap" fxLayoutGap="20px grid">
+
+                                <div fxLayout="column" class="w-100-p h-100-p" fxLayoutGap="20px">
+                                    <div *ngIf="(form.get('empleadoContrato').value?.id ? true : false) && !esLectura" fxLayout="row" fxLayoutAlign="end end">
+                                        <button type="button" class="btn-nuevo" mat-mini-fab color="primary" (click)="abrirDocumentoModal()" >
+                                            <mat-icon>add</mat-icon>
+                                        </button>
+                                    </div>
+                                    <mat-table #tableArchivos [dataSource]="cargaDataSourceListaEmpleadoDocumento()" fxFlex="fill" matSort [@animateStagger]="{value:'50'}" id="tableArchivos" fusePerfectScrollbar>
+                                        <ng-container matColumnDef="archivo">
+                                            <mat-header-cell *matHeaderCellDef> Nombre del archivo </mat-header-cell>
+                                            <mat-cell *matCellDef="let empleadoDocumento"> {{empleadoDocumento.archivo.nombreOriginal}} </mat-cell>
+                                        </ng-container>
+    
+                                        <ng-container matColumnDef="tipoDocumento">
+                                            <mat-header-cell *matHeaderCellDef> Tipo de Documento</mat-header-cell>
+                                            <mat-cell *matCellDef="let empleadoDocumento"> {{empleadoDocumento.tipoDocumento.valor}} </mat-cell>
+                                        </ng-container>
+    
+                                        <ng-container matColumnDef="fechaCreacion">
+                                            <mat-header-cell *matHeaderCellDef> Fecha </mat-header-cell>
+                                            <mat-cell *matCellDef="let empleadoDocumento"> {{ empleadoDocumento.archivo.fechaCreacion | date: 'dd/MM/yyyy' }} </mat-cell>
+                                        </ng-container>
+    
+                                        <ng-container matColumnDef="creadoPor">
+                                            <mat-header-cell *matHeaderCellDef> Usuario </mat-header-cell>
+                                            <mat-cell *matCellDef="let empleadoDocumento"> {{ empleadoDocumento.archivo.creadoPor.nombre }} </mat-cell>
+                                        </ng-container>
+    
+                                        <ng-container matColumnDef="acciones">
+                                            <mat-header-cell *matHeaderCellDef>
+                                                <span class="text-center text-nowrap w-100-p">Acciones</span>
+                                            </mat-header-cell>
+                                            <mat-cell *matCellDef="let empleadoDocumento">
+                                                <div *ngIf="!esLectura" class="w-100-p" fxLayout="row" fxLayoutAlign="center center">
+                                                    <button mat-icon-button matTooltip="Eliminar" (click)="eliminaArchivoEmpleadoDocumento(empleadoDocumento)">
+                                                        <mat-icon>delete</mat-icon>
+                                                    </button>
+                                                </div>
+                                            </mat-cell>
+                                        </ng-container>
+    
+                                        <mat-header-row *matHeaderRowDef="displayedColumnsEmpleadoDocumento; sticky:true"></mat-header-row>
+                                        <mat-row *matRowDef="let row; columns: displayedColumnsEmpleadoDocumento;"></mat-row>
+                                    </mat-table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <!-- / CONTENT -->
+        </div>
+
+    </div>
+    <!-- / CENTER -->
+
+</div>

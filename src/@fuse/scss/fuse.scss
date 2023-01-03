@@ -1,0 +1,17 @@
+// Material theming tools
+@import '~@angular/material/theming';
+
+// Breakpoint mixins
+@import "partials/breakpoints";
+
+// Breakpoint mixins
+@import "@pixvs/scss/pixvs";
+
+.sidebar-button {
+    border: lightgray 1px solid;
+    border-radius: 5px;
+    position: absolute;
+    left: -32px;
+    margin-top: 15px;
+    z-index: 9999;
+}

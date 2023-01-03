@@ -1,0 +1,125 @@
+<div class="w-100-p h-100-p" fxLayout="column">
+    <div fxFlex="0 0 8%" fxLayout="row" fxLayoutAlign="space-between start">
+        <span class="titulo-navegador accent-fg">
+            <mat-icon class="clickable mr-12" (click)="onVistaAtras()">arrow_back</mat-icon>
+            Inicio / Academy / <ng-container *ngFor="let item of breadcrumAcademy">{{item}} /</ng-container>
+        </span>
+        <div class="search-wrapper mx-32 mx-md-0">
+            <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                <mat-icon>search</mat-icon>
+                <input placeholder="{{ 'INTERFAZ.BUSCAR' | translate  }}..." [formControl]="filtroControl" [readonly]="_puntoVentaAbiertoService.cargando">
+            </div>
+        </div>
+    </div>
+
+    <ng-container *ngIf="currentView === 'CATEGORIES'">
+        <ng-container *ngTemplateOutlet="categories; context: this"></ng-container>
+    </ng-container>
+    <ng-container *ngIf="currentView === 'MODALITIES'">
+        <ng-container *ngTemplateOutlet="modalities; context: this"></ng-container>
+    </ng-container>
+    <ng-container *ngIf="currentView === 'COURSE_TYPES'">
+        <ng-container *ngTemplateOutlet="courseTypes; context: this"></ng-container>
+    </ng-container>
+    <ng-container *ngIf="currentView === 'WORKSHOPS'">
+        <ng-container *ngTemplateOutlet="workshops; context: this"></ng-container>
+    </ng-container>
+    <ng-container *ngIf="currentView === 'DIPLOMADOS'">
+        <ng-container *ngTemplateOutlet="diplomados; context: this"></ng-container>
+    </ng-container>
+    <!--
+    <div fxFlex="0 0 92%" fxLayout="row wrap" fxLayoutAlign="space-between start" fusePerfectScrollbar>
+        <ng-container *ngFor="let grupoCabecera of (grupos | PVInCompanyGruposPipe : filtroControl?.value)">
+            <mat-card *ngIf="!!grupoCabecera" [ngClass]="{'clickable': grupoCabecera.esSinRelacionar}" (click)="grupoCabecera.esSinRelacionar ? onGrupo(null,grupoCabecera.articuloId) : null" fxFlex="24" class="mb-28">
+                <div class="card-fondo" [ngStyle]="{'background-color': grupoCabecera.color}"></div>
+                
+                <mat-card-header>
+                    <mat-card-title>
+                        {{grupoCabecera.nombre}}
+                    </mat-card-title>
+                    <mat-card-subtitle *ngIf="!grupoCabecera.esSinRelacionar">{{ grupoCabecera.fechaInicio | date : 'dd/MM/yyyy' }} - {{ grupoCabecera.fechaFin | date : 'dd/MM/yyyy' }}</mat-card-subtitle>
+                    <mat-card-subtitle class="blue-fg">{{ (grupoCabecera.precioVentaInCompany || 0) | NumeroFormatoPipe }}</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <div fxLayout="row wrap">
+                        <ng-container *ngFor="let grupo of grupoCabecera.grupos">
+                            <div class="grupo-horario clickable" [ngClass]="{'cupo-lleno': !grupo.permiteInscripcion}" matRipple (click)="onGrupo(grupo)">{{ grupo.numeroGrupo }} {{ grupo.horario }}</div><div [matBadge]="grupo.cupoDisponible" [matBadgeOverlap]="true" matBadgePosition="before below" style="height: 10px;"></div>
+                        </ng-container>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+            <div fxFlex="24" *ngIf="!grupoCabecera"></div>
+        </ng-container>
+
+        <div *ngIf="!(grupos | PVInCompanyGruposPipe)?.length" fxFlex="100" class="mt-28">
+            <span>No se encontraron grupos activos</span>
+        </div>
+        -->
+</div>
+
+<ng-template #categories>
+    <div class="mt-32" fxFlex="0 0 92%" fxLayout="row wrap" fxLayoutAlign="start start" fxLayoutGap="10px" fusePerfectScrollbar>
+        <ng-container *ngFor="let elemento of categorias">
+            <mat-card fxFlex="24" class="mb-28 clickable card-230h" matRipple (click)="onCategoria(elemento)">
+                <img mat-card-image class="img-card" src="{{elemento.imagenId != null ? apiUrl + '/v1/archivo/' + (elemento.imagenId | hashId) : 'assets/images/no-image-icon.png' }}">
+                <mat-card-header>
+                    <mat-card-title>{{elemento.valor}}</mat-card-title>
+                </mat-card-header>
+            </mat-card>
+        </ng-container>
+    </div>
+</ng-template>
+
+<ng-template #modalities>
+    <div class="mt-32" fxFlex="0 0 92%" fxLayout="row wrap" fxLayoutAlign="start start" fxLayoutGap="10px" fusePerfectScrollbar>
+        <ng-container *ngFor="let elemento of modalidades">
+            <mat-card fxFlex="24" class="mb-28 clickable card-230h" matRipple (click)="onModalidad(elemento)">
+                <img mat-card-image class="img-card" src="{{elemento.imagenId != null ? apiUrl + '/v1/archivo/' + (elemento.imagenId | hashId) : 'assets/images/no-image-icon.png' }}">
+                <mat-card-header>
+                    <mat-card-title>{{elemento.nombre}}</mat-card-title>
+                </mat-card-header>
+            </mat-card>
+        </ng-container>
+    </div>
+</ng-template>
+
+<ng-template #courseTypes>
+    <div class="mt-32" fxFlex="0 0 92%" fxLayout="row wrap" fxLayoutAlign="start start" fxLayoutGap="10px" fusePerfectScrollbar>
+        <ng-container *ngFor="let elemento of tipos">
+            <mat-card fxFlex="24" class="mb-28 clickable card-230h" matRipple (click)="onTipoWorkshop(elemento)">
+                <img mat-card-image class="img-card" src="{{elemento.imagenId != null ? apiUrl + '/v1/archivo/' + (elemento.imagenId | hashId) : 'assets/images/no-image-icon.png' }}">
+                <mat-card-header>
+                    <mat-card-title>{{elemento.valor}}</mat-card-title>
+                </mat-card-header>
+            </mat-card>
+        </ng-container>
+    </div>
+</ng-template>
+
+<ng-template #workshops>
+    <div class="mt-32" fxFlex="0 0 92%" fxLayout="row wrap" fxLayoutAlign="start start" fxLayoutGap="10px" fusePerfectScrollbar>
+        <ng-container *ngFor="let grupoCabecera of grupos">
+            <mat-card *ngIf="!!grupoCabecera" [ngClass]="{'clickable': grupoCabecera.esSinRelacionar}" (click)="grupoCabecera.esSinRelacionar ? onGrupo(null,grupoCabecera.articuloId) : null" fxFlex="24" class="mb-28">
+                <div class="card-fondo" [ngStyle]="{'background-color': grupoCabecera.color}"></div>
+                <mat-card-header>
+                    <mat-card-title>
+                        {{grupoCabecera.nombre}}
+                    </mat-card-title>
+                    <mat-card-subtitle *ngIf="!grupoCabecera.esSinRelacionar">{{ grupoCabecera.fechaInicio | date : 'dd/MM/yyyy' }} - {{ grupoCabecera.fechaFin | date : 'dd/MM/yyyy' }}</mat-card-subtitle>
+                    <mat-card-subtitle class="blue-fg">{{ ((!!lpvCliente ? lpvCliente[grupoCabecera.articuloId] : lpvSucursal[grupoCabecera.articuloId]) || 0) | NumeroFormatoPipe }}</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <div fxLayout="row wrap">
+                        <ng-container *ngFor="let grupo of grupoCabecera.grupos">
+                            <div class="grupo-horario clickable" [ngClass]="{'cupo-lleno': !grupo.permiteInscripcion}" matRipple (click)="onGrupo(grupo)">{{ grupo.numeroGrupo }} {{ grupo.horario }}</div><div [matBadge]="grupo.cupoDisponible" [matBadgeOverlap]="true" matBadgePosition="before below" style="height: 10px;"></div>
+                        </ng-container>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+        </ng-container>
+    </div>
+</ng-template>
+
+<ng-template #diplomados>
+    Here comes diplomados
+</ng-template>

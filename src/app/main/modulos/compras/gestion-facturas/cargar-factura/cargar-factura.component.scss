@@ -1,0 +1,67 @@
+@import "@fuse/scss/fuse";
+
+#ficha-cargar-factura {
+
+	.tabla-totales{
+		border-spacing: 0;
+		thead{
+			th{
+				width: 33%;
+			}
+		}
+		tbody{
+			tr{
+				td{
+					border-left: solid 1px black;
+					padding: 5px;
+				}
+				td:last-child{
+					border-right: solid 1px black;
+				}
+			}
+			tr:first-child{
+				td{
+					border-top: solid 1px black;
+				}
+				td:first-child{
+					border-top-left-radius: 1rem;
+				}
+				td:last-child{
+					border-top-right-radius: 1rem;
+				}
+			}
+			tr:last-child{
+				td{
+					border-bottom: solid 1px black;
+				}
+				td:first-child{
+					border-bottom-left-radius: 1rem;
+				}
+				td:last-child{
+					border-bottom-right-radius: 1rem;
+				}
+			}
+		}
+	}
+
+	.btn-nuevo{
+		position: absolute;
+		top: 5px;
+		right: 5px;
+		z-index: 200;
+	}
+
+	#tableDetalles{
+
+		.mat-column-precioUnitario,
+		.mat-column-descuento,
+		.mat-column-iva,
+		.mat-column-ieps,
+		.mat-column-iepsCuotaFija{
+			padding-left: 5px;
+			padding-right: 5px;
+		}
+
+	}
+
+}

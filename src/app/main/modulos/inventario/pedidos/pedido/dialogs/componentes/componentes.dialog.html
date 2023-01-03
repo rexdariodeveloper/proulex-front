@@ -1,0 +1,31 @@
+<div mat-dialog-content>
+	<div fxLayout="column" fxFlex>
+		<div fxLayout="row" fxLayoutAlign="center center" *ngIf="cargandoComponentes && !articuloArbolComponentes">
+			<mat-spinner [diameter]="50"></mat-spinner>
+		</div>
+		<ng-container *ngIf="!!articuloArbolComponentes">
+			<div fxLayout="column" class="pb-20">
+				<div fxLayout="row" fxLayoutAlign="center center" class="px-12 componentes-encabezado pb-8">
+					<div fxFlex="1 1 calc(10em + 10px)">
+						<span>Artículo</span>
+					</div>
+					<div fxFlex="1 1 auto">
+						<span>Unidad de medida</span>
+					</div>
+					<div fxFlex="1 1 auto">
+						<span>Cantidad paquete</span>
+					</div>
+					<div fxFlex="1 1 auto">
+						<span>Existencia</span>
+					</div>
+				</div>
+				<ng-container *ngFor="let componente of articuloArbolComponentes.componentes">
+					<articulo-componente-nodo [componente]="componente"></articulo-componente-nodo>
+				</ng-container>
+			</div>
+		</ng-container>
+	</div>
+</div>
+<div mat-dialog-actions dir="rtl" *ngIf="!!articuloArbolComponentes">
+	<button mat-raised-button class="mat-accent mr-16" (click)="aceptar()">{{ 'ACEPTAR' | translate }}</button>
+</div>

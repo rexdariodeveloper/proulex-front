@@ -1,0 +1,381 @@
+<div id="reporte-antiguedad-saldos" class="pixvs-theme-listado page-layout carded left-sidebar fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- SIDEBAR -->
+    <fuse-sidebar *ngIf="filtros?.length" class="sidebar" name="filtros-sidebar" position="left" lockedOpen="gt-lg">
+        <filtros-sidebar #filtrado [regConfig]="filtros" [titulo]="'TITULO' | translate "
+			[modulo]="'MODULO' | translate " [icon]="'toc'" [listadoMenuOpciones]="filtrosOpciones"
+			[_FichasDataService]="_reporteAntiguedadSaldosService">
+        </filtros-sidebar>
+    </fuse-sidebar>
+    <!-- / SIDEBAR -->
+
+    <!-- CENTER -->
+    <div class="center" [ngClass]="{'px-0': filtros}">
+
+        <!-- HEADER -->
+
+        <div class="header accent" fxLayout="column" fxLayoutAlign="center center" fxLayout.gt-sm="row"
+            fxLayoutAlign.gt-sm="space-between center">
+
+
+            <!-- APP TITLE -->
+            <div fxLayout="column" fxLayoutAlign="center start" fxShow fxHide.gt-lg="{{filtros?.length > 0}}">
+
+                <div fxLayout="row" fxLayoutAlign="start center" fxHide fxShow.gt-xs>
+                    <mat-icon class="secondary-text s-18">home</mat-icon>
+                    <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+                    <span class="secondary-text">{{ 'MODULO' | translate  }}</span>
+                </div>
+
+                <div class="logo mb-12 mb-md-0" fxLayout="row" fxLayoutAlign="start center">
+                    <mat-icon class="logo-icon s-32 mr-16" [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
+                        toc
+                    </mat-icon>
+                    <span class="logo-text h1" [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+                        {{ 'TITULO' | translate  }}
+                    </span>
+                </div>
+
+            </div>
+            <div fxHide fxShow.gt-lg="{{filtros?.length > 0}}" style="width: 10%;"></div>
+            <!-- / APP TITLE -->
+
+            <!-- ADD BUTTON -->
+            <div fxLayout="row">
+            </div>
+
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <mat-progress-bar *ngIf="_reporteAntiguedadSaldosService?.cargando" [color]="'primary'" [mode]="'query'">
+            </mat-progress-bar>
+
+			<!-- BOTON FILTROS -->			
+			<button *ngIf="filtros" mat-icon-button fxHide.gt-lg class="primary floating sidebar-button sidebar-toggle"
+				matTooltip="{{ 'INTERFAZ.FILTROS' | translate  }}"
+				(click)="toggleSidebar('filtros-sidebar')">
+				<mat-icon class="mb-4">tune</mat-icon>
+			</button>
+			<!-- BOTON FILTROS -->
+
+			<mat-tab-group class="h-100-p">
+				<mat-tab [label]="reporte.tipo" *ngFor="let reporte of reportes">
+					<ng-template mat-tab-label>
+						{{reporte?.nombre}} 
+						<button mat-icon-button (click)="closeTab(reporte)">
+							<mat-icon>close</mat-icon>
+						</button>
+					</ng-template>
+					<div *ngIf="reporte?.url" class="h-100-p">
+						<visor-pdf [pdfSrc]="reporte?.url" class="h-100-p" (onLinkClicked)="verDetalle($event)"></visor-pdf>
+					</div>
+				</mat-tab>
+			</mat-tab-group>
+
+			<ng-container *ngIf="dataSourceDetalle?.data?.length">
+				<mat-table class="ficha-table" #tableDetalle [dataSource]="dataSourceDetalle" [@animateStagger]="{value:'50'}" id="table1">
+	
+					<ng-container matColumnDef="codigoProveedor">
+						<mat-header-cell *matHeaderCellDef fxFlex="0 0 calc(6% - 10px)">
+							<span class="text-center text-nowrap w-100-p">Código proveedor</span>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let proveedor" fxFlex="0 0 calc(6% - 10px)"> {{ proveedor.proveedorCodigo }} </mat-cell>
+					</ng-container>
+	
+					<ng-container matColumnDef="nombreProveedor">
+						<mat-header-cell *matHeaderCellDef fxFlex="fill">
+							<span class="text-center text-nowrap w-100-p">Nombre proveedor</span>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let proveedor" fxFlex="fill"> {{ proveedor.proveedorNombre }} </mat-cell>
+					</ng-container>
+	
+					<ng-container matColumnDef="codigoFactura">
+						<mat-header-cell *matHeaderCellDef fxFlex="0 0 calc(6% - 10px)">
+							<span class="text-center text-nowrap w-100-p">Código factura</span>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let proveedor" fxFlex="0 0 calc(6% - 10px)"> {{ proveedor.codigoRegistro }} </mat-cell>
+					</ng-container>
+	
+					<ng-container matColumnDef="fechaFactura">
+						<mat-header-cell *matHeaderCellDef fxFlex="0 0 calc(6% - 10px)">
+							<span class="text-center text-nowrap w-100-p">Fecha factura</span>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let proveedor" fxFlex="0 0 calc(6% - 10px)">
+							<span class="text-center w-100-p px-12">{{ proveedor.fechaRegistro | date:'dd/MM/yyyy' }}</span>
+						</mat-cell>
+					</ng-container>
+	
+					<ng-container matColumnDef="fechaVencimiento">
+						<mat-header-cell *matHeaderCellDef fxFlex="0 0 calc(6% - 10px)">
+							<span class="text-center text-nowrap w-100-p">Fecha vencimiento</span>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let proveedor" fxFlex="0 0 calc(6% - 10px)">
+							<span class="text-center w-100-p px-12">{{ proveedor.fechaVencimiento | date:'dd/MM/yyyy' }}</span>
+						</mat-cell>
+					</ng-container>
+	
+					<ng-container matColumnDef="diasVencimiento">
+						<mat-header-cell *matHeaderCellDef fxFlex="0 0 calc(6% - 10px)">
+							<span class="text-center text-nowrap w-100-p"># vencimiento</span>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let proveedor" fxFlex="0 0 calc(6% - 10px)">
+							<span class="text-center w-100-p px-12">{{ proveedor.diasVencimiento }}</span>
+						</mat-cell>
+					</ng-container>
+	
+					<ng-container matColumnDef="montoOriginal">
+						<mat-header-cell *matHeaderCellDef fxFlex="0 0 calc(6% - 10px)">
+							<div fxLayout="column" class="w-100-p">
+								<span class="text-center text-nowrap w-100-p">Monto original</span>
+								<span class="text-center text-nowrap w-100-p">$ {{ ((dataSourceDetalle?.data | SumaPipe:'montoRegistro') || 0).toFixed(2) | mask:'separator.2':',' }}</span>
+							</div>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let proveedor" fxFlex="0 0 calc(6% - 10px)">
+							<span class="text-right w-100-p px-12">$ {{ ((proveedor.montoRegistro || 0).toFixed(2)) | mask:'separator.2':',' }}</span>
+						</mat-cell>
+					</ng-container>
+	
+					<ng-container matColumnDef="montoActual">
+						<mat-header-cell *matHeaderCellDef fxFlex="0 0 calc(6% - 10px)">
+							<div fxLayout="column" class="w-100-p">
+								<span class="text-center text-nowrap w-100-p">Saldo</span>
+								<span class="text-center text-nowrap w-100-p">$ {{ ((dataSourceDetalle?.data | SumaPipe:'montoActual') || 0).toFixed(2) | mask:'separator.2':',' }}</span>
+							</div>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let proveedor" fxFlex="0 0 calc(6% - 10px)">
+							<span class="text-right w-100-p px-12">$ {{ ((proveedor.montoActual).toFixed(2)) | mask:'separator.2':',' }}</span>
+						</mat-cell>
+					</ng-container>
+					
+					<ng-container matColumnDef="porVencer">
+						<mat-header-cell *matHeaderCellDef fxFlex="0 0 calc(6% - 10px)">
+							<div fxLayout="column" class="w-100-p">
+								<span class="text-center text-nowrap w-100-p">Por vencer</span>
+								<span class="text-center text-nowrap w-100-p">$ {{ ((dataSourceDetalle?.data | SumaPipe:'porVencer') || 0).toFixed(2) | mask:'separator.2':',' }}</span>
+							</div>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let proveedor" fxFlex="0 0 calc(6% - 10px)">
+							<span class="text-right w-100-p px-12">$ {{ ((proveedor.porVencer).toFixed(2)) | mask:'separator.2':',' }}</span>
+						</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="montoP1">
+						<mat-header-cell *matHeaderCellDef fxFlex="0 0 calc(6% - 10px)">
+							<div fxLayout="column" class="w-100-p">
+								<span class="text-center text-nowrap w-100-p">{{ tituloMontoP1 }}</span>
+								<span class="text-center text-nowrap w-100-p">$ {{ ((dataSourceDetalle?.data | SumaPipe:'montoP1') || 0).toFixed(2) | mask:'separator.2':',' }}</span>
+							</div>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let proveedor" fxFlex="0 0 calc(6% - 10px)">
+							<span class="text-right w-100-p px-12">$ {{ ((proveedor.montoP1).toFixed(2)) | mask:'separator.2':',' }}</span>
+						</mat-cell>
+					</ng-container>
+	
+					<ng-container matColumnDef="montoP2">
+						<mat-header-cell *matHeaderCellDef fxFlex="0 0 calc(6% - 10px)">
+							<div fxLayout="column" class="w-100-p">
+								<span class="text-center text-nowrap w-100-p">{{ tituloMontoP2 }}</span>
+								<span class="text-center text-nowrap w-100-p">$ {{ ((dataSourceDetalle?.data | SumaPipe:'montoP2') || 0).toFixed(2) | mask:'separator.2':',' }}</span>
+							</div>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let proveedor" fxFlex="0 0 calc(6% - 10px)">
+							<span class="text-right w-100-p px-12">$ {{ ((proveedor.montoP2).toFixed(2)) | mask:'separator.2':',' }}</span>
+						</mat-cell>
+					</ng-container>
+	
+					<ng-container matColumnDef="montoP3">
+						<mat-header-cell *matHeaderCellDef fxFlex="0 0 calc(6% - 10px)">
+							<div fxLayout="column" class="w-100-p">
+								<span class="text-center text-nowrap w-100-p">{{ tituloMontoP3 }}</span>
+								<span class="text-center text-nowrap w-100-p">$ {{ ((dataSourceDetalle?.data | SumaPipe:'montoP3') || 0).toFixed(2) | mask:'separator.2':',' }}</span>
+							</div>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let proveedor" fxFlex="0 0 calc(6% - 10px)">
+							<span class="text-right w-100-p px-12">$ {{ ((proveedor.montoP3).toFixed(2)) | mask:'separator.2':',' }}</span>
+						</mat-cell>
+					</ng-container>
+	
+					<ng-container matColumnDef="montoP4">
+						<mat-header-cell *matHeaderCellDef fxFlex="0 0 calc(6% - 10px)">
+							<div fxLayout="column" class="w-100-p">
+								<span class="text-center text-nowrap w-100-p">{{ tituloMontoP4 }}</span>
+								<span class="text-center text-nowrap w-100-p">$ {{ ((dataSourceDetalle?.data | SumaPipe:'montoP4') || 0).toFixed(2) | mask:'separator.2':',' }}</span>
+							</div>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let proveedor" fxFlex="0 0 calc(6% - 10px)">
+							<span class="text-right w-100-p px-12">$ {{ ((proveedor.montoP4).toFixed(2)) | mask:'separator.2':',' }}</span>
+						</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="montoProgramado">
+						<mat-header-cell *matHeaderCellDef fxFlex="0 0 calc(6% - 10px)">
+							<div fxLayout="column" class="w-100-p">
+								<span class="text-center text-nowrap w-100-p">Monto programado</span>
+								<span class="text-center text-nowrap w-100-p">$ {{ ((dataSourceDetalle?.data | SumaPipe:'montoProgramado') || 0).toFixed(2) | mask:'separator.2':',' }}</span>
+							</div>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let proveedor" fxFlex="0 0 calc(6% - 10px)">
+							<span class="text-right w-100-p px-12">$ {{ ((proveedor.montoProgramado || 0).toFixed(2)) | mask:'separator.2':',' }}</span>
+						</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="codigos">
+						<mat-header-cell *matHeaderCellDef fxFlex="0 0 calc(10% - 10px)">
+							<span class="text-center text-nowrap w-100-p">Solicitud</span>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let proveedor" fxFlex="0 0 calc(10% - 10px)">
+							<span class="w-100-p px-12">{{ proveedor.codigos }}</span>
+						</mat-cell>
+					</ng-container>
+					
+					<ng-container>
+						<mat-header-row *matHeaderRowDef="displayedColumnsDetalle; sticky:true" style="min-width: 200%;"></mat-header-row>
+						<mat-row *matRowDef="let row; columns: displayedColumnsDetalle;" class="element" style="min-width: 200%;"></mat-row>
+					</ng-container>
+	
+				</mat-table>
+				<!--
+				<mat-paginator #paginator [length]="dataSourceDetalle.filteredData.length" [pageIndex]="0" [pageSize]="10"
+					[pageSizeOptions]="[10, 25, 100]">
+				</mat-paginator>
+				-->
+			</ng-container>
+
+			<ng-container *ngIf="dataSourceResumen?.data?.length">
+				<mat-table class="ficha-table" #tableResumen [dataSource]="dataSourceResumen" matSort [@animateStagger]="{value:'50'}" id="table1">
+	
+					<ng-container matColumnDef="codigoProveedor">
+						<mat-header-cell *matHeaderCellDef>
+							<span class="text-center text-nowrap w-100-p">Código proveedor</span>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let proveedor"> {{ proveedor.codigo }} </mat-cell>
+					</ng-container>
+	
+					<ng-container matColumnDef="nombreProveedor">
+						<mat-header-cell *matHeaderCellDef>
+							<span class="text-center text-nowrap w-100-p">Nombre proveedor</span>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let proveedor"> {{ proveedor.nombre }} </mat-cell>
+					</ng-container>
+	
+					<ng-container matColumnDef="montoOriginal">
+						<mat-header-cell *matHeaderCellDef>
+							<div fxLayout="column" class="w-100-p">
+								<span class="text-center text-nowrap w-100-p">Monto original</span>
+								<span class="text-center text-nowrap w-100-p">$ {{ ((dataSourceResumen?.data | SumaPipe:'montoRegistro') || 0).toFixed(2) | mask:'separator.2':',' }}</span>
+							</div>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let proveedor">
+							<span class="text-right w-100-p px-12">$ {{ ((proveedor.montoRegistro || 0).toFixed(2)) | mask:'separator.2':',' }}</span>
+						</mat-cell>
+					</ng-container>
+	
+					<ng-container matColumnDef="montoActual">
+						<mat-header-cell *matHeaderCellDef>
+							<div fxLayout="column" class="w-100-p">
+								<span class="text-center text-nowrap w-100-p">Saldo</span>
+								<span class="text-center text-nowrap w-100-p">$ {{ ((dataSourceResumen?.data | SumaPipe:'montoActual') || 0).toFixed(2) | mask:'separator.2':',' }}</span>
+							</div>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let proveedor">
+							<span class="text-right w-100-p px-12">$ {{ ((proveedor.montoActual).toFixed(2)) | mask:'separator.2':',' }}</span>
+						</mat-cell>
+					</ng-container>
+					
+					<ng-container matColumnDef="porVencer">
+						<mat-header-cell *matHeaderCellDef>
+							<div fxLayout="column" class="w-100-p">
+								<span class="text-center text-nowrap w-100-p">Por venccer</span>
+								<span class="text-center text-nowrap w-100-p">$ {{ ((dataSourceResumen?.data | SumaPipe:'porVencer') || 0).toFixed(2) | mask:'separator.2':',' }}</span>
+							</div>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let proveedor">
+							<span class="text-right w-100-p px-12">$ {{ ((proveedor.porVencer).toFixed(2)) | mask:'separator.2':',' }}</span>
+						</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="montoP1">
+						<mat-header-cell *matHeaderCellDef>
+							<div fxLayout="column" class="w-100-p">
+								<span class="text-center text-nowrap w-100-p">{{ tituloMontoP1 }}</span>
+								<span class="text-center text-nowrap w-100-p">$ {{ ((dataSourceResumen?.data | SumaPipe:'montoP1') || 0).toFixed(2) | mask:'separator.2':',' }}</span>
+							</div>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let proveedor">
+							<span class="text-right w-100-p px-12">$ {{ ((proveedor.montoP1).toFixed(2)) | mask:'separator.2':',' }}</span>
+						</mat-cell>
+					</ng-container>
+	
+					<ng-container matColumnDef="montoP2">
+						<mat-header-cell *matHeaderCellDef>
+							<div fxLayout="column" class="w-100-p">
+								<span class="text-center text-nowrap w-100-p">{{ tituloMontoP2 }}</span>
+								<span class="text-center text-nowrap w-100-p">$ {{ ((dataSourceResumen?.data | SumaPipe:'montoP2') || 0).toFixed(2) | mask:'separator.2':',' }}</span>
+							</div>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let proveedor">
+							<span class="text-right w-100-p px-12">$ {{ ((proveedor.montoP2).toFixed(2)) | mask:'separator.2':',' }}</span>
+						</mat-cell>
+					</ng-container>
+	
+					<ng-container matColumnDef="montoP3">
+						<mat-header-cell *matHeaderCellDef>
+							<div fxLayout="column" class="w-100-p">
+								<span class="text-center text-nowrap w-100-p">{{ tituloMontoP3 }}</span>
+								<span class="text-center text-nowrap w-100-p">$ {{ ((dataSourceResumen?.data | SumaPipe:'montoP3') || 0).toFixed(2) | mask:'separator.2':',' }}</span>
+							</div>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let proveedor">
+							<span class="text-right w-100-p px-12">$ {{ ((proveedor.montoP3).toFixed(2)) | mask:'separator.2':',' }}</span>
+						</mat-cell>
+					</ng-container>
+	
+					<ng-container matColumnDef="montoP4">
+						<mat-header-cell *matHeaderCellDef>
+							<div fxLayout="column" class="w-100-p">
+								<span class="text-center text-nowrap w-100-p">{{ tituloMontoP4 }}</span>
+								<span class="text-center text-nowrap w-100-p">$ {{ ((dataSourceResumen?.data | SumaPipe:'montoP4') || 0).toFixed(2) | mask:'separator.2':',' }}</span>
+							</div>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let proveedor">
+							<span class="text-right w-100-p px-12">$ {{ ((proveedor.montoP4).toFixed(2)) | mask:'separator.2':',' }}</span>
+						</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="montoProgramado">
+						<mat-header-cell *matHeaderCellDef>
+							<div fxLayout="column" class="w-100-p">
+								<span class="text-center text-nowrap w-100-p">Monto programado</span>
+								<span class="text-center text-nowrap w-100-p">$ {{ ((dataSourceResumen?.data | SumaPipe:'montoProgramado') || 0).toFixed(2) | mask:'separator.2':',' }}</span>
+							</div>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let proveedor">
+							<span class="text-right w-100-p px-12">$ {{ ((proveedor.montoProgramado || 0).toFixed(2)) | mask:'separator.2':',' }}</span>
+						</mat-cell>
+					</ng-container>
+					
+					<ng-container>
+						<mat-header-row *matHeaderRowDef="displayedColumnsResumen; sticky:true"></mat-header-row>
+						<mat-row *matRowDef="let row; columns: displayedColumnsResumen;" class="element"></mat-row>
+					</ng-container>
+	
+				</mat-table>
+				<!--
+				<mat-paginator #paginator [length]="dataSourceResumen.filteredData.length" [pageIndex]="0" [pageSize]="10"
+					[pageSizeOptions]="[10, 25, 100]">
+				</mat-paginator>
+				-->
+			</ng-container>
+			
+
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

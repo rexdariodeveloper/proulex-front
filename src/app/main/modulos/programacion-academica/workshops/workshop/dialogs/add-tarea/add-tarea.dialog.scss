@@ -1,0 +1,9 @@
+#verificar-rfc {
+	padding: 1px;
+	mat-expansion-panel * {
+	  transition: none !important;
+	}
+	.custom-dialog-container .mat-dialog-container {
+	  overflow-y: hidden;
+	}
+}

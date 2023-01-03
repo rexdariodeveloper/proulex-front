@@ -1,0 +1,18 @@
+quick-panel {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    width: 280px;
+    min-width: 280px;
+    max-width: 280px;
+    z-index: 99;
+
+    .mat-slide-toggle-content {
+        flex: 1;
+    }
+
+    .mat-line{
+        word-wrap: break-word !important;
+        white-space: pre-wrap !important;
+      }
+}

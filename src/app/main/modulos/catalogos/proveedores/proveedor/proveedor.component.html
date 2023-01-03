@@ -1,0 +1,588 @@
+<div id="ficha-proveedor" class="pixvs-theme-listado page-layout carded fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <ficha-crud *ngIf="config" [config]="config" [isGuardadoPersonalizado]="true" (output)="verificarRfc()"
+            [mostrarBorrar]="proveedor?.activo " [mostrarEditar]="proveedor?.activo " [titulo]="titulo"
+            [subTituloTraduccion]="pageType" [form]="form" [currentId]="currentId" [pageType]="pageType"
+            [dataService]="_proveedorService" class="header accent" fxLayout="column" fxLayoutAlign="center center"
+            fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center">
+        </ficha-crud>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <mat-progress-bar *ngIf="_proveedorService?.cargando" [color]="'primary'" [mode]="'query'">
+            </mat-progress-bar>
+
+            <div style="height: 0px;">
+                <button debounceClick mat-mini-fab class="boton-refresh" (debounceClick)="recargar()"
+                    matTooltip="{{ 'INTERFAZ.RECARGAR' | translate  }}">
+                    <mat-icon class="s-16">refresh</mat-icon>
+                </button>
+            </div>
+
+            <!-- CONTENT -->
+            <div class="content">
+
+                <form focusInvalidInput name="form" id="form" [formGroup]="form" class="product w-100-p"
+                    fxLayout="column" fxFlex>
+
+                    <mat-tab-group>
+
+                        <mat-tab label="Datos Generales">
+
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+
+                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                    <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <pixvs-mat-select [matSelectCtrl]="form.get('tipoProveedor')" [datos]="tiposProveedor"
+												[appearance]="'outline'"
+												[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+												[campoValor]="'valor'" [label]="'Tipo proveedor'" [required]="isRequired('tipoProveedor',form)"
+                                                [seleccionarUnicaOpcion]="!proveedor?.id"
+												fxFlex="1 0 auto">
+											</pixvs-mat-select>
+
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Nombre</mat-label>
+                                                <input type="text" matInput name="nombre" formControlName="nombre"
+                                                    required="{{ isRequired('nombre', form) }}">
+                                                <mat-error *ngIf="(!!form.get('nombre').errors)">
+                                                    {{validatorService.getMessage(form.get('nombre'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                        </div>
+
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Razón Social</mat-label>
+                                                <input type="text" matInput name="razonSocial"
+                                                    formControlName="razonSocial"
+                                                    required="{{ isRequired('razonSocial', form) }}">
+                                                <mat-error *ngIf="(!!form.get('razonSocial').errors)">
+                                                    {{validatorService.getMessage(form.get('razonSocial'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>RFC</mat-label>
+                                                <input type="text" matInput name="rfc"
+                                                    pattern="^([A-Z|a-z|&amp;]{3}\d{2}((0[1-9]|1[012])(0[1-9]|1\d|2[0-8])|(0[13456789]|1[012])(29|30)|(0[13578]|1[02])31)|([02468][048]|[13579][26])0229)(\w{2})([A|a|0-9]{1})$|^([A-Z|a-z]{4}\d{2}((0[1-9]|1[012])(0[1-9]|1\d|2[0-8])|(0[13456789]|1[012])(29|30)|(0[13578]|1[02])31)|([02468][048]|[13579][26])0229)((\w{2})([A|a|0-9]{1})){0,3}$"
+                                                    formControlName="rfc" required="{{ isRequired('rfc', form) }}">
+                                                <mat-error *ngIf="(!!form.get('rfc').errors)">
+                                                    {{validatorService.getMessage(form.get('rfc'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+										</div>
+										
+										<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Días Plazo Credito</mat-label>
+                                                <input type="number" min="0" matInput name="diasPlazoCredito"
+                                                    formControlName="diasPlazoCredito"
+                                                    required="{{ isRequired('diasPlazoCredito', form) }}">
+                                                <mat-error *ngIf="(!!form.get('diasPlazoCredito').errors)">
+                                                    {{validatorService.getMessage(form.get('diasPlazoCredito'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Monto Crédito</mat-label>
+                                                <input matInput name="montoCredito" prefix="$ " mask="separator.2"
+                                                    thousandSeparator="," formControlName="montoCredito"
+                                                    required="{{ isRequired('montoCredito', form) }}">
+                                                <mat-error *ngIf="(!!form.get('montoCredito').errors)">
+                                                    {{validatorService.getMessage(form.get('montoCredito'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Días Pago</mat-label>
+                                                <input type="text" matInput name="diasPago" formControlName="diasPago"
+                                                    required="{{ isRequired('diasPago', form) }}">
+                                                <mat-error *ngIf="(!!form.get('diasPago').errors)">
+                                                    {{validatorService.getMessage(form.get('diasPago'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                            <pixvs-mat-select [matSelectCtrl]="form.get('moneda')" [datos]="monedas"
+												[appearance]="'outline'"
+												[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+												[campoValor]="'nombre'" [label]="'Moneda'" [required]="isRequired('moneda',form)"
+                                                [seleccionarUnicaOpcion]="!proveedor?.id"
+												fxFlex="1 0 auto">
+											</pixvs-mat-select>
+										</div>
+										
+										<div fxLayout="row" fxLayoutAlign="start center" class="divisor">
+											<mat-icon class="m-0 mr-16 secondary-text">location_city</mat-icon>
+                                    		<div class="h2 secondary-text">Domicilio</div>
+										</div>
+
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="3 0 auto">
+                                                <mat-label>Domicilio</mat-label>
+                                                <input type="text" matInput name="domicilio" formControlName="domicilio"
+                                                    required="{{ isRequired('domicilio', form) }}">
+                                                <mat-error *ngIf="(!!form.get('domicilio').errors)">
+                                                    {{validatorService.getMessage(form.get('domicilio'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="3 0 auto">
+                                                <mat-label>Colonia</mat-label>
+                                                <input type="text" matInput name="colonia" formControlName="colonia"
+                                                    required="{{ isRequired('colonia', form) }}">
+                                                <mat-error *ngIf="(!!form.get('colonia').errors)">
+                                                    {{validatorService.getMessage(form.get('colonia'))}}
+                                                </mat-error>
+											</mat-form-field>
+											<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>CP</mat-label>
+                                                <input type="text" matInput name="cp" formControlName="cp"
+                                                    required="{{ isRequired('cp', form) }}" mask="99999">
+                                                <mat-error *ngIf="(!!form.get('cp').errors)">
+                                                    {{validatorService.getMessage(form.get('cp'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                        </div>
+
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+											<pixvs-mat-select [matSelectCtrl]="form.get('pais')" [datos]="paises"
+												[appearance]="'outline'"
+												[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+												[campoValor]="'nombre'" [label]="'País'" [required]="isRequired('pais',form)"
+                                                [seleccionarUnicaOpcion]="!proveedor?.id"
+												fxFlex="1 0 auto">
+											</pixvs-mat-select>
+											<pixvs-mat-select #estadoSelect [matSelectCtrl]="form.get('estado')" [datos]="estados"
+												[appearance]="'outline'"
+												[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+												[campoValor]="'nombre'" [label]="'Estado'" [required]="isRequired('estado',form)"
+                                                [seleccionarUnicaOpcion]="!proveedor?.id"
+												fxFlex="1 0 auto">
+											</pixvs-mat-select>
+											<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Ciudad</mat-label>
+                                                <input type="text" matInput name="ciudad" formControlName="ciudad"
+                                                    required="{{ isRequired('ciudad', form) }}">
+                                                <mat-error *ngIf="(!!form.get('ciudad').errors)">
+                                                    {{validatorService.getMessage(form.get('ciudad'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                        </div>
+
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Teléfono</mat-label>
+                                                <input matInput name="telefono" formControlName="telefono"
+                                                    mask="(00) 0000 0000" required="{{ isRequired('telefono', form) }}">
+                                                <mat-error *ngIf="(!!form.get('telefono').errors)">
+                                                    {{validatorService.getMessage(form.get('telefono'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Extensión</mat-label>
+                                                <input type="text" matInput name="extension" formControlName="extension"
+                                                    mask="999" required="{{ isRequired('extension', form) }}">
+                                                <mat-error *ngIf="(!!form.get('extension').errors)">
+                                                    {{validatorService.getMessage(form.get('extension'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                        </div>
+
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Correo Electrónico</mat-label>
+                                                <input type="text" matInput name="correoElectronico"
+                                                    formControlName="correoElectronico"
+                                                    required="{{ isRequired('correoElectronico', form) }}">
+                                                <mat-error *ngIf="(!!form.get('correoElectronico').errors)">
+                                                    {{validatorService.getMessage(form.get('correoElectronico'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Página Web</mat-label>
+                                                <input type="text" matInput name="paginaWeb" formControlName="paginaWeb"
+                                                    required="{{ isRequired('paginaWeb', form) }}">
+                                                <mat-error *ngIf="(!!form.get('paginaWeb').errors)">
+                                                    {{validatorService.getMessage(form.get('paginaWeb'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                        </div>
+
+
+
+                                    </div>
+
+
+                                </div>
+
+
+                            </div>
+
+                        </mat-tab>
+
+                        <mat-tab label="Contactos">
+
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+								<button type="button" class="btn-nuevo" *ngIf="!contactoEnEdicion"
+									mat-mini-fab color="primary" (click)="newContactoCompras()">
+									<mat-icon>add</mat-icon>
+								</button>
+
+                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                    <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="45" fxFlex.gt-md="35"
+                                        class="list-clickable">
+
+										<div class="clickable my-8 py-4 px-12" fxLayout="row" fxLayoutAlign="start-center" *ngFor="let contacto of contactos.controls; let index=index;" (click)="editarContacto(contacto,index)">
+											<div class="info" fxFlex fxLayout="column">
+
+												<div class="title">
+													{{ (contacto.get('nombre').value ? contacto.get('nombre').value : '')+' '+(contacto.get('primerApellido').value ? contacto.get('primerApellido').value : '')+' '+(contacto.get('segundoApellido').value?contacto.get('segundoApellido').value:'')}}
+												</div>
+												<div class="notes" *ngIf="!!contacto.departamento">
+													{{contacto.departamento}}
+												</div>
+
+												<div class="notes" *ngIf="!!contacto.get('telefono').value">
+													Tel. {{contacto.get('telefono').value}}
+													{{contacto.get('extension2').value ? 'Ext. '+ contacto.get('extension2').value : '' }}
+												</div>
+												<div class="notes"
+													*ngIf="!!contacto.get('correoElectronico').value">
+													{{contacto.get('correoElectronico').value }}
+												</div>
+												<div class="notes"
+													*ngIf="!!contacto.get('predeterminado').value">
+													{{ contacto.get('predeterminado').value ? 'Predeterminado' : '' }}
+												</div>
+
+											</div>
+										</div>
+                                    </div>
+
+
+                                    <div *ngIf="contactos.controls.length && contactoEnEdicion"
+                                        [formGroup]="contactoGroup" fxLayout="column" fxFlex="100" fxFlex.gt-sm="55"
+                                        fxFlex.gt-md="65">
+
+
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Nombre</mat-label>
+                                                <input type="text" matInput name="nombre" formControlName="nombre"
+                                                    required="{{ isRequired('nombre', contactoGroup) }}">
+                                                <mat-error *ngIf="(!!contactoGroup.get('nombre').errors)">
+                                                    {{validatorService.getMessage(contactoGroup.get('nombre'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                        </div>
+
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Primer Apellido</mat-label>
+                                                <input type="text" matInput name="primerApellido"
+                                                    formControlName="primerApellido"
+                                                    required="{{ isRequired('primerApellido', contactoGroup) }}">
+                                                <mat-error *ngIf="(!!contactoGroup.get('primerApellido').errors)">
+                                                    {{validatorService.getMessage(contactoGroup.get('primerApellido'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Segundo Apellido</mat-label>
+                                                <input type="text" matInput name="segundoApellido"
+                                                    formControlName="segundoApellido"
+                                                    required="{{ isRequired('segundoApellido', contactoGroup) }}">
+                                                <mat-error *ngIf="(!!contactoGroup.get('segundoApellido').errors)">
+                                                    {{validatorService.getMessage(contactoGroup.get('segundoApellido'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                        </div>
+
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+											<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Departamento</mat-label>
+                                                <input type="text" matInput name="departamento" formControlName="departamento"
+                                                    required="{{ isRequired('departamento', contactoGroup) }}">
+                                                <mat-error *ngIf="(!!contactoGroup.get('departamento').errors)">
+                                                    {{validatorService.getMessage(contactoGroup.get('departamento'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Teléfono</mat-label>
+                                                <input type="text" matInput name="telefono" formControlName="telefono"
+													required="{{ isRequired('telefono', contactoGroup) }}"
+													mask="(00) 0000 0000">
+                                                <mat-error *ngIf="(!!contactoGroup.get('telefono').errors)">
+                                                    {{validatorService.getMessage(contactoGroup.get('telefono'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                        </div>
+
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Extensión</mat-label>
+                                                <input type="text" matInput name="contacto.extension2"
+                                                    formControlName="extension2"
+                                                    mask="999" required="{{ isRequired('extension2', contactoGroup) }}">
+                                                <mat-error *ngIf="(!!contactoGroup.get('extension2').errors)">
+                                                    {{validatorService.getMessage(contactoGroup.get('extension2'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Correo Electrónico</mat-label>
+                                                <input type="text" matInput name="correoElectronico"
+                                                    formControlName="correoElectronico"
+                                                    required="{{ isRequired('correoElectronico', contactoGroup) }}">
+                                                <mat-error *ngIf="(!!contactoGroup.get('correoElectronico').errors)">
+                                                    {{validatorService.getMessage(contactoGroup.get('correoElectronico'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                        </div>
+
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Horario Atencion</mat-label>
+                                                <input type="text" matInput name="horarioAtencion"
+                                                    formControlName="horarioAtencion"
+                                                    required="{{ isRequired('horarioAtencion', contactoGroup) }}">
+                                                <mat-error *ngIf="(!!contactoGroup.get('horarioAtencion').errors)">
+                                                    {{validatorService.getMessage(contactoGroup.get('horarioAtencion'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+											<pixvs-mat-select [matSelectCtrl]="contactoGroup.get('tipoContacto')" [datos]="tiposContacto"
+												[appearance]="'outline'"
+												[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+												[campoValor]="'valor'" [label]="'Tipo contacto'" [required]="isRequired('tipoContacto',contactoGroup)"
+                                                [seleccionarUnicaOpcion]="false"
+												fxFlex="1 0 auto">
+											</pixvs-mat-select>
+                                        </div>
+
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid"
+                                            style="padding-bottom: 20px;">
+                                            <mat-checkbox color="primary" name="Predeterminado"
+                                                formControlName="predeterminado" fxFlex="1 0 auto">
+                                                Predeterminado
+                                            </mat-checkbox>
+                                        </div>
+
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" dir="rtl"
+                                            fxLayoutGap="20px" style="padding-bottom: 20px;">
+                                            <button type="button" class="boton-guardar mt-12"
+                                                style="padding: 0px !important; max-width: 150px;" mat-raised-button
+                                                color="primary" (click)="addContactoCompras()"
+                                                fxFlex="1 0 auto">Guardar</button>
+
+                                            <button type="button" class="boton-cancelar mt-12"
+                                                style="padding: 0px !important; max-width: 150px;" mat-raised-button
+                                                color="primary" (click)="cancelarContactoCompras(contactoGroup)"
+                                                fxFlex="1 0 auto">Cancelar</button>
+                                        </div>
+
+
+
+
+
+
+
+
+                                    </div>
+
+
+                                </div>
+
+
+                            </div>
+
+                        </mat-tab>
+
+
+                        <mat-tab label="Formas de Pago">
+
+                            <div class="tab-content p-24" fusePerfectScrollbar style="position: relative;">
+								<button type="button" class="btn-nuevo" *ngIf="!formaPagoEnEdicion"
+									mat-mini-fab color="primary" (click)="newFormaPago()">
+									<mat-icon>add</mat-icon>
+								</button>
+
+                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                    <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="45" fxFlex.gt-md="35"
+                                        class="list-clickable">
+
+                                        <mat-list role="list">
+                                            <mat-list-item role="listitem" class="list-item"
+                                                *ngFor="let formaPago of formasPago.controls; let index=index;"
+                                                (click)="editarFormaPago(formaPago,index)">
+                                                <div fxLayout="row" fxLayoutAlign="start-center">
+                                                    <div class="info" fxFlex fxLayout="column">
+
+                                                        <div class="title">
+                                                            {{ (formaPago.get('formaPago').value ? formaPago.get('formaPago').value.nombre : '') }}
+                                                        </div>
+                                                        <div class="notes" *ngIf="!!formaPago.departamento">
+                                                            CLABE:
+                                                            {{ (formaPago.get('cuentaClabe').value ? formaPago.get('cuentaClabe').value : '') }}
+                                                        </div>
+                                                        <div class="notes"
+                                                            *ngIf="!!formaPago.get('predeterminado').value">
+                                                            {{ formaPago.get('predeterminado').value ? 'Predeterminado' : '' }}
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </mat-list-item>
+                                        </mat-list>
+                                    </div>
+
+
+                                    <div *ngIf="formasPago.controls.length && formaPagoEnEdicion"
+                                        [formGroup]="formaPagoGroup" fxLayout="column" fxFlex="100" fxFlex.gt-sm="55"
+                                        fxFlex.gt-md="65">
+
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <pixvs-mat-select [matSelectCtrl]="formaPagoGroup.get('formaPago')" [datos]="formasPagoListado"
+												[appearance]="'outline'"
+												[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+												[campoValor]="'nombre'" [label]="'Forma pago'" [required]="isRequired('formaPago',formaPagoGroup)"
+                                                [seleccionarUnicaOpcion]="formaPagoGroupIndex == null"
+												fxFlex="1 0 auto">
+											</pixvs-mat-select>
+										</div>
+										
+										<ng-container *ngIf="!!formaPagoGroup.get('formaPago').value?.id">
+											<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+												<pixvs-mat-select [matSelectCtrl]="formaPagoGroup.get('moneda')" [datos]="monedas"
+													[appearance]="'outline'"
+													[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+													[campoValor]="'nombre'" [label]="'Moneda'" [required]="isRequired('moneda',formaPagoGroup)"
+                                                    [seleccionarUnicaOpcion]="formaPagoGroupIndex == null"
+													fxFlex="1 0 auto">
+												</pixvs-mat-select>
+												<mat-form-field *ngIf="validarMostrarCampoFormaPago(formaPagoGroup.get('formaPago').value?.id,[CMM_CXPP_FormaPago.TRANSFERENCIA_ELECTRONICA_DE_FONDOS,CMM_CXPP_FormaPago.TARJETA_DE_CREDITO,CMM_CXPP_FormaPago.TARJETA_DE_DEBITO])" appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+													<mat-label>Banco</mat-label>
+													<input type="text" matInput name="banco" formControlName="banco"
+														required="{{ isRequired('banco', formaPagoGroup) }}">
+													<mat-error *ngIf="(!!formaPagoGroup.get('banco').errors)">
+														{{validatorService.getMessage(formaPagoGroup.get('banco'))}}
+													</mat-error>
+												</mat-form-field>
+											</div>
+	
+											<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+												<mat-form-field *ngIf="validarMostrarCampoFormaPago(formaPagoGroup.get('formaPago').value?.id,[CMM_CXPP_FormaPago.TRANSFERENCIA_ELECTRONICA_DE_FONDOS])" appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+													<mat-label>Referencia</mat-label>
+													<input type="text" matInput name="referencia"
+														formControlName="referencia"
+														required="{{ isRequired('referencia', formaPagoGroup) }}">
+													<mat-error *ngIf="(!!formaPagoGroup.get('referencia').errors)">
+														{{validatorService.getMessage(formaPagoGroup.get('referencia'))}}
+													</mat-error>
+												</mat-form-field>
+												<mat-form-field *ngIf="validarMostrarCampoFormaPago(formaPagoGroup.get('formaPago').value?.id,[CMM_CXPP_FormaPago.TRANSFERENCIA_ELECTRONICA_DE_FONDOS,CMM_CXPP_FormaPago.TARJETA_DE_CREDITO,CMM_CXPP_FormaPago.TARJETA_DE_DEBITO])" appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+													<mat-label>Numero Cuenta</mat-label>
+													<input type="text" matInput name="numeroCuenta"
+														formControlName="numeroCuenta"
+														mask="00000000000" required="{{ isRequired('numeroCuenta', formaPagoGroup) }}">
+													<mat-error *ngIf="(!!formaPagoGroup.get('numeroCuenta').errors)">
+														{{validatorService.getMessage(formaPagoGroup.get('numeroCuenta'))}}
+													</mat-error>
+												</mat-form-field>
+											</div>
+	
+											<div *ngIf="validarMostrarCampoFormaPago(formaPagoGroup.get('formaPago').value?.id,[CMM_CXPP_FormaPago.TRANSFERENCIA_ELECTRONICA_DE_FONDOS])" fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+												<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+													<mat-label>Cuenta Clabe</mat-label>
+													<input type="text" matInput name="cuentaClabe"
+														formControlName="cuentaClabe"
+														mask="000000000000000000" required="{{ isRequired('cuentaClabe', formaPagoGroup) }}">
+													<mat-error *ngIf="(!!formaPagoGroup.get('cuentaClabe').errors)">
+														{{validatorService.getMessage(formaPagoGroup.get('cuentaClabe'))}}
+													</mat-error>
+												</mat-form-field>
+												<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+													<mat-label>BIC SWIFT</mat-label>
+													<input type="text" matInput name="bicSwift" formControlName="bicSwift"
+														required="{{ isRequired('bicSwift', formaPagoGroup) }}">
+													<mat-error *ngIf="(!!formaPagoGroup.get('bicSwift').errors)">
+														{{validatorService.getMessage(formaPagoGroup.get('bicSwift'))}}
+													</mat-error>
+												</mat-form-field>
+											</div>
+	
+											<div *ngIf="validarMostrarCampoFormaPago(formaPagoGroup.get('formaPago').value?.id,[CMM_CXPP_FormaPago.TRANSFERENCIA_ELECTRONICA_DE_FONDOS])" fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+												<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+													<mat-label>IBAN</mat-label>
+													<input type="text" matInput name="iban" formControlName="iban"
+														required="{{ isRequired('iban', formaPagoGroup) }}">
+													<mat-error *ngIf="(!!formaPagoGroup.get('iban').errors)">
+														{{validatorService.getMessage(formaPagoGroup.get('iban'))}}
+													</mat-error>
+												</mat-form-field>
+											</div>
+
+											<div *ngIf="validarMostrarCampoFormaPago(formaPagoGroup.get('formaPago').value?.id,[CMM_CXPP_FormaPago.TARJETA_DE_CREDITO,CMM_CXPP_FormaPago.TARJETA_DE_DEBITO])" fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+												<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+													<mat-label>Nombre del titular de la tarjeta</mat-label>
+													<input type="text" matInput name="nombreTitularTarjeta" formControlName="nombreTitularTarjeta"
+														required="{{ isRequired('nombreTitularTarjeta', formaPagoGroup) }}">
+													<mat-error *ngIf="(!!formaPagoGroup.get('nombreTitularTarjeta').errors)">
+														{{validatorService.getMessage(formaPagoGroup.get('nombreTitularTarjeta'))}}
+													</mat-error>
+												</mat-form-field>
+											</div>
+										</ng-container>
+
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid"
+                                            style="padding-bottom: 20px;">
+                                            <mat-checkbox color="primary" name="Predeterminado"
+                                                formControlName="predeterminado" fxFlex="1 0 auto">
+                                                Predeterminado
+                                            </mat-checkbox>
+                                        </div>
+
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" dir="rtl"
+                                            fxLayoutGap="20px" style="padding-bottom: 20px;">
+                                            <button type="button" class="boton-guardar mt-12"
+                                                style="padding: 0px !important; max-width: 150px;" mat-raised-button
+                                                color="primary" (click)="addFormaPago()"
+                                                fxFlex="1 0 auto">Guardar</button>
+
+                                            <button type="button" class="boton-cancelar mt-12"
+                                                style="padding: 0px !important; max-width: 150px;" mat-raised-button
+                                                color="primary" (click)="cancelarFormaPago(formaPagoGroup)"
+                                                fxFlex="1 0 auto">Cancelar</button>
+                                        </div>
+
+
+
+                                    </div>
+
+
+                                </div>
+
+
+                            </div>
+
+                        </mat-tab>
+
+                    </mat-tab-group>
+
+                </form>
+
+
+            </div>
+            <!-- / CONTENT -->
+
+        </div>
+        <!-- / CONTENT CARD -->
+
+
+    </div>
+    <!-- / CENTER -->
+</div>

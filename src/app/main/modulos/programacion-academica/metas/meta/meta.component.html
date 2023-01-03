@@ -1,0 +1,199 @@
+<div id="ficha-meta" class="pixvs-theme-listado page-layout carded fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <ficha-crud *ngIf="config" [config]="config" [isGuardadoPersonalizado]="true" (output)="guardar()"
+            [mostrarBorrar]="true"
+            [mostrarEditar]="true" [titulo]="titulo" [subTituloTraduccion]="pageType"
+            [form]="form" [currentId]="currentId" [pageType]="pageType"
+            [dataService]="_metaService" class="header accent" fxLayout="column"
+            fxLayoutAlign="center center" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center">
+        </ficha-crud>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <mat-progress-bar *ngIf="_metaService?.cargando" [color]="'primary'"
+                [mode]="'query'">
+            </mat-progress-bar>
+
+            <!-- CONTENT -->
+            <div class="content">
+
+                <form *ngIf="!!form" focusInvalidInput name="form" id="form" [formGroup]="form" class="product w-100-p"
+                    fxLayout="column" fxFlex>
+
+                    <mat-tab-group fxFlex="100">
+
+                        <mat-tab label="Datos Generales">
+
+                            <div class="tab-content p-24 h-100-p">
+
+                                <div class="h-100-p" fxLayout="row wrap" fxLayoutGap="20px grid">
+                                    <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <pixvs-mat-select [matSelectCtrl]="programacionAcademicaComercialControl" [datos]="programacionAcademicaComercial"
+                                                [appearance]="'outline'"
+                                                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                                [campoValor]="'nombre'" [label]="'Programación comercial'"
+                                                [required]="isRequired('programacionAcademicaComercial')"
+                                                [isDisabled]="!!programaMeta?.id"
+                                                [seleccionarUnicaOpcion]="!programaMeta?.id"
+                                                fxFlex="auto">
+                                            </pixvs-mat-select>
+
+                                            <div fxFlex="fill">
+                                                <button mat-icon-button [matMenuTriggerFor]="opciones">
+                                                    <mat-icon>more_vert</mat-icon>
+                                                </button>
+                                                <mat-menu #opciones="matMenu">
+                                                    <button mat-menu-item type="button" (click)="descargarPlantilla()">
+                                                        <mat-icon>insert_drive_file</mat-icon>
+                                                        <span>Descargar plantilla</span>
+                                                    </button>
+                                                    <button *ngIf="form?.enabled" mat-menu-item type="button" (click)="xlsxInput.click()">
+                                                        <mat-icon>arrow_upward</mat-icon>
+                                                        <span>Importar metas</span>
+                                                        <input
+                                                            #xlsxInput
+                                                            type="file"
+                                                            accept=".xlsx"
+                                                            (change)="xlsxChangeEvent($event)"
+                                                            style="display:none;"
+                                                        />
+                                                    </button>
+                                                    <button *ngIf="programaMeta?.id" mat-menu-item type="button" (click)="exportarExcel()">
+                                                        <mat-icon>arrow_downward</mat-icon>
+                                                        <span>Exportar metas</span>
+                                                    </button>
+                                                </mat-menu>
+                                            </div>
+                                        </div>
+
+                                        <ng-container *ngIf="!!programacionAcademicaComercialControl?.value?.id">
+                                            <div fxlayout="row" fxlayoutalign="start center" class="my-20" style="display: flex; border-bottom: solid 1px lightgray;">
+                                                <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font">attach_money</mat-icon>
+                                                <div class="h2 secondary-text ng-tns-c345-79">Metas</div>
+                                            </div>
+    
+                                            <div fxLayout="row wrap" fxLayoutAlign="start start" fxLayoutGap="10px grid" fxFlex="auto">
+                                                <pixvs-menu-sidebar fxFlex="20" [secciones]="seccionesSidebar" [seleccionInicial]="sidebarSeleccionInicial" (onMenu)="onSede($event)" style="height: 600px !important; max-height: 600px !important;"></pixvs-menu-sidebar>
+                                                <div fxFlex="80" *ngIf="!!sedeSeleccionada?.id" style="height: 600px !important; max-height: 600px !important;">
+                                                    <mat-tab-group fxFlex="100">
+                                                        <ng-container *ngFor="let paModalidad of paModalidades">
+                                                            <mat-tab label="{{paModalidad.nombre}}">
+                                                                <div class="tab-content p-24 h-100-p">
+                                                                    <div class="h-100-p" fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                                        <div class="h-100-p py-0" fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+                                                                            <div fxLayout="row wrap" fxLayoutAlign="start start" fxLayoutGap="10px grid" fxFlex="80%">
+                                                                                <mat-table
+                                                                                    class="ficha-table tabla-metyas h-100-p py-0"
+                                                                                    #tableResumen
+                                                                                    [dataSource]="dataSourceMetasMapPaModalidadId[paModalidad.id]"
+                                                                                    matSort
+                                                                                    [@animateStagger]="{value:'50'}"
+                                                                                    id="tabla-metas">
+    
+                                                                                    <ng-container
+                                                                                        matColumnDef="fechaInicio">
+                                                                                        <mat-header-cell
+                                                                                            *matHeaderCellDef>
+                                                                                            <span
+                                                                                                class="text-center text-nowrap w-100-p">Fecha inicio</span>
+                                                                                        </mat-header-cell>
+                                                                                        <mat-cell
+                                                                                            *matCellDef="let detalle">
+                                                                                            <div class="w-100-p"
+                                                                                                fxLayout="row"
+                                                                                                fxLayoutAlign="center center">
+                                                                                                {{ detalle.fechaInicio | date : 'dd/MM/yyyy' }}
+                                                                                            </div>
+                                                                                        </mat-cell>
+                                                                                        <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                                                                                    </ng-container>
+    
+                                                                                    <ng-container
+                                                                                        matColumnDef="fechaFin">
+                                                                                        <mat-header-cell
+                                                                                            *matHeaderCellDef>
+                                                                                            <span
+                                                                                                class="text-center text-nowrap w-100-p">Fecha fin</span>
+                                                                                        </mat-header-cell>
+                                                                                        <mat-cell
+                                                                                            *matCellDef="let detalle">
+                                                                                            <div class="w-100-p"
+                                                                                                fxLayout="row"
+                                                                                                fxLayoutAlign="center center">
+                                                                                                {{ detalle.fechaFin | date : 'dd/MM/yyyy' }}
+                                                                                            </div>
+                                                                                        </mat-cell>
+                                                                                        <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                                                                                    </ng-container>
+    
+                                                                                    <ng-container
+                                                                                        matColumnDef="meta">
+                                                                                        <mat-header-cell
+                                                                                            *matHeaderCellDef>
+                                                                                            <span
+                                                                                                class="text-center text-nowrap w-100-p">Meta</span>
+                                                                                        </mat-header-cell>
+                                                                                        <mat-cell
+                                                                                            *matCellDef="let detalle">
+                                                                                            <div class="w-100-p"
+                                                                                                fxLayout="row"
+                                                                                                fxLayoutAlign="center center">
+                                                                                                {{ ((programaMetaDetallesJsonEditar[sedeSeleccionada.id] || {})[detalle.paModalidadId] || {})[detalle.fechaInicio | date : 'yyyy-MM-dd'] || 0 }}
+                                                                                            </div>
+                                                                                        </mat-cell>
+                                                                                        <mat-footer-cell *matFooterCellDef>
+                                                                                            <div class="w-100-p"
+                                                                                                fxLayout="row"
+                                                                                                fxLayoutAlign="center center">
+                                                                                                {{ dataSourceMetasMapPaModalidadId[paModalidad.id] | MetaSumaDetallesPipe : sedeSeleccionada : programaMetaDetallesJsonEditar }}
+                                                                                            </div>
+                                                                                        </mat-footer-cell>
+                                                                                    </ng-container>
+    
+                                                                                    <ng-container>
+                                                                                        <mat-header-row
+                                                                                            *matHeaderRowDef="displayedColumnsDetalles; sticky:true">
+                                                                                        </mat-header-row>
+                                                                                        <mat-row
+                                                                                            *matRowDef="let row; columns: displayedColumnsDetalles;"
+                                                                                            class="element"
+                                                                                            matRipple
+                                                                                            (click)="onDetalle(paModalidad,row)">
+                                                                                        </mat-row>
+                                                                                        <mat-footer-row *matFooterRowDef="displayedColumnsDetalles; sticky: true"></mat-footer-row>
+                                                                                    </ng-container>
+                                                                                </mat-table>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </mat-tab>
+                                                        </ng-container>
+                                                    </mat-tab-group>
+                                                </div>
+                                            </div>
+                                        </ng-container>
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-tab>
+                    </mat-tab-group>
+                </form>
+            </div>
+            <!-- / CONTENT -->
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

@@ -1,0 +1,115 @@
+@import "@fuse/scss/fuse";
+
+asistencia {
+    ficha-crud {
+        min-height: 80px;
+        max-height: 80px;
+        padding: 0px 16px;
+    }
+    .content {
+        mat-panel-title {
+            span {
+                border-radius: 2px;
+                padding: 4px 8px;
+                margin: 0 8px;
+                font-size: 12px;
+            }
+            .text-boxed-success{
+                background-color: #4caf50;
+                color: #f5f5f5;
+            }
+            .text-boxed-warning{
+                background-color: #ff9800;
+                color: #f5f5f5;
+            }
+            .text-boxed-danger{
+                background-color: #f44336;
+                color: #f5f5f5;
+            }
+            .text-boxed-muted{
+                background-color: #d3d3d3;
+                color: #696969;
+            }
+        }
+        .calendar-header {
+            border: 1px solid lightgray;
+            min-height: 40px;
+            .date-controls {
+                text-align: center;
+                .date {
+                    font-size: 24px;
+                    min-width: 350px;
+                }
+                .next,.prev {
+                    .mat-icon {
+                        font-size: 36px;
+                    }
+                }
+            }
+        }
+        table {
+            .table-header{
+                text-align: center;
+                font-weight: bold;
+                font-size: initial;
+            }
+            td {
+                .text-success {
+                    color: #4caf50;
+                    font-weight: bold;
+                }
+                .text-warning {
+                    color: #ff9800;
+                    font-weight: bold;
+                }
+                .text-danger {
+                    color: #f44336;
+                    font-weight: bold;
+                }
+                .text-muted {
+                    color: #d3d3d3;
+                    font-weight: bold;
+                }
+                .relative {
+                    position: relative;
+                }
+                .indicator {
+                    position: absolute; 
+                    top: 2px; 
+                    left: 14px;
+                    text-align: right;
+                    mat-icon {
+                        float: right; 
+                        height: 32px; 
+                        width: 32px; 
+                        font-size: 36px;
+                    }
+                }
+                .absolute-tooltip {
+                    position: absolute;
+                    top: 8px;
+                    left: 3px;
+                    transform: rotate(-45deg);
+                    mat-icon {
+                        float: right; 
+                        font-size: 36px;
+                    }
+                }
+            }
+        }
+        .no-data {
+            .icon {
+                font-size: 120px;
+                height: 120px;
+                width: 120px;
+            }
+            .message {
+                font-size: 24px;
+                color: rgba(0,0,0,.54);
+            }
+            .back-link {
+                font-size: 15px;
+            }
+        }
+    }
+}

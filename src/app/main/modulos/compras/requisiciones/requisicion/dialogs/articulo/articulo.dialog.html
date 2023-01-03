@@ -1,0 +1,190 @@
+<h1 mat-dialog-title>
+	{{
+		esNuevo
+		? 'Agregar articulo'
+		: 'Actualizar articulo'
+	}}
+</h1>
+<div mat-dialog-content>
+	<!-- <pixvs-dynamic-components #camposDinamicos [regConfig]="camposListado"></pixvs-dynamic-components> -->
+	<form
+		focusInvalidInput
+		name="form"
+		id="form"
+		[formGroup]="form"
+		class="product w-100-p"
+		fxLayout="column"
+		fxFlex
+	>
+		<!--<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+			<div fxFlex="1 0 auto" fxLayout="row" fxLayoutAlign="end center" class="mb-20">
+				<mat-checkbox color="primary" [formControl]="miscCheckControl">
+					Misceláneo
+				</mat-checkbox>
+			</div>
+		</div>-->
+
+		<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+			<pixvs-mat-select *ngIf="!miscCheckControl?.value" [matSelectCtrl]="articuloControl" [datos]="articulos"
+				[appearance]="'outline'"
+				[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+				[campoValor]="['codigoArticulo','nombreArticulo']" [label]="'Artículo'" [required]="isRequired('articulo')"
+				fxFlex="1 0 auto">
+			</pixvs-mat-select>
+
+			<pixvs-mat-select *ngIf="miscCheckControl?.value && camposNuevoRegistro?.length" [matSelectCtrl]="articuloMiscControl" [datos]="articulos"
+				[appearance]="'outline'"
+				[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+				[campoValor]="['codigoArticulo','nombreArticulo']" [label]="'Artículo'" [required]="isRequired('articulo')"
+				fxFlex="1 0 auto">
+			</pixvs-mat-select>
+		</div>
+
+		<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+			<pixvs-mat-select #unidadMedidaSelect [matSelectCtrl]="unidadMedidaControl" [datos]="unidadesMedida"
+				[appearance]="'outline'"
+				[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+				[campoValor]="'nombre'" [label]="'Unidad de medida'" [required]="isRequired('unidadMedida')"
+				fxFlex="1 0 auto">
+			</pixvs-mat-select>
+
+			<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+				<mat-label>Cantidad</mat-label>
+				<input matInput name="cantidadRequerida" formControlName="cantidadRequerida"
+					required="{{ isRequired('cantidadRequerida') }}"
+					mask="separator.6" thousandSeparator=",">
+				<mat-error *ngIf="(!!form.get('cantidadRequerida').errors)">
+					{{validatorService.getMessage(form.get('cantidadRequerida'))}}
+				</mat-error>
+			</mat-form-field>
+		</div>
+
+		<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+			<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+				<mat-label>Comentarios</mat-label>
+				<textarea matInput name="comentarios" formControlName="comentarios"
+					required="{{ isRequired('comentarios') }}">
+				</textarea>
+				<mat-error *ngIf="(!!form.get('comentarios').errors)">
+					{{validatorService.getMessage(form.get('comentarios'))}}
+				</mat-error>
+			</mat-form-field>
+		</div>
+
+		<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+			<mat-form-field
+				appearance="outline"
+				floatLabel="auto"
+				fxFlex="1 0 auto"
+			>
+				<mat-label>Fecha requerida</mat-label>
+				<input
+					matInput
+					[matDatepicker]="fechaRequerida"
+					name="fechaRequerida"
+					formControlName="fechaRequerida"
+					disabled
+				>
+				<mat-datepicker-toggle
+					matSuffix
+					[for]="fechaRequerida"
+				>
+				</mat-datepicker-toggle>
+				<mat-datepicker
+					#fechaRequerida
+					disabled="false"
+				></mat-datepicker>
+			</mat-form-field>
+		</div>
+
+		<div
+			fxLayout="column"
+			fxFlex="100"
+		>
+			<mat-card
+				fxLayout="column"
+				style="min-height: 330px;"
+			>
+				<mat-card-header fxLayoutAlign="center">
+					<mat-card-title
+						fxLayoutAlign="center"
+						style="text-align: center;"
+					>
+						Imagen
+					</mat-card-title>
+					<mat-card-subtitle
+						fxLayoutAlign="center"
+						style="text-align: center; display: block; margin-left: auto;margin-right: auto;"
+					>
+						<div
+							*ngIf="croppedImage"
+							mat-card-avatar
+							[ngStyle]="{'background-image': 'url('+croppedImage+')'}"
+							style="background-size: cover;"
+							class="example-header-image"
+						>
+						</div>
+					</mat-card-subtitle>
+				</mat-card-header>
+				<mat-card-content class="h-200">
+					<image-cropper
+						style="height: 100%;"
+						*ngIf="imageChangedEvent"
+						[imageChangedEvent]="imageChangedEvent"
+						[backgroundColor]="'#148999'"
+						[maintainAspectRatio]="true"
+						[aspectRatio]="4 / 4"
+						[resizeToWidth]="100"
+						[cropperMinWidth]="100"
+						format="png"
+						(imageCropped)="imageCropped($event)"
+					>
+					</image-cropper>
+
+					<img
+						*ngIf="!imageChangedEvent"
+						style="display: block; margin-left: auto; margin-right: auto; height: 60%;"
+						src="{{articulo?.imagenArticuloId != null ? apiUrl + '/v1/archivo/' + (articulo.imagenArticuloId | hashId) : 'assets/images/no-image-icon.png' }}"
+					/>
+				</mat-card-content>
+				<mat-card-actions>
+					<div
+						class="px-16"
+						fxLayout="row"
+						fxLayoutAlign="space-between center"
+					>
+
+						<div></div>
+
+						<a
+							*ngIf="form.enabled"
+							(click)="fileInput.click()"
+							mat-button
+							color="accent"
+							style="width: 100%;"
+						>
+							<mat-icon class="s-16">add_a_photo</mat-icon>
+							<span> Cambiar </span>
+							<input
+								#fileInput
+								type="file"
+								(change)="fileChangeEvent($event)"
+								style="display:none;"
+							/>
+						</a>
+					</div>
+				</mat-card-actions>
+			</mat-card>
+		</div>
+	</form>
+</div>
+<div mat-dialog-actions>
+	<button
+		mat-button
+		(click)="cancelar()"
+	>Cancelar</button>
+	<button
+		mat-button
+		(click)="aceptar()"
+	>Aceptar</button>
+</div>

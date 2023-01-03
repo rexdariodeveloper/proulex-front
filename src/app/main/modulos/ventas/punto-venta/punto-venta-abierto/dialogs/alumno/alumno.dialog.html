@@ -1,0 +1,71 @@
+<h1 mat-dialog-title>
+	Seleccionar alumno
+</h1>
+<div mat-dialog-content class="font-size-20 pb-12">
+    <div class="w-100-p" fxLayout="column">
+        <div *ngIf="pedirCantidad" fxLayout="row">
+            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="100">
+                <mat-label>Cantidad</mat-label>
+                <input matInput
+                    name="cantidad"
+                    [formControl]="cantidadControl"
+                    [required]="false"
+                    type="number">
+            </mat-form-field>
+        </div>
+        <div fxLayout="row">
+            <pixvs-mat-select [matSelectCtrl]="alumnoControl" [datos]="[]"
+                [appearance]="'outline'"
+                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                [busquedaAsincronaActiva]="true" [busquedaAsincronaRuta]="'/api/v1/punto-venta/listados/alumnos'"
+                [campoValor]="['codigo','nombre']" [label]="'Alumno'"
+                [required]="false" fxFlex="100">
+            </pixvs-mat-select>
+        </div>
+        <div fxLayout="row" *ngIf="grupoEsJobsSems">
+            <mat-checkbox id="carta-compromiso" [(ngModel)]="entregarCartaCompromiso">Entregar carta compromiso</mat-checkbox>
+        </div>
+        <div *ngIf="!!localidadesSucursal?.length && localidadesSucursal.length > 1" fxLayout="row">
+            <pixvs-mat-select [matSelectCtrl]="localidadControl" [datos]="localidadesSucursal"
+                [appearance]="'outline'"
+                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                [campoValor]="'nombre'" [label]="'Localidad'"
+                [required]="false" fxFlex="100">
+            </pixvs-mat-select>
+        </div>
+        <div *ngIf="!becaUDG" fxLayout="row" fxLayoutAlign="end start">
+            <button
+                mat-button
+                class="indigo-fg"
+                (click)="onNuevoAlumno()"
+            >Nuevo alumno</button>
+        </div>
+        <div *ngIf="!!becaUDG" fxLayout="row">
+            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="100">
+                <mat-label>Beca disponible</mat-label>
+                <input matInput name="becaDisponible" [formControl]="becaDisponibleControl" required="{{ false }}" [readOnly]="true">
+            </mat-form-field>
+        </div>
+        <div *ngIf="!!valeCertificacion" fxLayout="row">
+            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="100">
+                <mat-label>Vale de certificación disponible</mat-label>
+                <input matInput name="valeCertificacion" [formControl]="valeCertificacionDisponibleControl" required="{{ false }}" [readOnly]="true">
+            </mat-form-field>
+        </div>
+    </div>
+</div>
+<div mat-dialog-actions align="end" fxLayout="row" fxLayoutAlign="space-between center">
+	<button
+		mat-button
+		(click)="cancelar()"
+	>Cancelar</button>
+	<button
+		mat-raised-button
+        class="mat-primary"
+		(click)="onAceptar()"
+	>
+        <ng-container *ngIf="!becaUDG && !valeCertificacion">Aceptar</ng-container>
+        <ng-container *ngIf="!!becaUDG">Aplicar beca</ng-container>
+        <ng-container *ngIf="!!valeCertificacion">Aplicar vale</ng-container>
+    </button>
+</div>

@@ -1,0 +1,30 @@
+@import "@fuse/scss/fuse";
+
+:host {
+
+}
+
+.options-selector {
+    margin-left: 2px;
+    opacity: 0.8;
+    border-radius: 0px 8px 8px 0;
+    padding-left: 1px !important;
+    padding-right: 1px !important;
+    min-width: 30px !important;
+
+    mat-icon {
+      color: #ffffff;
+    }
+}
+
+.options-selector-complete {
+    margin-left: 2px;
+    opacity: 0.8;
+    padding-left: 1px !important;
+    padding-right: 1px !important;
+    min-width: 30px !important;
+
+    mat-icon {
+      color: #ffffff;
+    }
+}

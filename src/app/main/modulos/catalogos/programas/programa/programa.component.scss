@@ -1,0 +1,31 @@
+@import "@fuse/scss/fuse";
+
+#ficha-programa {
+	.btn-nuevo{
+		position: absolute;
+		top: 5px;
+		right: 5px;
+		z-index: 200;
+	}
+
+	.clickable{
+		cursor: pointer;
+		&:hover{
+			background-color: #F0F0F0;
+		}
+	}
+	.mat-column-nombreArticulo {
+	  word-wrap: break-word !important;
+	  white-space: unset !important;
+	  width: 700px;
+	  overflow-wrap: break-word;
+	  word-wrap: break-word;
+
+	  word-break: break-word;
+
+	  -ms-hyphens: auto;
+	  -moz-hyphens: auto;
+	  -webkit-hyphens: auto;
+	  hyphens: auto;
+	}
+}

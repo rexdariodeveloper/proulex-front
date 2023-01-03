@@ -1,0 +1,38 @@
+@import "@fuse/scss/fuse";
+
+$borderColor: gray;
+#ficha-beca {
+	.btn-nuevo{
+		position: absolute;
+		top: 5px;
+		right: 5px;
+		z-index: 200;
+	}
+
+	.clickable{
+		cursor: pointer;
+		&:hover{
+			background-color: #F0F0F0;
+		}
+	}
+	.tabla-proveedores{
+		border-spacing: 0;
+		td{
+			padding: 1rem;
+		}
+		thead{
+			td{
+				border: solid 1px $borderColor;
+				border-left: none;
+				border-right: none;
+			}
+
+		}
+		tbody{
+			td{
+				border-bottom: solid 1px $borderColor;
+			}
+			
+		}
+	}
+}

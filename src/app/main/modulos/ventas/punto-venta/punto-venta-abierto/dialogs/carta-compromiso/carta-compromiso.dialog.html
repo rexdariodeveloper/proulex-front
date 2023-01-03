@@ -1,0 +1,31 @@
+<h1 mat-dialog-title>
+	Carta compromiso
+</h1>
+<div mat-dialog-content class="pb-12">
+    <div class="w-100-p" fxLayout="column">
+        <div fxLayout="row">
+            <mat-checkbox id="carta-compromiso" [(ngModel)]="entregarCartaCompromiso">Entregar carta compromiso</mat-checkbox>
+        </div>
+        <div fxLayout="row" *ngIf="localidadesSucursal.length > 1">
+            <pixvs-mat-select [matSelectCtrl]="localidadControl" [datos]="localidadesSucursal"
+                [appearance]="'outline'"
+                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                [campoValor]="'nombre'" [label]="'Localidad'"
+                [required]="false" fxFlex="100">
+            </pixvs-mat-select>
+        </div>
+    </div>
+</div>
+<div mat-dialog-actions align="end" fxLayout="row" fxLayoutAlign="space-between center">
+	<button
+		mat-button
+		(click)="cancelar()"
+	>Cancelar</button>
+	<button
+		mat-raised-button
+        class="mat-primary"
+		(click)="onAceptar()"
+	>
+        Aceptar
+    </button>
+</div>

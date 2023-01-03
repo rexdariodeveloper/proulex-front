@@ -1,0 +1,45 @@
+<h1 mat-dialog-title>
+	Convertir
+</h1>
+<div mat-dialog-content>
+	<form
+		focusInvalidInput
+		name="form"
+		id="form"
+		[formGroup]="form"
+		class="product w-100-p h-100-p"
+		fxLayout="column"
+		fxFlex
+	>
+		<div fxLayout="column">
+			<mat-form-field
+				appearance="outline"
+				floatLabel="auto"
+				fxFlex="1 0 auto"
+			>
+				<mat-label>Comentario</mat-label>
+				<textarea
+					type="text"
+					matInput
+					name="comentario"
+					formControlName="comentario"
+					required="{{ isRequired('comentario') }}"
+				></textarea>
+				<mat-error *ngIf="(!!form.get('comentario').errors)">
+					{{validatorService.getMessage(form.get('comentario'))}}
+				</mat-error>
+			</mat-form-field>
+		</div>
+	</form>
+</div>
+<div mat-dialog-actions>
+	<button
+		mat-button
+		(click)="cancelar()"
+	>Cerrar</button>
+	<button
+		mat-button
+		[disabled]="form.disabled"
+		(click)="aceptar()"
+	>Aceptar</button>
+</div>

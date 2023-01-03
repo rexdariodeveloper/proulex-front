@@ -1,0 +1,191 @@
+<div id="solicitud-pago" class="page-layout carded left-sidebar fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center layout-pad0">
+
+        <!-- HEADER -->
+        <ficha-crud *ngIf="config" [config]="config" [cargando]="_solicitudService?.cargando" [isGuardadoPersonalizado]="true" (output)="guardar($event)" [mostrarAprobar]="pageType == 'alerta'" [mostrarRechazar]="pageType == 'alerta'" [ocultarGuardar]="pageType == 'alerta'"
+            [mostrarBorrar]="cancelable" [mostrarEditar]="true" [titulo]="titulo" [subTituloTraduccion]="pageType" [form]="form" [currentId]="currentId" [pageType]="pageType" [dataService]="_solicitudService" [historial]="historial || []" class="header accent"
+            fxLayout="column" fxLayoutAlign="center center" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center">
+        </ficha-crud>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card p-0">
+            <mat-tab-group #tabs class="h-100-p">
+                <mat-tab label="Datos Generales">
+                    <div class="tab-content p-24" fusePerfectScrollbar>
+                        <form *ngIf="!!form" name="form" id="form" [formGroup]="form" class="product w-100-p" fxLayout="column" fxFlex>
+                            <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                <pixvs-mat-select #sucursal
+                                    [matSelectCtrl]="sucursalControl"
+                                    [datos]="sucursales"
+                                    [appearance]="'outline'"
+                                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                    [campoValor]="'nombre'"
+                                    [label]="'Sede'"
+                                    [required]="isRequired(form,'sucursal')"
+                                    [incluirItemVacio]="!solicitud?.id"
+                                    fxFlex="1 0 calc(50% - 10px)">
+                                </pixvs-mat-select>
+
+                                <pixvs-mat-select #tipoServicio
+                                    [matSelectCtrl]="tipoServicioControl"
+                                    [datos]="tipoServicios"
+                                    [appearance]="'outline'"
+                                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                    [campoValor]="'concepto'"
+                                    [label]="'Tipo de servicio'"
+                                    [required]="isRequired(form,'tipoServicio')"
+                                    [incluirItemVacio]="!solicitud?.id"
+                                    fxFlex="1 0 calc(50% - 10px)">
+                                </pixvs-mat-select>
+                            </div>
+
+                            <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                <pixvs-mat-select #proveedor
+                                    [matSelectCtrl]="proveedorControl"
+                                    [datos]="proveedores"
+                                    [appearance]="'outline'"
+                                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                    [campoValor]="'nombre'"
+                                    [label]="'Proveedor'"
+                                    [required]="isRequired(form,'proveedor')"
+                                    [incluirItemVacio]="!solicitud?.id"
+                                    fxFlex="1 0 calc(50% - 10px)">
+                                </pixvs-mat-select>
+
+                                <ng-container *ngIf="!permiteReemplazarDocumentos || form?.disabled">
+                                    <div class="attachment-list" *ngIf="!!archivoPDF" fxFlex="1 0 calc(25% - 10px)">
+                                        <div class="attachment" (click)="descargarPDF()" style="cursor: pointer">
+                                            <div fxFlex="1 0 80%" class="text-truncate">
+                                                <span class="filename" dir="rtl">{{archivoPDF?.nombreOriginal}}</span>
+                                            </div>
+    
+                                            <button mat-icon-button aria-label="Download attachment" fxFlex="1 0 20%">
+                                                <mat-icon class="s-16">cloud_download</mat-icon>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="attachment-list" *ngIf="!!archivoXML" fxFlex="1 0 calc(25% - 10px)">
+                                        <div class="attachment" (click)="descargarXML()" style="cursor: pointer">
+                                            <div fxFlex="1 0 80%" class="text-truncate">
+                                                <span class="filename" dir="rtl">{{archivoXML?.nombreOriginal}}</span>
+                                            </div>
+    
+                                            <button mat-icon-button aria-label="Download attachment" fxFlex="1 0 20%">
+                                                <mat-icon class="s-16">cloud_download</mat-icon>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </ng-container>
+                                
+                                <ng-container *ngIf="permiteReemplazarDocumentos && form?.enabled">
+                                    <div class="attachment-list" fxFlex="1 0 calc(25% - 10px)">
+                                        <div class="attachment" (click)="pdf.click(); $event.preventDefault()" style="cursor: pointer" matTooltip="Archivo PDF">
+                                            <div fxFlex="1 0 80%" class="text-truncate">
+                                                <span class="filename" dir="rtl">{{ !!archivoPDF?.id ? archivoPDF?.nombreOriginal : 'Subir PDF'}}</span>
+                                            </div>
+    
+                                            <button mat-icon-button aria-label="Download attachment" fxFlex="1 0 20%">
+                                                <mat-icon class="s-16">cloud_upload</mat-icon>
+                                            </button>
+                                        </div>
+                                        <input #pdf type="file" accept=".pdf" (change)="pdfChangeEvent($event)" style="border: 0;clip: rect(0 0 0 0); height: 1px; margin: -1px;overflow: hidden;padding: 0;position: absolute; width: 1px;" />
+                                    </div>
+    
+                                    <div class="attachment-list" fxFlex="1 0 calc(25% - 10px)">
+                                        <div class="attachment" (click)="xml.click(); $event.preventDefault()" style="cursor: pointer" matTooltip="Archivo XML">
+                                            <div fxFlex="1 0 80%" class="text-truncate">
+                                                <span class="filename" dir="rtl">{{ !!archivoXML?.id ? archivoXML?.nombreOriginal : 'Subir XML' }}</span>
+                                            </div>
+    
+                                            <button mat-icon-button aria-label="Download attachment" fxFlex="1 0 20%">
+                                                <mat-icon class="s-16">cloud_upload</mat-icon>
+                                            </button>
+                                        </div>
+                                        <input #xml type="file" accept=".xml" (change)="xmlChangeEvent($event)" style="border: 0;clip: rect(0 0 0 0); height: 1px; margin: -1px;overflow: hidden;padding: 0;position: absolute; width: 1px;" />
+                                    </div>
+                                </ng-container>
+                            </div>
+
+                            <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                <mat-form-field
+                                    appearance="outline"
+                                    floatLabel="auto"
+                                    fxFlex="1 0 auto"
+                                >
+                                    <mat-label>Comentarios</mat-label>
+                                    <textarea
+                                        type="text"
+                                        matInput
+                                        name="comentarios"
+                                        formControlName="comentarios"
+                                        [required]="isRequired(form,'comentarios')"
+                                        [readonly]="!!solicitud?.id"
+                                    ></textarea>
+                                    <mat-error *ngIf="(!!form.get('comentarios').errors)">
+                                        {{validatorService.getMessage(form.get('comentarios'))}}
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+
+                            <div fxlayout="row" fxlayoutalign="start center" class="my-20" style="display: flex; border-bottom: solid 1px lightgray;">
+                                <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font">attach_money</mat-icon>
+                                <div class="h2 secondary-text ng-tns-c345-79">Datos del pago</div>
+                            </div>
+
+                            <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 calc(16% - 10px)">
+                                    <mat-label>Importe</mat-label>
+                                    <input id="importe" matInput name="importe" formControlName="importe" type="number" [readonly]="!!solicitud?.id" (change)="onChangedImporte($event)">
+                                    <mat-error *ngIf="(!!form.get('importe').errors)">
+                                        {{validatorService.getMessage(form.get('importe'))}}
+                                    </mat-error>
+                                </mat-form-field>
+                                <pixvs-mat-select #moneda
+                                    [matSelectCtrl]="monedaControl"
+                                    [datos]="monedas"
+                                    [appearance]="'outline'"
+                                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                    [campoValor]="'nombre'"
+                                    [label]="'Moneda'"
+                                    [required]="isRequired(form,'moneda')"
+                                    fxFlex="1 0 calc(16.6% - 10px)"
+                                    [incluirItemVacio]="!solicitud?.id">
+                                </pixvs-mat-select>
+                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 calc(16% - 10px)">
+                                    <mat-label>Numero de documento</mat-label>
+                                    <input matInput name="folio" formControlName="folio" [readonly]="!!solicitud?.id">
+                                    <mat-error *ngIf="(!!form.get('folio').errors)">
+                                        {{validatorService.getMessage(form.get('folio'))}}
+                                    </mat-error>
+                                </mat-form-field>
+                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 calc(16% - 10px)">
+                                    <mat-label>Fecha documento</mat-label>
+                                    <input matInput type="date" name="fechaFactura" formControlName="fechaFactura" [max]="fechaActual" [readonly]="!!solicitud?.id">
+                                    <mat-error *ngIf="(!!form.get('fechaFactura').errors)">
+                                        {{validatorService.getMessage(form.get('fechaFactura'))}}
+                                    </mat-error>
+                                </mat-form-field>
+                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 calc(16% - 10px)">
+                                    <mat-label>Fecha vencimiento</mat-label>
+                                    <input matInput type="date" name="fechaVencimiento" formControlName="fechaVencimiento" [readonly]="!!solicitud?.id">
+                                    <mat-error *ngIf="(!!form.get('fechaVencimiento').errors)">
+                                        {{validatorService.getMessage(form.get('fechaVencimiento'))}}
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                        </form>
+                    </div>
+                </mat-tab>
+            </mat-tab-group>
+        </div>
+
+    </div>
+
+</div>

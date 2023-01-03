@@ -1,0 +1,43 @@
+<mat-toolbar color="primary">
+	<mat-toolbar-row>
+		<span class="title dialog-title" style="width: 100%; text-align: center;">Seleccionar artículo</span>
+	</mat-toolbar-row>
+</mat-toolbar>
+<div mat-dialog-content>
+	<div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+		<div fxLayout="row wrap">
+			<pixvs-mat-select [matSelectCtrl]="familiaControl" [datos]="familias"
+            [appearance]="'outline'"
+            [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+            [campoValor]="'nombre'" [label]="'Familia'"
+            fxFlex="1 0 auto">
+            </pixvs-mat-select>
+		</div>
+		<div fxLayout="row wrap">
+			<pixvs-mat-select #categoriaSelect [matSelectCtrl]="categoriaControl" [datos]="categorias"
+            [appearance]="'outline'"
+            [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+            [campoValor]="'nombre'" [label]="'Categoria'"
+            fxFlex="1 0 auto">
+            </pixvs-mat-select>
+		</div>
+		<div fxLayout="row wrap">
+			<pixvs-mat-select #articuloSelect [matSelectCtrl]="articuloControl" [datos]="articulos"
+            [appearance]="'outline'"
+            [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+            [campoValor]="'nombreArticulo'" [label]="'Articulo'" [multiple]="true"
+            fxFlex="1 0 auto" [showToggleAllCheckbox]="true">
+            </pixvs-mat-select>
+		</div>
+	</div>
+</div>
+<div mat-dialog-actions align="end">
+	<button
+		mat-button
+		(click)="cancelar()"
+	>Cerrar</button>
+	<button
+		mat-raised-button class="mat-accent mr-16"
+		(click)="aceptar()"
+	>Aceptar</button>
+</div>

@@ -1,0 +1,645 @@
+punto-venta-abierto{
+
+    max-height: calc(100vh - 52px - 37px);
+
+    div.resumen{
+        border-right: solid 2px #e6e6e6;
+    }
+
+    mat-table.tabla-resumen{
+        .mat-header-cell{
+            font-weight: 900;
+            &:not(:first-child){
+                flex-flow: row-reverse;
+            }
+        }
+
+        .cdk-column-cantidad{
+            width: 100px;
+            max-width: 100px;
+        }
+
+        .cdk-column-precio{
+            width: 100px;
+            max-width: 100px;
+        }
+
+        .cdk-column-descuento{
+            width: 100px;
+            max-width: 100px;
+        }
+
+        .cdk-column-total{
+            width: 100px;
+            max-width: 100px;
+        }
+
+        .cdk-column-acciones{
+            width: 50px;
+            max-width: 50px;
+            padding: 0;
+        }
+    }
+
+    .titulo-navegador{
+        font-size: 2rem;
+        mat-icon{
+            font-size: 2rem;
+        }
+    }
+
+    div.search-wrapper .search{
+        height: 4rem;
+        mat-icon{
+            margin-top: 0.75rem !important;
+        }
+        input{
+            line-height: 2rem;
+        }
+    }
+
+    mat-card{
+        border-radius: 1.5rem !important;
+        
+        &.card-230h{
+            height: 230px;
+        }
+
+        img.img-card{
+            height: 145px !important;
+        }
+
+        div.card-fondo{
+            width: calc(100% + 32px);
+            margin: -16px -16px 16px -16px !important;
+            height: 80px;
+            border-radius: 1.5rem 1.5rem 0 0;
+        }
+
+        mat-card-title{
+            font-size: 1.5rem !important;
+        }
+
+        div.grupo-horario{
+            background-color: lightgray;
+            padding: 5px;
+            margin: 10px 5px 10px 5px;
+            white-space: nowrap;
+    
+            &.cupo-lleno{
+                background-color: white;
+                border: solid 1px lightgray;
+            }
+        }
+    }
+
+    div.tipo-pago{
+        margin-top: 12px;
+        padding: 10px 8px 5px 8px;
+        border: solid 2px lightgray;
+        border-radius: 1rem;
+        line-height: 3 !important;
+        // height: 100px;
+        
+        &.activo{
+            border-color: #2c37d1;
+        }
+        // &.doble{
+        //     height: 300px;
+        // }
+    }
+
+    .card-forma-pago{
+        .mat-card-content{
+            height: 100%;
+        }
+    }
+
+    mat-table.tabla-reinscripciones{
+        .mat-header-cell{
+            font-weight: 900;
+            &:last-child{
+                align-items: center;
+            }
+        }
+
+        .cdk-column-estatus{
+            width: 120px;
+            min-width: 120px;
+        }
+
+        .cdk-column-codigo{
+            width: 120px;
+            min-width: 120px;
+        }
+
+        .cdk-column-becaCodigo{
+            width: 120px;
+            min-width: 120px;
+        }
+
+        .cdk-column-codigoUDG{
+            width: 120px;
+            min-width: 120px;
+        }
+
+        .cdk-column-primerApellido{
+            width: 150px;
+            min-width: 150px;
+        }
+
+        .cdk-column-segundoApellido{
+            width: 150px;
+            min-width: 150px;
+        }
+
+        .cdk-column-nombre{
+            width: 150px;
+            min-width: 150px;
+        }
+
+        .cdk-column-curso{
+            width: 120px;
+            min-width: 120px;
+        }
+
+        .cdk-column-modalidad{
+            width: 120px;
+            min-width: 120px;
+        }
+
+        .cdk-column-horario{
+            width: 120px;
+            min-width: 120px;
+        }
+
+        .cdk-column-nivelReinscripcion{
+            width: 120px;
+            min-width: 120px;
+        }
+        
+        .cdk-column-calificacion{
+            width: 120px;
+            min-width: 120px;
+        }
+        
+        .cdk-column-grupoReinscripcionCodigo{
+            width: 120px;
+            min-width: 120px;
+        }
+
+        .cdk-column-acciones{
+            width: 50px;
+            min-width: 50px;
+            padding: 0;
+        }
+
+        mat-header-row,mat-row{
+            width: 1700px;
+            min-width: 1700px;
+        }
+    }
+
+    span.tag{
+        background-color: orangered;
+        color: white;
+        font-weight: 600;
+        padding: 0.5rem 1rem;
+    }
+
+    mat-table.tabla-alumnos-sin-grupo{
+        .mat-header-cell{
+            font-weight: 900;
+            &:last-child{
+                align-items: center;
+            }
+        }
+
+        .cdk-column-curso{
+            width: 70px;
+            min-width: 70px;
+            max-width: 70px;
+            padding: 0;
+        }
+
+        .cdk-column-nivel{
+            width: 40px;
+            min-width: 40px;
+            max-width: 40px;
+            padding: 0;
+        }
+
+        .cdk-column-modalidad{
+            width: 80px;
+            min-width: 80px;
+            max-width: 80px;
+            padding: 0;
+        }
+
+        .cdk-column-montoPago{
+            width: 80px;
+            min-width: 80px;
+            max-width: 80px;
+            padding: 0;
+        }
+
+        .cdk-column-medioPago{
+            width: 100px;
+            min-width: 100px;
+            max-width: 100px;
+            padding: 0;
+        }
+
+        .cdk-column-ovCodigo{
+            width: 100px;
+            min-width: 100px;
+            max-width: 100px;
+            padding: 0;
+        }
+
+        .cdk-column-estatus{
+            width: 90px;
+            min-width: 90px;
+            max-width: 90px;
+            padding: 0;
+        }
+
+        .cdk-column-acciones{
+            width: 70px;
+            min-width: 70px;
+            max-width: 70px;
+            padding: 0;
+        }
+
+        // mat-header-row,mat-row{
+        //     min-width: 550px;
+        // }
+    }
+
+    mat-table.tabla-alumnos-entrega-libros{
+        .mat-header-cell{
+            font-weight: 900;
+            &:last-child{
+                align-items: center;
+            }
+        }
+
+        .cdk-column-imagen{
+            width: 50px;
+            min-width: 50px;
+            max-width: 50px;
+            padding: 0;
+        }
+
+        .cdk-column-codigo{
+            width: 100px;
+            min-width: 100px;
+            max-width: 100px;
+            padding: 0;
+        }
+
+        .cdk-column-codigoUDG{
+            width: 100px;
+            min-width: 100px;
+            max-width: 100px;
+            padding: 0;
+        }
+
+        .cdk-column-primerApellido{
+            width: 150px;
+            min-width: 150px;
+            max-width: 150px;
+            padding: 0;
+        }
+
+        .cdk-column-segundoApellido{
+            width: 150px;
+            min-width: 150px;
+            max-width: 150px;
+            padding: 0;
+        }
+
+        .cdk-column-nombre{
+            width: 150px;
+            min-width: 150px;
+            max-width: 150px;
+            padding: 0;
+        }
+
+        .cdk-column-grupo{
+            width: 150px;
+            min-width: 150px;
+            max-width: 150px;
+            padding: 0;
+        }
+
+        .cdk-column-libros{
+            width: 400px;
+            min-width: 400px;
+            max-width: 400px;
+            padding: 0 5px 0 0;
+        }
+
+        .cdk-column-inscripcion{
+            width: 150px;
+            min-width: 150px;
+            max-width: 150px;
+            padding: 0;
+        }
+
+        .cdk-column-notaVenta{
+            width: 150px;
+            min-width: 150px;
+            max-width: 150px;
+            padding: 0;
+        }
+
+        .cdk-column-check{
+            width: 30px;
+            min-width: 30px;
+            max-width: 30px;
+            padding: 0;
+        }
+
+        .cdk-column-agregar{
+            width: 60px;
+            min-width: 60px;
+            max-width: 60px;
+            padding: 0;
+        }
+
+        mat-header-row,mat-row{
+            min-width: 1640px;
+        }
+    }
+
+    mat-table.tabla-alumnos-jobs{
+        .mat-header-cell{
+            font-weight: 900;
+            &:last-child{
+                align-items: center;
+            }
+        }
+
+        .cdk-column-codigo{
+            width: 100px;
+            min-width: 100px;
+            max-width: 100px;
+            padding: 0 0 0 10px;
+        }
+
+        .cdk-column-codigoUDG{
+            width: 100px;
+            min-width: 100px;
+            max-width: 100px;
+            padding: 0;
+        }
+
+        .cdk-column-primerApellido{
+            width: 150px;
+            min-width: 150px;
+            max-width: 150px;
+            padding: 0;
+        }
+
+        .cdk-column-segundoApellido{
+            width: 150px;
+            min-width: 150px;
+            max-width: 150px;
+            padding: 0;
+        }
+
+        .cdk-column-nombre{
+            width: 150px;
+            min-width: 150px;
+            max-width: 150px;
+            padding: 0;
+        }
+
+        .cdk-column-centroUniversitario{
+            width: 150px;
+            min-width: 150px;
+            max-width: 150px;
+            padding: 0;
+        }
+
+        .cdk-column-carrera{
+            width: 150px;
+            min-width: 150px;
+            max-width: 150px;
+            padding: 0;
+        }
+
+        .cdk-column-grupo{
+            width: 150px;
+            min-width: 150px;
+            max-width: 150px;
+            padding: 0;
+        }
+
+        .cdk-column-check{
+            width: 30px;
+            min-width: 30px;
+            max-width: 30px;
+            padding: 0;
+        }
+
+        .cdk-column-agregar{
+            width: 60px;
+            min-width: 60px;
+            max-width: 60px;
+            padding: 0;
+        }
+
+        mat-header-row,mat-row{
+            min-width: 1190px;
+        }
+    }
+
+    mat-table.tabla-alumnos-jobs-sems{
+        .mat-header-cell{
+            font-weight: 900;
+            &:last-child{
+                align-items: center;
+            }
+        }
+
+        .cdk-column-codigo{
+            width: 100px;
+            min-width: 100px;
+            max-width: 100px;
+            padding: 0 0 0 10px;
+        }
+
+        .cdk-column-codigoUDG{
+            width: 100px;
+            min-width: 100px;
+            max-width: 100px;
+            padding: 0;
+        }
+
+        .cdk-column-primerApellido{
+            width: 150px;
+            min-width: 150px;
+            max-width: 150px;
+            padding: 0;
+        }
+
+        .cdk-column-segundoApellido{
+            width: 150px;
+            min-width: 150px;
+            max-width: 150px;
+            padding: 0;
+        }
+
+        .cdk-column-nombre{
+            width: 150px;
+            min-width: 150px;
+            max-width: 150px;
+            padding: 0;
+        }
+
+        .cdk-column-preparatoria{
+            width: 150px;
+            min-width: 150px;
+            max-width: 150px;
+            padding: 0;
+        }
+
+        .cdk-column-bachilleratoTecnologico{
+            width: 150px;
+            min-width: 150px;
+            max-width: 150px;
+            padding: 0;
+        }
+
+        .cdk-column-grupo{
+            width: 150px;
+            min-width: 150px;
+            max-width: 150px;
+            padding: 0;
+        }
+
+        .cdk-column-check{
+            width: 30px;
+            min-width: 30px;
+            max-width: 30px;
+            padding: 0;
+        }
+
+        .cdk-column-agregar{
+            width: 60px;
+            min-width: 60px;
+            max-width: 60px;
+            padding: 0;
+        }
+
+        mat-header-row,mat-row{
+            min-width: 1190px;
+        }
+    }
+
+    mat-table.tabla-becas-sindicato{
+        .mat-header-cell{
+            font-weight: 900;
+            &:last-child{
+                align-items: center;
+            }
+        }
+
+        .cdk-column-codigoProulex,
+        .cdk-column-codigoBeca,
+        .cdk-column-codigoUDG,
+        .cdk-column-descuento{
+            width: 100px;
+            min-width: 100px;
+            max-width: 100px;
+            padding: 0;
+        } // 400px
+
+        .cdk-column-primerApellido,
+        .cdk-column-segundoApellido,
+        .cdk-column-nombre,
+        .cdk-column-curso,
+        .cdk-column-modalidad{
+            width: 150px;
+            min-width: 150px;
+            max-width: 150px;
+            padding: 0 5px 0 0;
+        } // 750px
+
+        .cdk-column-nivel,
+        .cdk-column-acciones{
+            width: 80px;
+            min-width: 80px;
+            max-width: 80px;
+            padding: 0;
+        } // 160px
+        
+        mat-header-row,mat-row{
+            min-width: 1310px;
+        }
+    }
+
+    mat-table.tabla-alumnos-sin-grupo{
+        .mat-header-cell{
+            font-weight: 900;
+            &:last-child{
+                align-items: center;
+            }
+        }
+        .cdk-column-codigo,
+        .cdk-column-codigoUDG,
+        .cdk-column-montoPago,
+        .cdk-column-estatus{
+            width: 100px;
+            min-width: 100px;
+            max-width: 100px;
+            padding: 0;
+            padding-left: 10px;
+        }
+        .cdk-column-primerApellido,
+        .cdk-column-segundoApellido,
+        .cdk-column-nombre,
+        .cdk-column-curso,
+        .cdk-column-medioPago,
+        .cdk-column-modalidad,
+        .cdk-column-ovCodigo{
+            width: 150px;
+            min-width: 150px;
+            max-width: 150px;
+            padding: 0;
+            padding-left: 10px;
+        }
+        .cdk-column-nivel,
+        .cdk-column-acciones{
+            width: 80px;
+            min-width: 80px;
+            max-width: 80px;
+            padding: 0;
+            padding-left: 10px;
+        }
+        mat-header-row,mat-row{
+            min-width: 1610px;
+        }
+    }
+
+    hr.multisede-separador{
+        height: 5px;
+        background: linear-gradient(to bottom, gray, white);
+        border: none;
+    }
+
+}
+
+div.mat-menu-panel.white-fg{
+    button{
+        color: white !important;
+        mat-icon{
+            color: white !important;
+        }
+    }
+    *:after{
+        color: white !important;
+    }
+}

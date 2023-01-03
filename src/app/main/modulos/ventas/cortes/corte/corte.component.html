@@ -1,0 +1,36 @@
+<div id="ficha-cliente" class="pixvs-theme-listado page-layout carded fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <ficha-crud *ngIf="config" [config]="config"
+            [mostrarEditar]="false" [titulo]="titulo"
+            [subTituloTraduccion]="pageType" [form]="form" [currentId]="currentId" [pageType]="pageType"
+            [listadoAcciones]="acciones" (onActionClicked)="actionClicked($event)"
+            [dataService]="_corteService" class="header accent" fxLayout="column" fxLayoutAlign="center center"
+            fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center">
+        </ficha-crud>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <mat-progress-bar *ngIf="_corteService?.cargando" [color]="'primary'" [mode]="'query'">
+            </mat-progress-bar>
+
+            <!-- CONTENT -->
+            <div *ngIf="url" class="content">
+                <div class="h-100-p">
+                    <visor-pdf [pdfSrc]="url" class="h-100-p w-100-p"></visor-pdf>
+                </div>
+            </div>
+            <!-- / CONTENT -->
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

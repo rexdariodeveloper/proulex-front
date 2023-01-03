@@ -1,0 +1,139 @@
+<div class="w-100-p h-100-p" fxLayout="column">
+    <div fxFlex="0 0 7%" fxLayout="row" fxLayoutAlign="space-between start">
+        <span class="titulo-navegador accent-fg">
+            <mat-icon class="clickable mr-12" (click)="onVistaAtras()">arrow_back</mat-icon> Vales de certificación
+        </span>
+        <div class="search-wrapper mx-32 mx-md-0">
+            <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                <mat-icon>search</mat-icon>
+                <input placeholder="{{ 'INTERFAZ.BUSCAR' | translate  }}..." [formControl]="filtroControl" [readonly]="_puntoVentaAbiertoService.cargando">
+            </div>
+        </div>
+    </div>
+
+    <div fxFlex="0 0 93%" fxLayout="column" class="fuse-white-bg">
+        <div fxFlex="0 0 10%" fxLayout="row" fxLayoutAlign="end center" class="py-8 px-16">
+            <span class="tag blue-bg">{{ dataSourceValesCertificacion?.filteredData?.length }} vale(s) de certificación</span>
+        </div>
+        <div fxFlex="0 0 90%" fxLayout="row" class="px-12">
+            <mat-table
+                fxFlex="100" style="max-height: 100%;"
+                class="tabla-vales-certificacion-proulex ficha-table h-100-p"
+                #tablaValesCertificacion
+                [dataSource]="dataSourceValesCertificacion"
+                matSort
+                [@animateStagger]="{value:'50'}"
+                cdkDropList
+                id="tablaValesCertificacion"
+                cdkVirtualFor
+                (scroll)="onScrollDownValesCertificacion($event)"
+            >
+                <ng-container matColumnDef="codigoProulex">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Código proulex</mat-header-cell>
+                    <mat-cell *matCellDef="let valeCertificacion" >
+                        <p>{{ valeCertificacion.alumnoCodigo }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="primerApellido">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Primer apellido</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let valeCertificacion"
+                    >
+                        <p>{{ valeCertificacion.alumnoPrimerApellido }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="segundoApellido">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Segundo apellido</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let valeCertificacion"
+                    >
+                        <p>{{ valeCertificacion.alumnoSegundoApellido }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="nombre">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Nombre</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let valeCertificacion"
+                    >
+                        <p>{{ valeCertificacion.alumnoNombre }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="curso">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Curso</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let valeCertificacion"
+                        fxFlex="1 1 100%"
+                    >
+                        <p>{{ valeCertificacion.curso }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="certificacion">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Certificación</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let valeCertificacion"
+                        fxFlex="1 1 100%"
+                    >
+                        <p>{{ valeCertificacion.certificacion }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="descuento">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Descuento %</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let valeCertificacion"
+                    >
+                        <p>{{ valeCertificacion.descuento }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="acciones" stickyEnd>
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                        fxLayout="row" fxLayoutAlign="center center" class="text-center"
+                    >
+                        Acciones
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let valeCertificacion" fxLayout="row" fxLayoutAlign="center center" class="text-center">
+                        <button mat-icon-button type="button" matTooltip="Aplicar" (click)="onSeleccionarValeCertificacion(valeCertificacion)">
+                            <mat-icon>group_add</mat-icon>
+                        </button>
+                    </mat-cell>
+                </ng-container>
+
+                <mat-header-row *matHeaderRowDef="displayedColumnsValesCertificacion; sticky:true"></mat-header-row>
+                <mat-row
+                    *matRowDef="let row; columns: displayedColumnsValesCertificacion;"
+                    class="element"
+                >
+                </mat-row>
+            </mat-table>
+        </div>
+    </div>
+</div>

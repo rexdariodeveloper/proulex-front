@@ -1,0 +1,41 @@
+<div class="w-100-p h-100-p" fxLayout="column">
+    <div fxFlex="0 0 8%" fxLayout="row" fxLayoutAlign="space-between start">
+        <span class="titulo-navegador accent-fg">
+            <mat-icon class="clickable mr-12" (click)="onVistaAtras()">arrow_back</mat-icon> Inicio / In Company / {{ componentePV?.clienteInCompanySeleccionado?.nombre }}
+        </span>
+        <div class="search-wrapper mx-32 mx-md-0">
+            <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                <mat-icon>search</mat-icon>
+                <input placeholder="{{ 'INTERFAZ.BUSCAR' | translate  }}..." [formControl]="filtroControl" [readonly]="_puntoVentaAbiertoService.cargando">
+            </div>
+        </div>
+    </div>
+
+    <div fxFlex="0 0 92%" fxLayout="row wrap" fxLayoutAlign="space-between start" fusePerfectScrollbar>
+        <ng-container *ngFor="let grupoCabecera of (grupos | PVInCompanyGruposPipe : filtroControl?.value)">
+            <mat-card *ngIf="!!grupoCabecera" [ngClass]="{'clickable': grupoCabecera.esSinRelacionar}" (click)="grupoCabecera.esSinRelacionar ? onGrupo(null,grupoCabecera.articuloId) : null" fxFlex="24" class="mb-28">
+                <div class="card-fondo" [ngStyle]="{'background-color': grupoCabecera.color}"></div>
+                
+                <mat-card-header>
+                    <mat-card-title>
+                        {{grupoCabecera.nombre}}
+                    </mat-card-title>
+                    <mat-card-subtitle *ngIf="!grupoCabecera.esSinRelacionar">{{ grupoCabecera.fechaInicio | date : 'dd/MM/yyyy' }} - {{ grupoCabecera.fechaFin | date : 'dd/MM/yyyy' }}</mat-card-subtitle>
+                    <mat-card-subtitle class="blue-fg">{{ (grupoCabecera.precioVentaInCompany || 0) | NumeroFormatoPipe }}</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <div fxLayout="row wrap">
+                        <ng-container *ngFor="let grupo of grupoCabecera.grupos">
+                            <div class="grupo-horario clickable" [ngClass]="{'cupo-lleno': !grupo.permiteInscripcion}" matRipple (click)="onGrupo(grupo)">{{ grupo.numeroGrupo }} {{ grupo.horario }}</div><div [matBadge]="grupo.cupoDisponible" [matBadgeOverlap]="true" matBadgePosition="before below" style="height: 10px;"></div>
+                        </ng-container>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+            <div fxFlex="24" *ngIf="!grupoCabecera"></div>
+        </ng-container>
+
+        <div *ngIf="!(grupos | PVInCompanyGruposPipe)?.length" fxFlex="100" class="mt-28">
+            <span>No se encontraron grupos activos</span>
+        </div>
+    </div>
+</div>

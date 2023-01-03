@@ -1,0 +1,31 @@
+<mat-toolbar color="primary">
+	<mat-toolbar-row>
+		<span class="title dialog-title" style="text-align: center;width: 100%">{{ esNuevo ? 'Agregar descuento' : 'Editar descuento' }}</span>
+	</mat-toolbar-row>
+</mat-toolbar>
+<div mat-dialog-content>
+	<div class="tab-content p-24" fusePerfectScrollbar *ngIf="form">
+        <form focusInvalidInput name="form" id="form" [formGroup]="form" class="product w-100-p" fxLayout="column" fxFlex>
+            <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                    <mat-label>Número de niveles</mat-label>
+                    <input type="number" matInput name="numeroNivel" formControlName="numeroNivel">
+                    <mat-error *ngIf="(!!form.get('numeroNivel').errors)">
+                        {{_validatorService.getMessage(form.get('numeroNivel'))}}
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                    <mat-label>Descuento</mat-label>
+                    <input type="number" matInput name="porcentajeDescuento" step="0.01" formControlName="porcentajeDescuento"><span matSuffix>%</span>
+                    <mat-error *ngIf="(!!form.get('porcentajeDescuento').errors)">
+                        {{_validatorService.getMessage(form.get('porcentajeDescuento'))}}
+                    </mat-error>
+                </mat-form-field>
+            </div>
+        </form>
+    </div>
+</div>
+<div mat-dialog-actions align="end">
+	<button mat-button (click)="cancelar()">Cerrar</button>
+	<button mat-raised-button class="mat-accent mr-16" (click)="aceptar()">Aceptar</button>
+</div>

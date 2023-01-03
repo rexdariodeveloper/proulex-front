@@ -1,0 +1,19 @@
+<div mat-dialog-title class="text-center">
+	<h1>{{row?.fecha | date: 'EEEE dd MMMM yyyy'}}</h1>
+	<h1>{{row?.alumno?.codigo}} - {{row?.alumno?.nombre}} {{row?.alumno?.primerApellido}} {{row?.alumno?.segundoApellido}}</h1>
+</div>
+<div mat-dialog-content *ngIf="!!form">
+	<form focusInvalidInput name="form" id="form" class="w-100-p" [formGroup]="form" fxLayout="column" fxFlex>
+		<div fxLayout="row" class="pb-16">
+			<mat-form-field appearance="outline" fxFlex="0 0 100%">
+				<mat-label>Comentarios</mat-label>
+				<input matInput type="text" formControlName="comentario">
+				<mat-hint align="end">{{form.get('comentario').value?.length || 0}} / 280</mat-hint>
+			</mat-form-field>
+		</div>
+	</form>
+</div>
+<div mat-dialog-actions fxLayoutAlign="end end" fxLayoutGap="5px">
+	<button mat-button (click)="cancelar()">Cerrar</button> 
+	<button mat-raised-button class="mat-accent mr-16" (click)="aceptar()">Aceptar</button>
+</div>

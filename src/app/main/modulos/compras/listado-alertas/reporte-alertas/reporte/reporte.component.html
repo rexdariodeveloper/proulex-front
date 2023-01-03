@@ -1,0 +1,170 @@
+<div id="reporte-antiguedad-saldos" class="pixvs-theme-listado page-layout carded left-sidebar fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- SIDEBAR -->
+    <fuse-sidebar *ngIf="filtros?.length" class="sidebar" name="filtros-sidebar" position="left" lockedOpen="gt-lg">
+        <filtros-sidebar #filtrado [regConfig]="filtros" [titulo]="'TITULO' | translate "
+			[modulo]="'MODULO' | translate " [icon]="'toc'" [listadoMenuOpciones]="filtrosOpciones"
+			[_FichasDataService]="_reporteAlertasService">
+        </filtros-sidebar>
+    </fuse-sidebar>
+    <!-- / SIDEBAR -->
+
+    <!-- CENTER -->
+    <div class="center" [ngClass]="{'layout-pad0': filtros}">
+
+        <!-- HEADER -->
+
+        <div class="header accent" fxLayout="column" fxLayoutAlign="center center" fxLayout.gt-sm="row"
+            fxLayoutAlign.gt-sm="space-between center">
+
+
+            <!-- APP TITLE -->
+            <div fxLayout="column" fxLayoutAlign="center start" fxShow fxHide.gt-lg="{{filtros?.length > 0}}">
+
+                <div fxLayout="row" fxLayoutAlign="start center" fxHide fxShow.gt-xs>
+                    <mat-icon class="secondary-text s-18">home</mat-icon>
+                    <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+                    <span class="secondary-text">{{ 'MODULO' | translate  }}</span>
+                </div>
+
+                <div class="logo mb-12 mb-md-0" fxLayout="row" fxLayoutAlign="start center">
+                    <mat-icon class="logo-icon s-32 mr-16" [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
+                        toc
+                    </mat-icon>
+                    <span class="logo-text h1" [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+                        {{ 'TITULO' | translate  }}
+                    </span>
+                </div>
+
+            </div>
+            <div fxHide fxShow.gt-lg="{{filtros?.length > 0}}" style="width: 10%;"></div>
+            <!-- / APP TITLE -->
+
+            <!-- SEARCH -->
+            <div class="search-wrapper mx-32 mx-md-0">
+				<div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                    <mat-icon>search</mat-icon>
+                    <input #filter placeholder="{{ 'INTERFAZ.BUSCAR' | translate  }}...">
+                </div>
+            </div>
+            <!-- / SEARCH -->
+
+            <!-- ADD BUTTON -->
+            <div fxLayout="row">
+            </div>
+
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <mat-progress-bar *ngIf="_reporteAlertasService?.cargando" [color]="'primary'" [mode]="'query'">
+            </mat-progress-bar>
+
+			<!-- BOTON FILTROS -->			
+			<button *ngIf="filtros" mat-icon-button fxHide.gt-lg class="primary sidebar-button sidebar-toggle"
+				matTooltip="{{ 'INTERFAZ.FILTROS' | translate  }}"
+				(click)="toggleSidebar('filtros-sidebar')">
+				<mat-icon class="mb-4">tune</mat-icon>
+			</button>
+			<!-- BOTON FILTROS -->
+
+			<ng-container *ngIf="dataSource?.data?.length">
+				<mat-table  #tableDetalle [dataSource]="dataSource" matSort [@animateStagger]="{value:'10'}" id="table1" fusePerfectScrollbar>
+					
+					<ng-container matColumnDef="fecha">
+						<mat-header-cell *matHeaderCellDef>
+							<span class="text-center text-nowrap w-100-p"> Fecha </span>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let alerta">
+							<span class="text-center w-100-p px-12">{{alerta.fecha | date:'dd/MM/yyyy'}}</span>
+						</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="codigo">
+						<mat-header-cell *matHeaderCellDef>
+							<span class="text-center text-nowrap w-100-p"> Código </span>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let alerta">
+							<span class="text-center w-100-p px-12">{{alerta.codigo}}</span>
+						</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="sede">
+						<mat-header-cell *matHeaderCellDef>
+							<span class="text-center text-nowrap w-100-p"> Sede </span>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let alerta">
+							<span class="text-center w-100-p px-12">{{alerta.sede}}</span>
+						</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="tipo">
+						<mat-header-cell *matHeaderCellDef>
+							<span class="text-center text-nowrap w-100-p"> Tipo </span>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let alerta">
+							<span class="text-center w-100-p px-12">{{alerta.tipo}}</span>
+						</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="inicadaPor">
+						<mat-header-cell *matHeaderCellDef>
+							<span class="text-center text-nowrap w-100-p"> Iniciada por </span>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let alerta">
+							<span class="text-center w-100-p px-12">{{alerta.inicadaPor}}</span>
+						</mat-cell>
+					</ng-container>
+					
+					<ng-container matColumnDef="estatus">
+						<mat-header-cell *matHeaderCellDef>
+							<span class="text-center text-nowrap w-100-p"> Estatus </span>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let alerta">
+							<span class="text-center w-100-p px-12">{{alerta.estatus}}</span>
+						</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="acciones">
+						<mat-header-cell *matHeaderCellDef>
+							<span class="text-center text-nowrap w-100-p"> Acciones </span>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let alerta">
+							<button *ngIf="alerta.estatusId == 1000151 && alerta.tipoId == 1000172" mat-icon-button (debounceClick)="onAceptar(alerta)">
+								<mat-icon>thumb_up_alt</mat-icon>
+							</button>
+							<button *ngIf="alerta.estatusId == 1000151 && alerta.tipoId == 1000172" mat-icon-button (debounceClick)="onCancelar(alerta)">
+								<mat-icon>thumb_down_alt</mat-icon>
+							</button>
+							<button mat-icon-button (debounceClick)="navegarRutaDestino(alerta);">
+								<mat-icon>remove_red_eye</mat-icon>
+							</button>
+							<button *ngIf="alerta.estatusId == 1000151 && alerta.tipoId == 1000172 && !!alerta.urlDocumento" mat-icon-button (debounceClick)="descargarPdf(alerta);">
+								<mat-icon>cloud_download</mat-icon>
+							</button>
+						</mat-cell>
+					</ng-container>
+					
+					<ng-container>
+						<mat-header-row *matHeaderRowDef="displayedColumns; sticky:true"></mat-header-row>
+						<mat-row  *matRowDef="let row; columns: displayedColumns;" class="element" matRipple></mat-row>
+					</ng-container>
+	
+				</mat-table>
+	
+				<mat-paginator #paginator [length]="dataSource.filteredData.length" [pageIndex]="0" [pageSize]="10"
+					[pageSizeOptions]="[10, 25, 100]">
+				</mat-paginator>
+			</ng-container>
+			
+
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

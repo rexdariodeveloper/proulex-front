@@ -1,0 +1,162 @@
+<div
+	id="pixvs-tabla-detalles"
+	class="w-100-p h-100-p"
+	fxLayout="column"
+>
+	<button *ngIf="mostrarBotonAgregar" mat-mini-fab class="btn-nuevo" (click)="nuevoRegistro()" type="button">
+		<mat-icon>add</mat-icon>
+	</button>
+	<mat-table
+		fxFlex="fill"
+		class="tabla-datos ficha-table"
+		#table
+		[dataSource]="dataSource"
+		matSort
+		[@animateStagger]="{value:'50'}"
+		cdkDropList
+		#list1="cdkDropList"
+		[cdkDropListData]="dataSource"
+		(cdkDropListDropped)="drop($event)"
+		id="table1"
+		fusePerfectScrollbar
+	>
+
+		<!-- position Column -->
+		<ng-container
+			*ngFor="let columna of columnas"
+			matColumnDef="{{columna.name}}"
+		>
+
+			<mat-header-cell
+				*matHeaderCellDef
+				mat-sort-header
+				fxShow.xs="{{columna.xs}}"
+				fxShow.sm="{{columna.sm}}"
+				[ngClass]="[columna.class, (columna.centrado ? 'celda-centrada' : '') ]"
+			>{{columna.title}}
+			</mat-header-cell>
+			<mat-cell
+				*matCellDef="let element"
+				fxShow.xs="{{columna.xs}}"
+				fxShow.sm="{{columna.sm}}"
+				[ngClass]="[columna.class, (columna.centrado ? 'celda-centrada' : '') ]"
+			>
+				<p
+					*ngIf="columna.type != 'estatus' && columna.type != 'boolean' && columna.type != 'delete' && columna.type != 'acciones'"
+					#container
+					class="text-truncate"
+					[ngClass]="[(columna?.dir == 'rtl'? 'w-100-p' : ''), (columna?.dir == 'rtl'? 'text-right' : ''),(columna?.dir == 'rtl'? 'px-20' : '')]"
+					matTooltip="{{getElemento(element, columna.name)}}"
+					[matTooltipDisabled]="container.offsetWidth >= container.scrollWidth"
+					[matTooltipPosition]="'below'"
+				>
+					{{
+						columna.type == 'decimal2'
+						? (getElemento(element, columna.name)  | number : '1.2-2') 
+						: (
+							columna.type == 'fecha'
+							? (getElemento(element, columna.name)  | date:'dd/MM/yyyy') 
+							: getElemento(element, columna.values || columna.name)
+						)
+					}}
+				</p>
+
+				<mat-icon
+					*ngIf="columna.type == 'boolean' && getElemento(element, columna.name) == true"
+					class="active-icon green-600 s-16"
+					matTooltip="{{ 'INTERFAZ.ACTIVO' | translate  }}"
+				>
+					check
+				</mat-icon>
+				<mat-icon
+					*ngIf="columna.type == 'boolean' && getElemento(element, columna.name) == false"
+					class="active-icon red-500 s-16"
+					matTooltip="{{ 'INTERFAZ.BORRADO' | translate  }}"
+				>
+					close
+				</mat-icon>
+
+				<mat-icon
+					*ngIf="columna.type == 'estatus' && getElemento(element, columna.name) == 1000001"
+					class="active-icon green-600 s-16"
+					matTooltip="{{ 'INTERFAZ.ACTIVO' | translate  }}"
+				>
+					check
+				</mat-icon>
+				<mat-icon
+					*ngIf="columna.type == 'estatus' && getElemento(element, columna.name) == 1000002"
+					class="active-icon red-500 s-16"
+					matTooltip="{{ 'INTERFAZ.INACTIVO' | translate  }}"
+				>
+					remove
+				</mat-icon>
+				<mat-icon
+					*ngIf="columna.type == 'estatus' && getElemento(element, columna.name) == 1000003"
+					class="active-icon red-500 s-16"
+					matTooltip="{{ 'INTERFAZ.BORRADO' | translate  }}"
+				>
+					close
+				</mat-icon>
+				<div *ngIf="columna.type == 'delete'">
+					<button
+						mat-icon-button
+						matTooltip="{{ 'INTERFAZ.ELIMINAR' | translate  }}"
+						(click)="delete($event, getElemento(element, columnaId))"
+					>
+						<mat-icon>delete_outline</mat-icon>
+					</button>
+				</div>
+				<!-- <mat-icon *ngIf="!product.active" class="active-icon red-500 s-16">close</mat-icon> -->
+				<div *ngIf="columna.type == 'acciones'">
+					<ng-container *ngFor="let opcion of (columna.listadoAcciones || listadoAcciones)">
+						<button *ngIf="!opcion.columnaMostrar || getElemento(element, opcion.columnaMostrar)"
+							mat-icon-button
+							matTooltip="{{opcion.title}}"
+							(click)="action($event,opcion,element)"
+						>
+							<mat-icon>{{opcion.icon}}</mat-icon>
+						</button>
+					</ng-container>
+				</div>
+				<div *ngIf="columna.iconosInfo?.length">
+					<ng-container *ngFor="let opcion of columna.iconosInfo">
+						<button mat-icon-button matTooltip="{{opcion.title}}"
+							(click)="$event.stopPropagation(); iconoInfo(element,opcion.idExtra);" *ngIf="mostrarIconoInfo(opcion,element)">
+							<mat-icon>{{opcion.icon}}</mat-icon>
+						</button>
+					</ng-container>
+				</div>
+			</mat-cell>
+		</ng-container>
+		<ng-container *ngIf="reordenamiento">
+			<mat-header-row *matHeaderRowDef="displayedColumns; sticky:true"></mat-header-row>
+			<mat-row
+				*matRowDef="let row; columns: displayedColumns;"
+				class="element"
+				matRipple
+				(click)="navegarRutaDestino(rutaDestino, 'ver/' + getHashId(row[columnaId]))"
+				cdkDrag
+			></mat-row>
+		</ng-container>
+		<ng-container *ngIf="!reordenamiento">
+			<mat-header-row *matHeaderRowDef="displayedColumns; sticky:true"></mat-header-row>
+			<mat-row
+				*matRowDef="let row; columns: displayedColumns;"
+				class="element"
+				matRipple
+				(click)="navegarRutaDestino(rutaDestino, 'ver/' + getHashId(row[columnaId])); seleccionarRegistro(row)"
+			>
+			</mat-row>
+		</ng-container>
+
+	</mat-table>
+
+	<mat-paginator
+		#paginator
+		[length]="dataSource.filteredData.length"
+		[pageIndex]="0"
+		[pageSize]="showAll? dataSource.filteredData.length : 10"
+		[pageSizeOptions]="showAll? [dataSource.filteredData.length] : [10, 25, 100]"
+	>
+	</mat-paginator>
+</div>

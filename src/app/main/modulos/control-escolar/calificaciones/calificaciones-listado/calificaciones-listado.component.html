@@ -1,0 +1,136 @@
+<div>
+    <pixvs-bloqueo-pantalla [style.z-index]="10000" *ngIf="!!_fichasDataService.cargando"></pixvs-bloqueo-pantalla>
+</div>
+<div id="listado-capturas" class="pixvs-theme-listado page-layout full left-sidebar fullwidth inner-scroll w-100-p">
+    <!-- TOP BACKGROUND -->
+    <div class="accent" style="height: 100px;">
+        <div class="center h-100-p">
+            <div class="header accent h-100-p pl-16" fxLayout="column" fxLayoutAlign="center center" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center">
+
+                <div fxLayout="column" fxLayoutAlign="center start" fxShow>
+
+                    <div fxLayout="row" fxLayoutAlign="start center" fxHide fxShow.gt-xs>
+                        <mat-icon class="secondary-text s-16">home</mat-icon>
+                        <mat-icon class="secondary-text s-12">chevron_right</mat-icon>
+                        <span class="secondary-text">Control escolar</span>
+                    </div>
+
+                    <div class="logo mb-12 mb-md-0" fxLayout="row" fxLayoutAlign="start center">
+                        <mat-icon class="logo-icon s-24 mr-12">store</mat-icon>
+                        <span class="logo-text h1">Captura de calificaciones</span>
+                    </div>
+                </div>
+
+                <div class="search-wrapper mx-32 mx-md-0">
+                    <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                        <mat-icon>search</mat-icon>
+                        <input #filter placeholder="Buscar..." [(ngModel)]="textoBuscador" (change)="applyFilter(textoBuscador)" (keyup)="applyFilter(textoBuscador)">
+                    </div>
+                </div>
+
+                <!-- <div fxLayout="row" *ngIf="tienePermiso">
+                    <button mat-raised-button class="boton-nuevo mt-12 mx-16"
+                        [matMenuTriggerFor]="listadoMenu" aria-label="opciones"
+                        matTooltip="Acciones">
+                        <mat-icon>more_vert</mat-icon>
+                    </button>
+                    <mat-menu #listadoMenu="matMenu">
+                        <button mat-menu-item (click)="exportar()">
+                            <mat-icon>arrow_downward</mat-icon>
+                            <span class="font-size-12">EXCEL</span>
+                        </button>
+                    </mat-menu>
+                </div> -->
+                <div fxLayout="row">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- SIDEBAR -->
+    <fuse-sidebar *ngIf="filtros?.length" class="sidebar" name="filtros-sidebar" position="left">
+        <filtros-sidebar #filtrado [regConfig]="filtros" [titulo]="'Captura de calificaciones'"
+			[modulo]="'Control escolar'" [icon]="'toc'" [listadoMenuOpciones]="filtrosOpciones"
+			[_FichasDataService]="_fichasDataService">
+        </filtros-sidebar>
+    </fuse-sidebar>
+    <!-- / SIDEBAR -->
+
+    <!-- CENTER -->
+    <div class="center" style="height: calc(100% - 100px)">
+        <!-- CONTENT CARD -->
+        <div class="content-card h-100-p" fusePerfectScrollbar>
+            <!-- BOTON FILTROS -->
+			<button *ngIf="filtros?.length" mat-icon-button class="primary sidebar-button sidebar-toggle"
+                matTooltip="Filtros"
+                (click)="toggleSidebar('filtros-sidebar')">
+                <mat-icon class="mb-4">tune</mat-icon>
+            </button>
+            <!-- BOTON FILTROS -->
+
+            <cdk-virtual-scroll-viewport itemSize="100" class="w-100-p h-100-p">
+                <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="24px" class="pl-32 h-100-p">
+                    <div class="py-16" *cdkVirtualFor="let item of dataSource.filteredData; let i = index" fxLayout="row" fxLayoutAlign="center center"
+                        fxFlex="22" [fxFlex.lt-lg]="30">
+                        <mat-card class="grupo-card p-0 mat-elevation-z8" [style]="'--primary:'+(item?.colorPrimario)+'; --secondary:'+(item?.colorSecundario)">
+                            <mat-card-header class="p-8" fxLayout="column">
+                                <div><span class="mat-title">{{item?.sucursal || ''}}</span> <span class="pull-right pt-8">{{item?.programacion || ''}}</span></div>
+                                <div><span>{{item?.codigo || ''}}</span></div>
+                                <div><span>{{item?.fechaInicio || '' | date: 'dd/MM/yyyy'}} - {{item?.fechaFin || '' | date: 'dd/MM/yyyy'}}</span></div>
+                            </mat-card-header>
+                            <mat-card-content class="h-200">
+                                <div class="card-content h-100-p px-8" fxLayout="row wrap">
+                                    <div fxLayout="row" class="w-100-p" fxLayoutAlign="center center">
+                                        <div fxLayout="column" fxFlex="50"><span class="title">{{item?.programaCodigo || ''}} {{item?.idioma || ''}}</span></div>
+                                        <div fxLayout="column" fxFlex="50"><div><span class="marker pull-right" [style]="'--color:'+(item?.colorModalidad || 'lightgray')">{{item?.modalidad || ''}}</span></div></div>
+                                    </div>
+                                    <div fxLayout="row" class="w-100-p" fxLayoutAlign="start start">
+                                        <div fxLayout="column">
+                                            <span>Nivel {{item?.nivel || ''}}</span>
+                                            <span>{{item?.horario || ''}}</span>
+                                            <span>Grupo {{item?.grupo || ''}}</span>
+                                            <span>{{item?.plantel || ''}}</span>
+                                        </div>
+                                    </div>
+                                    <div fxLayout="row wrap" fxLayoutAlign="end start" class="w-100-p">
+                                        <div fxLayout="row" class="w-100-p">
+                                            <div class="label">
+                                                <mat-icon class="s-24" [style.color]="item?.colorPrimario">account_circle</mat-icon>
+                                                <span><strong> {{item?.nombreProfesor || ''}}</strong></span>
+                                            </div>
+                                        </div>
+                                        <div fxLayout="row" class="w-100-p" *ngIf="!!item?.nombreSuplente">
+                                            <div class="label">
+                                                <mat-icon class="s-24" [style.color]="item?.colorPrimario">supervised_user_circle</mat-icon>
+                                                <span><strong> {{item?.nombreSuplente || ''}}</strong></span>
+                                            </div>
+                                        </div>
+                                        <div fxLayout="row" class="w-100-p">
+                                            <div class="label w-100-p">
+                                                <mat-icon class="s-24" [style.color]="item?.colorPrimario">group</mat-icon>
+                                                <span> {{item?.inscritos || '0'}}/{{item?.cupo || '-'}}</span>
+                                            </div>
+                                            <div class="w-100-p" style="display: flex; flex-direction: row-reverse">
+                                                <button mat-icon-button (click)="rutaDestino(item.id)" class="pr-40">
+                                                    <span>Ver</span>
+                                                    <mat-icon class="s-20" [style.color]="'#0066CC'">arrow_forward</mat-icon>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </mat-card-content>
+                        </mat-card>
+                    </div>
+
+                    <div *ngIf="!data || data.length == 0">
+                        <h1>No hay grupos para mostrar</h1>
+                    </div>
+                </div>
+            </cdk-virtual-scroll-viewport>
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

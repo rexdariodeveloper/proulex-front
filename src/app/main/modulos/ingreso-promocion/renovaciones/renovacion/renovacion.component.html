@@ -1,0 +1,128 @@
+<div id="ficha-renovacion" class="pixvs-theme-listado page-layout carded fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <ficha-crud *ngIf="config" [config]="config" [isGuardadoPersonalizado]="true" (output)="guardar()"
+            [mostrarEditar]="true" [titulo]="titulo"
+            [subTituloTraduccion]="pageType" [form]="form" [currentId]="currentId" [pageType]="pageType"
+            [dataService]="_renovacionService" class="header accent" fxLayout="column" fxLayoutAlign="center center"
+            fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center" (outputDesHabilitarCampos)="deshabilitarCampos()" [isDesHabilitarPersonalizado]="true">
+        </ficha-crud>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <mat-progress-bar *ngIf="_renovacionService?.cargando" [color]="'primary'" [mode]="'query'">
+            </mat-progress-bar>
+
+            <!-- CONTENT -->
+            <div class="content p-20" *ngIf="form">
+                <form focusInvalidInput name="form" id="form" [formGroup]="form" class="product w-100-p" fxLayout="column" fxFlex>
+                    <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto" fxFlex.gt-sm="1 0 auto" fxFlex.gt-md="45">
+                            <mat-label>Fecha Inicio</mat-label>
+                            <input matInput type="date" name="fechaInicio" formControlName="fechaInicio" >
+                            <mat-error *ngIf="(!!form.get('fechaInicio').errors)">
+                                {{_validatorService.getMessage(form.get('fechaInicio'))}}
+                            </mat-error>
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto" fxFlex.gt-sm="1 0 auto" fxFlex.gt-md="45">
+                            <mat-label>Fecha Fin</mat-label>
+                            <input matInput type="date" name="fechaFin" formControlName="fechaFin" [min]="form.get('fechaInicio').value" >
+                            <mat-error *ngIf="(!!form.get('fechaFin').errors)">
+                                {{_validatorService.getMessage(form.get('fechaFin'))}}
+                            </mat-error>
+                        </mat-form-field>
+                        <div fxFlex="1 0 auto" fxFlex.gt-sm="1 0 auto" fxFlex.gt-md="10" fxLayoutAlign="center start" [ngStyle]="{'pointer-events': (!deshabilitarBotones) ? 'none' : ''}">
+                            <button mat-raised-button class="boton-filtrar" (click)="onClickFiltrar()">Filtrar</button>
+                        </div>
+                    </div>
+                    <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid" style="width: 100%">
+                        <div fxlayout="row" fxlayoutalign="start center" class="my-20" style="display: flex;border-bottom: solid 3px lightgray;width: 100%">
+                            <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font"><span class="material-icons">attach_money</span></mat-icon>
+                            <div class="h2 secondary-text ng-tns-c345-79">Renovación de contratos</div>
+                        </div>
+                    </div>
+                    <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                        <mat-table [dataSource]="cargaDataSourceListaSolicitud()" style="width: 100%" matSort [ngStyle]="{'pointer-events': (!deshabilitarBotones) ? 'none' : ''}">
+                            <!-- Position Column -->
+                            <ng-container matColumnDef="ContratoAnterior">
+                                <mat-header-cell *matHeaderCellDef>Contrato anterior</mat-header-cell>
+                                <mat-cell *matCellDef="let detalle"> {{ detalle.empleado.empleadoContrato.codigo }} </mat-cell>
+                            </ng-container>
+
+                            <ng-container matColumnDef="Empleado">
+                                <mat-header-cell *matHeaderCellDef >Empleado</mat-header-cell>
+                                <mat-cell *matCellDef="let detalle"> {{ detalle.empleado.codigoEmpleado + ' - ' + detalle.empleado.primerApellido + ' ' + detalle.empleado.segundoApellido + ' ' + detalle.empleado.nombre }} </mat-cell>
+                            </ng-container>
+
+                            <ng-container matColumnDef="TipoDeContrato">
+                                <mat-header-cell *matHeaderCellDef >Tipo de contrato</mat-header-cell>
+                                <mat-cell *matCellDef="let detalle"> {{ detalle.empleado.empleadoContrato.tipoContrato.valor }} </mat-cell>
+                            </ng-container>
+
+                            <ng-container matColumnDef="Puesto">
+                                <mat-header-cell *matHeaderCellDef >Puesto</mat-header-cell>
+                                <mat-cell *matCellDef="let detalle"> {{ detalle.empleado.empleadoContrato.puesto.nombre }} </mat-cell>
+                            </ng-container>
+
+                            <ng-container matColumnDef="FechaInicioYFechaFin">
+                                <mat-header-cell *matHeaderCellDef >Nuevo Fecha inicio Nueva Fecha fin</mat-header-cell>
+                                <mat-cell *matCellDef="let detalle"> 
+                                    <div fxFlex="row" fxLayoutAlign="center center">
+                                        {{ getFechas(detalle.empleado.empleadoContrato) }}
+                                    </div>    
+                                </mat-cell>
+                            </ng-container>
+
+                            <ng-container matColumnDef="SueldoMensual">
+                                <mat-header-cell *matHeaderCellDef >Sueldo Mensual</mat-header-cell>
+                                <mat-cell *matCellDef="let detalle"> {{ detalle.empleado.empleadoContrato.sueldoMensual | currency:'USD':'symbol' }} </mat-cell>
+                            </ng-container>
+
+                            <ng-container matColumnDef="Acciones" class="otro">
+                                <mat-header-cell *matHeaderCellDef>
+                                    <div fxFlex="row" fxLayoutAlign="center center">
+                                        Acciones
+                                    </div>    
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let detalle">
+                                    <div fxFlex="row" fxLayoutAlign="center center">
+                                        <button mat-icon-button [matMenuTriggerFor]="moreMenu" aria-label="More"
+                                                (click)="$event.stopPropagation();">
+                                            <mat-icon class="secondary-text">more_vert</mat-icon>
+                                        </button>
+                        
+                                        <mat-menu #moreMenu="matMenu">
+                                            <button mat-menu-item aria-label="edit" (click)="abrirRenovacionEditarModal(detalle)" >
+                                                <mat-icon>edit</mat-icon>
+                                                <span>Editar</span>
+                                            </button>
+                                            <button mat-menu-item aria-label="remove" (click)="abrirRenovacionEliminarModal(detalle)">
+                                                <mat-icon>delete</mat-icon>
+                                                <span>Eliminar</span>
+                                            </button>
+                                        </mat-menu>
+                                    </div>
+                                </mat-cell>
+                            </ng-container>
+                            
+                          
+                            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+                        </mat-table>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+
+    </div>
+    <!-- / CENTER -->
+</div>

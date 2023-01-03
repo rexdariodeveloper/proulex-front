@@ -1,0 +1,13 @@
+@import "@fuse/scss/fuse";
+
+remision{
+    #tabla-detalles {
+		position: relative;
+		.btn-nuevo{
+			position: absolute;
+			top: 5px;
+			right: 5px;
+			z-index: 200;
+		}    
+	}
+}

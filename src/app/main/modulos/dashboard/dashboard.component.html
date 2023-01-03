@@ -1,0 +1,165 @@
+<div id="dashboard" class="page-layout simple" fusePerfectScrollbar (window:resize)="onResize($event)">
+    <div class="main-widget" *ngIf="loaded">
+        <line-chart-banner 
+            [title]="'Ingresos'" 
+            [subtitle]="'Total de ingresos por mes'" 
+            [labels]="mLabels" 
+            [datasets]="bDatasets" 
+            [datasetsLabels]="yLabels"
+            [defaultDataset]="selected"
+            [color]="'blue'"
+            [range]="[20000, 2000000]"
+            [labelType]="'currency'"
+            (selection)="onSelected($event)"
+        ></line-chart-banner>
+    </div>
+
+    <div fxLayout="row wrap" fxLayoutGap="32px" class="pl-32 pb-32">
+        
+        <div fxLayout="column" fxFlex="0 0 100%" fxFlex.gt-sm="0 0 calc(50% - 32px)" class="pt-32">
+            <div id="treeMapChart" class="widget fuse-card auto-width">
+                <div class="widget-header p-16">
+                    <div fxLayout="column" fxFlex="fill" fxLayoutAlign="start start"><h2>Ingresos por sede</h2></div>
+                    <div fxLayout="column" fxFlex="0 0 20%" fxLayoutAlign="center end">
+                        <pixvs-mat-select class="w-100-p pr-8" [matSelectCtrl]="sedesForm.get('month')" [datos]="meses"
+                            [appearance]="'outline'"
+                            [campoValor]="'label'" [label]="'Meses'"
+                            fxFlex="0 0 100%">
+                        </pixvs-mat-select>
+                    </div>
+                    <div fxLayout="column" fxFlex="0 0 20%" fxLayoutAlign="center end">
+                        <pixvs-mat-select class="w-100-p" [matSelectCtrl]="sedesForm.get('sedes')" [datos]="sedes"
+                            [appearance]="'outline'"
+                            [campoValor]="'nombre'" [label]="'Sedes'"
+                            [multiple]="true" [selectAll]="true" [showToggleAllCheckbox]="true"
+                            fxFlex="0 0 100%">
+                        </pixvs-mat-select>
+                    </div>
+                </div>
+                <mat-divider></mat-divider>
+                <div class="widget-body p-16" fxLayoutAlign="center center" style="min-height: 500px;">
+                    <treemap-chart [data]="tmDataset" [color]="'spectre'" [width]="size[0]" [height]="size[1]">                        
+                    </treemap-chart>
+                </div>
+            </div>
+        </div>
+
+        <div fxLayout="column" fxFlex="0 0 100%" fxFlex.gt-sm="0 0 calc(50% - 32px)" class="pt-32">
+            <div class="widget fuse-card auto-width">
+                <div class="widget-header p-16">
+                    <div fxLayout="column" fxFlex="fill" fxLayoutAlign="start start"><h2>Ingresos por horario e idioma</h2></div>
+                    <div fxLayout="column" fxFlex="0 0 20%" fxLayoutAlign="center end">
+                        <pixvs-mat-select class="w-100-p pr-8" [matSelectCtrl]="horariosForm.get('month')" [datos]="meses"
+                            [appearance]="'outline'"
+                            [campoValor]="'label'" [label]="'Meses'"
+                            fxFlex="0 0 100%">
+                        </pixvs-mat-select>
+                    </div>
+                    <div fxLayout="column" fxFlex="0 0 20%" fxLayoutAlign="center end">
+                        <pixvs-mat-select class="w-100-p" [matSelectCtrl]="horariosForm.get('sedes')" [datos]="sedes"
+                            [appearance]="'outline'"
+                            [campoValor]="'nombre'" [label]="'Sedes'"
+                            [multiple]="true" [selectAll]="true" [showToggleAllCheckbox]="true"
+                            fxFlex="0 0 100%">
+                        </pixvs-mat-select>
+                    </div>
+                </div>
+                <mat-divider></mat-divider>
+                <div class="widget-body p-16">
+                    <stacked-bar-chart *ngIf="!!sbhDataset && sbhDataset.length > 0"
+                        [data]="sbhDataset"
+                        [labels]="['idioma','horario','valor']"
+                        [groupBy]="'horario'"
+                        [position]="'horizontal'" 
+                        [color]="'spectre'"
+                        [labelType]="'currency'"
+                    ></stacked-bar-chart>
+                </div>
+            </div>
+        </div>
+
+        <div fxLayout="column" fxFlex="0 0 100%" fxFlex.gt-sm="0 0 calc(50% - 32px)" class="pt-32">
+            <div class="widget fuse-card auto-width">
+                <div class="widget-header p-16">
+                    <div fxLayout="column" fxFlex="fill" fxLayoutAlign="start start"><h2>Distribución de descuentos aplicados</h2></div>
+                    <div fxLayout="column" fxFlex="0 0 20%" fxLayoutAlign="center end">
+                        <pixvs-mat-select class="w-100-p pr-8" [matSelectCtrl]="descuentosForm.get('month')" [datos]="meses"
+                            [appearance]="'outline'"
+                            [campoValor]="'label'" [label]="'Meses'"
+                            fxFlex="0 0 100%">
+                        </pixvs-mat-select>
+                    </div>
+                    <div fxLayout="column" fxFlex="0 0 20%" fxLayoutAlign="center end">
+                        <pixvs-mat-select class="w-100-p" [matSelectCtrl]="descuentosForm.get('sedes')" [datos]="sedes"
+                            [appearance]="'outline'"
+                            [campoValor]="'nombre'" [label]="'Sedes'"
+                            [multiple]="true" [selectAll]="true" [showToggleAllCheckbox]="true"
+                            fxFlex="0 0 100%">
+                        </pixvs-mat-select>
+                    </div>
+                </div>
+                <mat-divider></mat-divider>
+                <div class="widget-body p-16">
+                    <mat-table [dataSource]="tDataset" style="max-height: 500px; overflow-y: auto; border: solid 1px lightgray; border-radius: 5px;">
+                        <ng-container matColumnDef="cantidad">
+                          <mat-header-cell *matHeaderCellDef fxFlex="0 0 20%"> Cantidad </mat-header-cell>
+                          <mat-cell *matCellDef="let element" fxFlex="0 0 20%"> {{element.cantidad}} </mat-cell>
+                        </ng-container>
+                      
+                        <ng-container matColumnDef="descripcion">
+                          <mat-header-cell *matHeaderCellDef fxFlex="fill"> Descripción </mat-header-cell>
+                          <mat-cell *matCellDef="let element" fxFlex="fill"> {{element.descripcion}} </mat-cell>
+                        </ng-container>
+                      
+                        <ng-container matColumnDef="monto">
+                          <mat-header-cell *matHeaderCellDef fxFlex="0 0 20%"> Monto </mat-header-cell>
+                          <mat-cell *matCellDef="let element" fxFlex="0 0 20%">$ {{(element.monto || 0).toFixed(2) | mask:'separator.2':',' }} </mat-cell>
+                        </ng-container>
+                      
+                        <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+                        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+                    </mat-table>
+                </div>
+            </div>
+        </div>
+
+        <div fxLayout="column" fxFlex="0 0 100%" fxFlex.gt-sm="0 0 calc(50% - 32px)" class="pt-32">
+            <div class="widget fuse-card auto-width">
+                <div class="widget-header p-16">
+                    <div fxLayout="column" fxFlex="fill" fxLayoutAlign="start start"><h2>Ingresos por programa</h2></div>
+                    <div fxLayout="column" fxFlex="0 0 20%" fxLayoutAlign="center end">
+                        <pixvs-mat-select class="w-100-p pr-8" [matSelectCtrl]="programasForm.get('month')" [datos]="meses"
+                            [appearance]="'outline'"
+                            [campoValor]="'label'" [label]="'Meses'"
+                            fxFlex="0 0 100%">
+                        </pixvs-mat-select>
+                    </div>
+                    <div fxLayout="column" fxFlex="0 0 20%" fxLayoutAlign="center end">
+                        <pixvs-mat-select class="w-100-p" [matSelectCtrl]="programasForm.get('sedes')" [datos]="sedes"
+                            [appearance]="'outline'"
+                            [campoValor]="'nombre'" [label]="'Sedes'"
+                            [multiple]="true" [selectAll]="true" [showToggleAllCheckbox]="true"
+                            fxFlex="0 0 100%">
+                        </pixvs-mat-select>
+                    </div>
+                </div>
+                <mat-divider></mat-divider>
+                <div class="widget-body p-16" fxLayoutAlign="center center">
+                    <ngx-charts-pie-chart
+                        [view]="size"
+                        [results]="pcDataset"
+                        [labels]="false">
+                        <ng-template #tooltipTemplate let-model="model">
+                            <div class="p-8">
+                                {{model?.name}}
+                                <br>
+                                $ {{(model?.value || 0).toFixed(2) | mask:'separator.2':',' }}
+                            </div>
+                        </ng-template>
+                    </ngx-charts-pie-chart>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

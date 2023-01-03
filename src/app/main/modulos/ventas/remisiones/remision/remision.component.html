@@ -1,0 +1,305 @@
+<div id="ficha-remision" class="pixvs-theme-listado page-layout carded fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <ficha-crud *ngIf="config" [config]="config" [isGuardadoPersonalizado]="true" (output)="guardar()"
+            [mostrarBorrar]="false"
+            [mostrarEditar]="false" [titulo]="titulo" [subTituloTraduccion]="pageType"
+            [form]="form" [currentId]="currentId" [pageType]="pageType"
+            [dataService]="_remisionService" class="header accent" fxLayout="column"
+            fxLayoutAlign="center center" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center">
+        </ficha-crud>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <mat-progress-bar *ngIf="_remisionService?.cargando" [color]="'primary'" [mode]="'query'">
+            </mat-progress-bar>
+
+            <!-- CONTENT -->
+            <div class="content">
+
+                <form *ngIf="!!form" focusInvalidInput name="form" id="form" [formGroup]="form" class="product w-100-p"
+                    fxLayout="column" fxFlex>
+
+                    <mat-tab-group fxFlex="100">
+
+                        <mat-tab label="Datos Generales">
+
+                            <div class="tab-content p-24 h-100-p">
+
+                                <div class="h-100-p" fxLayout="row wrap" fxLayoutGap="20px grid">
+                                    <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <pixvs-mat-select [matSelectCtrl]="clienteControl" [datos]="clientes"
+                                                [appearance]="'outline'"
+                                                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                                [campoValor]="'nombre'" [label]="'Cliente'"
+                                                [required]="isRequired('cliente')" fxFlex="50">
+                                            </pixvs-mat-select>
+
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="25">
+                                                <mat-label>Fecha</mat-label>
+                                                <input type="text" matInput name="fecha" [value]="form.get('fecha')?.value | date : 'dd/MM/yyyy'" [readonly]="true">
+                                            </mat-form-field>
+
+                                            <pixvs-mat-select [matSelectCtrl]="monedaControl" [datos]="monedas"
+                                                [appearance]="'outline'"
+                                                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                                [campoValor]="'nombre'" [label]="'Moneda'"
+                                                [required]="isRequired('moneda')" fxFlex="25">
+                                            </pixvs-mat-select>
+                                        </div>
+
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <pixvs-mat-select [matSelectCtrl]="almacenOrigenControl" [datos]="almacenesOrigen"
+                                                [appearance]="'outline'"
+                                                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                                [campoValor]="'nombre'" [label]="'Almacén origen'"
+                                                [required]="isRequired('almacenOrigen')" fxFlex="50">
+                                            </pixvs-mat-select>
+
+                                            <pixvs-mat-select #almacenDestinoSelect [matSelectCtrl]="almacenDestinoControl" [datos]="almacenesDestino"
+                                                [appearance]="'outline'"
+                                                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                                [campoValor]="'nombre'" [label]="'Almacén destino'"
+                                                [required]="isRequired('almacenDestino')" fxFlex="50">
+                                            </pixvs-mat-select>
+                                        </div>
+
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <mat-form-field
+												appearance="outline"
+												floatLabel="auto"
+												fxFlex="1 0 auto"
+											>
+												<mat-label>Comentario</mat-label>
+												<textarea
+													type="text"
+													matInput
+													name="comentario"
+													formControlName="comentario"
+													required="{{ isRequired('comentario') }}"
+												></textarea>
+												<mat-error *ngIf="(!!form.get('comentario').errors)">
+													{{validatorService.getMessage(form.get('comentario'))}}
+												</mat-error>
+											</mat-form-field>
+                                        </div>
+
+                                        <div fxFlex="100" fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <div id="tabla-detalles" fxFlex="80" fxLayout="column" class="w-100-p h-100-p">
+                                                <button mat-mini-fab class="btn-nuevo" (click)="onNuevoDetalle()" type="button"  *ngIf="!!form?.enabled">
+													<mat-icon>add</mat-icon>
+												</button>
+                                                <mat-table
+													fxFlex="fill"
+													class="tabla-detalles ficha-table"
+													#table
+													[dataSource]="dataSourceDetalles"
+													matSort
+													[@animateStagger]="{value:'50'}"
+													cdkDropList
+													id="table1"
+													fusePerfectScrollbar
+												>
+													<ng-container matColumnDef="articulo.codigoArticulo">
+														<mat-header-cell
+															*matHeaderCellDef
+															mat-sort-header
+															[ngClass]="['mat-column-flex']"
+														>Código</mat-header-cell>
+														<mat-cell
+															*matCellDef="let detalle"
+															[ngClass]="['mat-column-flex']"
+														>
+															<p
+																#container
+																class="text-truncate"
+																matTooltip="{{detalle.articulo.codigoArticulo}}"
+																[matTooltipDisabled]="container.offsetWidth >= container.scrollWidth"
+																[matTooltipPosition]="'below'"
+															>
+																{{ detalle.articulo.codigoArticulo }}
+															</p>
+														</mat-cell>
+													</ng-container>
+
+													<ng-container matColumnDef="articulo.nombreArticulo">
+														<mat-header-cell
+															*matHeaderCellDef
+															mat-sort-header
+															[ngClass]="['mat-column-flex']"
+														>Nombre</mat-header-cell>
+														<mat-cell
+															*matCellDef="let detalle"
+															[ngClass]="['mat-column-flex']"
+														>
+															<p
+																#container
+																class="text-truncate"
+																matTooltip="{{detalle.articulo.nombreArticulo}}"
+																[matTooltipDisabled]="container.offsetWidth >= container.scrollWidth"
+																[matTooltipPosition]="'below'"
+															>
+																{{ detalle.articulo.nombreArticulo }}
+															</p>
+														</mat-cell>
+													</ng-container>
+
+													<ng-container matColumnDef="articulo.unidadMedidaInventario.nombre">
+														<mat-header-cell
+															*matHeaderCellDef
+															mat-sort-header
+															[ngClass]="['mat-column-flex']"
+														>Unidad de medida</mat-header-cell>
+														<mat-cell
+															*matCellDef="let detalle"
+															[ngClass]="['mat-column-flex']"
+														>
+															<p
+																#container
+																class="text-truncate"
+																matTooltip="{{detalle.articulo.unidadMedidaInventario.nombre}}"
+																[matTooltipDisabled]="container.offsetWidth >= container.scrollWidth"
+																[matTooltipPosition]="'below'"
+															>
+																{{ detalle.articulo.unidadMedidaInventario.nombre }}
+															</p>
+														</mat-cell>
+													</ng-container>
+
+													<ng-container matColumnDef="cantidad">
+														<mat-header-cell
+															*matHeaderCellDef
+															mat-sort-header
+															[ngClass]="['mat-column-flex']"
+														>Cantidad</mat-header-cell>
+														<mat-cell
+															*matCellDef="let detalle"
+															[ngClass]="['mat-column-flex']"
+														>
+															<p
+																#container
+																class="text-truncate"
+																matTooltip="{{detalle.cantidad}}"
+																[matTooltipDisabled]="container.offsetWidth >= container.scrollWidth"
+																[matTooltipPosition]="'below'"
+															>
+																{{ detalle.cantidad }}
+															</p>
+														</mat-cell>
+													</ng-container>
+
+													<ng-container matColumnDef="articulo.precioVenta">
+														<mat-header-cell
+															*matHeaderCellDef
+															mat-sort-header
+															[ngClass]="['mat-column-flex']"
+														>Precio unitario</mat-header-cell>
+														<mat-cell
+															*matCellDef="let detalle"
+															[ngClass]="['mat-column-flex']"
+														>
+															<p
+																#container
+																class="text-truncate"
+																matTooltip="{{detalle.precio}}"
+																[matTooltipDisabled]="container.offsetWidth >= container.scrollWidth"
+																[matTooltipPosition]="'below'"
+															>
+																{{ detalle.articulo.precioVenta }}
+															</p>
+														</mat-cell>
+													</ng-container>
+
+                                                    <mat-header-row *matHeaderRowDef="displayedColumnsTablaDetalles; sticky:true"></mat-header-row>
+													<mat-row
+														*matRowDef="let row; columns: displayedColumnsTablaDetalles;"
+														class="element"
+														matRipple
+														(click)="onEditarDetalle(row)"
+													>
+													</mat-row>
+
+												</mat-table>
+
+												<mat-paginator
+													#paginator
+													[length]="dataSourceDetalles?.filteredData?.length"
+													[pageIndex]="0"
+													[pageSize]="10"
+													[pageSizeOptions]="[10, 25, 100]"
+												>
+												</mat-paginator>
+                                            </div>
+                                            <div fxFlex="20" fxLayout="row">
+                                                <mat-card class="w-100-p">
+                                                    <mat-card-content>
+                                                        <div class="w-100-p" fxLayout="row" fxLayoutGap="10px grid">
+                                                            <div fxFlex="50" fxLayout="column">
+                                                                <div fxLayout="row wrap" fxLayoutAlign="start center">
+                                                                    <span class="font-weight-900">Subtotal: </span>
+                                                                </div>
+                                                                <div fxLayout="row wrap" fxLayoutAlign="start center">
+                                                                    <span class="font-weight-900">IVA: </span>
+                                                                </div>
+                                                                <div fxLayout="row wrap" fxLayoutAlign="start center">
+                                                                    <span class="font-weight-900">IEPS: </span>
+                                                                </div>
+                                                                <div fxLayout="row wrap" fxLayoutAlign="start center">
+                                                                    <span class="font-weight-900">Total: </span>
+                                                                </div>
+                                                            </div>
+                                                            <div fxFlex="50" fxLayout="column">
+                                                                <div fxLayout="row wrap" fxLayoutAlign="start center">
+                                                                    <span class="w-100-p text-right">{{ ((dataSourceDetalles?.filteredData || []) | RemisionSumaMontoPipe : 'subtotal') | NumeroFormatoPipe }}</span>
+                                                                </div>
+                                                                <div fxLayout="row wrap" fxLayoutAlign="start center">
+                                                                    <span class="w-100-p text-right">{{ ((dataSourceDetalles?.filteredData || []) | RemisionSumaMontoPipe : 'iva') | NumeroFormatoPipe }}</span>
+                                                                </div>
+                                                                <div fxLayout="row wrap" fxLayoutAlign="start center">
+                                                                    <span class="w-100-p text-right">{{ ((dataSourceDetalles?.filteredData || []) | RemisionSumaMontoPipe : 'ieps') | NumeroFormatoPipe }}</span>
+                                                                </div>
+                                                                <div fxLayout="row wrap" fxLayoutAlign="start center">
+                                                                    <span class="w-100-p text-right">{{ ((dataSourceDetalles?.filteredData || []) | RemisionSumaMontoPipe : 'total') | NumeroFormatoPipe }}</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </mat-card-content>
+                                                </mat-card>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+
+                                </div>
+
+
+                            </div>
+
+                        </mat-tab>
+
+                    </mat-tab-group>
+
+                </form>
+
+
+            </div>
+            <!-- / CONTENT -->
+
+        </div>
+        <!-- / CONTENT CARD -->
+
+
+    </div>
+    <!-- / CENTER -->
+</div>

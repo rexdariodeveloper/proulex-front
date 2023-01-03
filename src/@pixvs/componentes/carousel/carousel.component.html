@@ -1,0 +1,21 @@
+<!-- carousel -->
+<div class="carousel" style="height: 400px; width: 500px; overflow-y: scroll">
+  <ng-container *ngFor="let slide of slides; let i = index">
+    <img *ngIf="i === currentSlide" [src]="slide.src" class="slide" style="display: block;
+    max-width: 100%;height: auto; " @carouselAnimation />
+  </ng-container>
+
+  <!-- controls -->
+  <button class="control prev" (click)="onPreviousClick()">
+    <span class="arrow left"></span>
+  </button>
+  <button class="control next" (click)="onNextClick()">
+    <span class="arrow right"></span>
+  </button>
+  <!--<div style="text-align: center;position: absolute;bottom: 0;width: 100%">
+    <ng-container *ngFor="let slide of slides; let i = index">
+      <span *ngIf="i != currentSlide" style="font-size: 25px">◎</span>
+      <span *ngIf="i === currentSlide" style="font-size: 25px">◉</span>
+    </ng-container>
+  </div>-->
+</div>

@@ -1,0 +1,50 @@
+<h1 mat-dialog-title>
+	Registros repetidos
+</h1>
+<div mat-dialog-content class="font-size-20 pb-12">
+    <div class="w-100-p" fxLayout="column">
+        <div fxLayout="row">
+            <p>Se encontraron los siguientes alumnos con los mismos datos a los ingresados:</p>
+        </div>
+        <div fxLayout="row">
+            <table class="alumnos-repetidos-dialog-tabla-alumnos">
+                <thead>
+                    <tr>
+                        <td>Código</td>
+                        <td>Nombre</td>
+                        <td>Primer apellido</td>
+                        <td>Segundo apellido</td>
+                        <td>Fecha de nacimiento</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let alumno of alumnosRepetidos">
+                        <td>{{ alumno.codigo }}</td>
+                        <td>{{ alumno.nombre }}</td>
+                        <td>{{ alumno.primerApellido }}</td>
+                        <td>{{ alumno.segundoApellido }}</td>
+                        <td>{{ alumno.fechaNacimiento | date : 'dd/MM/yyyy' }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div fxLayout="row">
+            <p><br><br>¿Deseas continuar creando un nuevo alumno?</p>
+        </div>
+    </div>
+</div>
+<div mat-dialog-actions align="end" fxLayout="row" fxLayoutAlign="space-between center">
+	<button
+		mat-button
+		(click)="cancelar()"
+	>
+        No
+    </button>
+	<button
+		mat-raised-button
+        class="mat-primary"
+		(click)="onAceptar()"
+	>
+        Si
+    </button>
+</div>

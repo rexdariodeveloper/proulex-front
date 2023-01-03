@@ -1,0 +1,55 @@
+<h1 mat-dialog-title>
+	{{
+		esNuevo
+		? 'Agregar componente'
+		: 'Actualizar componente'
+	}}
+</h1>
+<div mat-dialog-content>
+	<!-- <pixvs-dynamic-components #camposDinamicos [regConfig]="camposListado"></pixvs-dynamic-components> -->
+	<form
+		focusInvalidInput
+		name="form"
+		id="form"
+		[formGroup]="form"
+		class="product w-100-p"
+		fxLayout="column"
+		fxFlex
+	>
+		<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+			<pixvs-mat-select [matSelectCtrl]="articuloControl" [datos]="articulos"
+				[appearance]="'outline'"
+				[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+				[campoValor]="'nombreArticulo'" [label]="'Artículo'" [required]="isRequired('componente')"
+				fxFlex="1 0 auto">
+			</pixvs-mat-select>
+		</div>
+
+		<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+			<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+				<mat-label>Unidad de medida</mat-label>
+				<input matInput [value]="articuloControl?.value?.unidadMedidaInventario?.nombre || '-'">
+			</mat-form-field>
+
+			<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+				<mat-label>Cantidad</mat-label>
+				<input matInput name="cantidad" formControlName="cantidad"
+					required="{{ isRequired('cantidad') }}"
+					mask="separator.6" thousandSeparator=",">
+				<mat-error *ngIf="(!!form.get('cantidad').errors)">
+					{{validatorService.getMessage(form.get('cantidad'))}}
+				</mat-error>
+			</mat-form-field>
+		</div>
+	</form>
+</div>
+<div mat-dialog-actions align="end">
+	<button
+		mat-button
+		(click)="cancelar()"
+	>Cancelar</button>
+	<button
+		mat-raised-button class="mat-accent mr-16"
+		(click)="aceptar()"
+	>Aceptar</button>
+</div>

@@ -1,0 +1,23 @@
+export class AlumnorGupoBoletaProjection{
+    public codigo?: string;
+    public alumno?: string;
+    public programaCorto?: string;
+    public programaLargo?: string;
+    public idioma?: string;
+    public modalidad?: string;
+    public tipo?: string;
+    public nivel?: string;
+    public inicio?: string;
+    public fin?: string;
+    public horario?: string;
+    public instructor?: string;
+    public sede?: string;
+    public calificacion?: number;
+    public calificacionLetra?: string;
+    public siguiente?: string;
+    public institucion?: string;
+    public cuenta?: string;
+    public clabe?: string;
+    public convenio?: string;
+    public referencia?: string;
+}

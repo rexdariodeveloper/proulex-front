@@ -1,0 +1,50 @@
+cancelacion-nota-venta{
+
+    mat-table.tabla-detalles{
+        .mat-header-cell{
+            font-weight: 900;
+            &:not(:first-child):not(:nth-child(2)):not(:last-child){
+                flex-flow: row-reverse;
+            }
+        }
+
+        .cdk-column-check{
+            width: 80px;
+            max-width: 80px;
+        }
+
+        .cdk-column-cantidad{
+            width: 100px;
+            max-width: 100px;
+        }
+
+        .cdk-column-precio{
+            width: 100px;
+            max-width: 100px;
+        }
+
+        .cdk-column-descuento{
+            width: 100px;
+            max-width: 100px;
+        }
+
+        .cdk-column-total{
+            width: 100px;
+            max-width: 100px;
+        }
+
+        .cdk-column-regresaLibro{
+            width: 115px;
+            max-width: 115px;
+        }
+    }
+
+    .btn-nuevo{
+		position: absolute;
+		top: 5px;
+		right: 5px;
+		z-index: 200;
+        padding: 0px 10px 10px 3px !important;
+	}
+
+}

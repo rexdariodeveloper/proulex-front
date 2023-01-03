@@ -1,0 +1,62 @@
+
+<mat-toolbar color="primary">
+	<mat-toolbar-row>
+		<span class="title dialog-title" style="text-align: center;width: 100%">Reprogramación de clase</span>
+	</mat-toolbar-row>
+</mat-toolbar>
+<div mat-dialog-content>
+	<div class="tab-content p-24" fusePerfectScrollbar>
+        <div fxLayout="row wrap" fxLayoutGap="20px grid">
+            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+        		<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                  <form focusInvalidInput name="claseReprogramada" [formGroup]="claseReprogramada" class="product w-100-p" fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+                    <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 calc(16% - 10px)">
+                            <mat-label>Fecha Actual</mat-label>
+                            <input matInput type="date" name="fechaReprogramar" formControlName="fechaReprogramar" [readonly]="true">
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 calc(16% - 10px)">
+                            <mat-label>Hora Inicio</mat-label>
+                            <input matInput type="text" name="horaInicioActual" formControlName="horaInicioActual" [readonly]="true">
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 calc(16% - 10px)">
+                            <mat-label>Hora Fin</mat-label>
+                            <input matInput type="text" name="horaFinActual" formControlName="horaFinActual" [readonly]="true">
+                        </mat-form-field>
+                    </div>
+                    <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 calc(16% - 10px)">
+                            <mat-label>Nueva Fecha</mat-label>
+                            <input matInput type="date" name="fechaNueva" formControlName="fechaNueva">
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 calc(16% - 10px)">
+                            <mat-label>Hora Inicio</mat-label>
+                            <input matInput type="time" name="horaInicioString" formControlName="horaInicioString">
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 calc(16% - 10px)">
+                            <mat-label>Hora Fin</mat-label>
+                            <input matInput type="time" name="horaFinString" formControlName="horaFinString">
+                        </mat-form-field>
+                    </div>
+                    <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 calc(16% - 10px)">
+                            <mat-label>Motivo</mat-label>
+                            <input matInput type="text" name="motivo" formControlName="motivo">
+                        </mat-form-field>
+                    </div>
+                  </form>
+        		</div>
+            </div>
+        </div>
+    </div>
+</div>
+<div mat-dialog-actions align="end">
+	<button
+		mat-button
+		(click)="cancelar()"
+	>Cerrar</button>
+	<button
+		mat-raised-button class="mat-accent mr-16"
+		(click)="aceptar()"
+	>Aceptar</button>
+</div>

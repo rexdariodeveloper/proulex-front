@@ -1,0 +1,32 @@
+<mat-form-field class="pixvs-select" appearance="{{appearance}}" floatLabel="auto" fxFlex="1 0 auto">
+  <mat-label>{{label}}</mat-label>  
+  <mat-select #pixvsSelect
+    [formControl]="matSelectCtrl" 
+    placeholder="" 
+    [multiple]="multiple"      
+    required="{{required}}"
+    msInfiniteScroll
+	(infiniteScroll)="getNextBatch()"
+	(selectionChange)="onSeleccionar($event)"
+  [disabled]="isDisabled">
+    
+    <mat-option>
+      <ngx-mat-select-search 
+        [formControl]="matSelectFilterCtrl"
+        [searching]="buscando"
+        placeholderLabel="Buscar..."
+        noEntriesFoundLabel="No se encontraron coincidencias"
+        [showToggleAllCheckbox]="showToggleAllCheckbox" 
+        (toggleAll)="toggleSelectAll($event)">
+      </ngx-mat-select-search>
+    </mat-option>
+
+    <mat-option *ngFor="let element of filteredData | async" [value]="element">
+      {{ campoValor ? getElemento(element, campoValor) : element }}
+    </mat-option>
+    
+    <mat-option *ngIf="!multiple && incluirItemVacio">{{ etiquetaVacio }}</mat-option>
+    <mat-option *ngIf="!multiple && permiteAgregar" [value]="{ id: -1 }">Otro...</mat-option>
+  </mat-select>
+  <mat-error>{{matError}}</mat-error>
+</mat-form-field>

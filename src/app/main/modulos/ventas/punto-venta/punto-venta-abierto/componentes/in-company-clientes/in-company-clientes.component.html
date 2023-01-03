@@ -1,0 +1,29 @@
+<div class="w-100-p h-100-p" fxLayout="column">
+    <div fxFlex="0 0 8%" fxLayout="row" fxLayoutAlign="space-between start">
+        <span class="titulo-navegador accent-fg">
+            <mat-icon class="clickable mr-12" (click)="onVistaAtras()">arrow_back</mat-icon> Inicio / In Company
+        </span>
+        <div class="search-wrapper mx-32 mx-md-0">
+            <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                <mat-icon>search</mat-icon>
+                <input placeholder="{{ 'INTERFAZ.BUSCAR' | translate  }}..." [formControl]="filtroControl" [readonly]="_puntoVentaAbiertoService.cargando">
+            </div>
+        </div>
+    </div>
+
+    <div fxFlex="0 0 92%" fxLayout="row wrap" fxLayoutAlign="space-between start" fusePerfectScrollbar>
+        <ng-container *ngFor="let cliente of (clientes | PVInCompanyClientesPipe : filtroControl?.value)">
+            <mat-card *ngIf="!!cliente" fxFlex="24" class="mb-28 clickable card-230h" matRipple (click)="onCliente(cliente)">
+                <img mat-card-image class="img-card" src="{{cliente.imagenId != null ? apiUrl + '/v1/archivo/' + (cliente.imagenId | hashId) : 'assets/images/no-image-icon.png' }}">
+                
+                <mat-card-header>
+                    <mat-card-title>{{cliente.nombre}}</mat-card-title>
+                </mat-card-header>
+            </mat-card>
+            <div *ngIf="!cliente" fxFlex="24"></div>
+        </ng-container>
+        <div *ngIf="!(clientes | PVInCompanyClientesPipe : filtroControl?.value)?.length" fxFlex="100" class="mt-28">
+            <span>No se encontraron clientes in company</span>
+        </div>
+    </div>
+</div>

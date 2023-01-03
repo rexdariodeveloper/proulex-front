@@ -1,0 +1,206 @@
+<div id="reporte-cxp" class="pixvs-theme-listado page-layout carded left-sidebar fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- SIDEBAR -->
+    <fuse-sidebar *ngIf="filtros?.length" class="sidebar" name="filtros-sidebar" position="left" lockedOpen="gt-lg">
+        <filtros-sidebar #filtrado [regConfig]="filtros" [titulo]="'TITULO' | translate "
+			[modulo]="'MODULO' | translate " [icon]="'toc'" [listadoMenuOpciones]="filtrosOpciones"
+			[_FichasDataService]="_reporteService">
+        </filtros-sidebar>
+    </fuse-sidebar>
+    <!-- / SIDEBAR -->
+
+    <!-- CENTER -->
+    <div class="center" [ngClass]="{'p-0': filtros}">
+
+        <!-- HEADER -->
+
+        <div class="header accent" fxLayout="column" fxLayoutAlign="center center" fxLayout.gt-sm="row"
+            fxLayoutAlign.gt-sm="space-between center">
+
+
+            <!-- APP TITLE -->
+            <div fxLayout="column" fxLayoutAlign="center start" fxShow fxHide.gt-lg="{{filtros?.length > 0}}">
+
+                <div fxLayout="row" fxLayoutAlign="start center" fxHide fxShow.gt-xs>
+                    <mat-icon class="secondary-text s-18">home</mat-icon>
+                    <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+                    <span class="secondary-text">{{ 'MODULO' | translate  }}</span>
+                </div>
+
+                <div class="logo mb-12 mb-md-0" fxLayout="row" fxLayoutAlign="start center">
+                    <mat-icon class="logo-icon s-32 mr-16" [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
+                        toc
+                    </mat-icon>
+                    <span class="logo-text h1" [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+                        {{ 'TITULO' | translate  }}
+                    </span>
+                </div>
+
+            </div>
+            <div fxHide fxShow.gt-lg="{{filtros?.length > 0}}" style="width: 10%;"></div>
+            <!-- / APP TITLE -->			
+
+            <!-- ADD BUTTON -->
+            <div fxLayout="row">
+            </div>
+
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <mat-progress-bar *ngIf="_reporteService?.cargando" [color]="'primary'" [mode]="'query'">
+            </mat-progress-bar>
+
+			<!-- BOTON FILTROS -->			
+			<button *ngIf="filtros" mat-icon-button fxHide.gt-lg class="primary sidebar-button sidebar-toggle"
+				matTooltip="{{ 'INTERFAZ.FILTROS' | translate  }}"
+				(click)="toggleSidebar('filtros-sidebar')">
+				<mat-icon class="mb-4">tune</mat-icon>
+			</button>
+			<!-- BOTON FILTROS -->
+
+			<ng-container *ngIf="dataSource?.data?.length" style="overflow-x: auto;">
+
+				<mat-table style="overflow-x: auto;" class="ficha-table" #tableDetalle [dataSource]="dataSource" matSort [@animateStagger]="{value:'50'}" id="table1" fusePerfectScrollbar>
+	
+					<ng-container matColumnDef="fechaRegistro">
+						<mat-header-cell *matHeaderCellDef>
+							<span class="text-center text-nowrap w-100-p">Fecha Registro</span>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let reporte"> {{ reporte.fechaRegistro | date:'dd/MM/yyyy' }} </mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="sede">
+						<mat-header-cell *matHeaderCellDef>
+							<span class="text-center text-nowrap w-100-p">Sede</span>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let reporte">
+							<span class="text-center w-100-p px-12">{{ reporte.sede }}</span>
+						</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="proveedor">
+						<mat-header-cell *matHeaderCellDef>
+							<span class="text-center text-nowrap w-100-p">Proveedor</span>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let reporte">
+							<span class="text-center text-nowrap w-100-p">{{ reporte.nombreProveedor }}</span>
+						</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="numeroDocumento">
+						<mat-header-cell *matHeaderCellDef>
+							<span class="text-center text-nowrap w-100-p">Número de documento</span>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let reporte">
+							<span class="text-center w-100-p px-12">{{ reporte.numeroDocumento }}</span>
+						</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="monto">
+						<mat-header-cell *matHeaderCellDef>
+							<div fxLayout="column" class="w-100-p">
+								<span class="text-center text-nowrap w-100-p">Monto</span>
+								<span class="text-center text-nowrap w-100-p">$ {{ ((dataSource?.data | SumaPipe:'monto') || 0).toFixed(2) | mask:'separator.2':',' }}</span>
+							</div>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let reporte">
+							<span class="text-center w-100-p px-12">${{ ((reporte.monto).toFixed(2)) | mask:'separator.2':',' }}</span>
+						</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="saldo">
+						<mat-header-cell *matHeaderCellDef>
+							<div fxLayout="column" class="w-100-p">
+								<span class="text-center text-nowrap w-100-p">Saldo</span>
+								<span class="text-center text-nowrap w-100-p">$ {{ ((dataSource?.data | SumaPipe:'saldo') || 0).toFixed(2) | mask:'separator.2':',' }}</span>
+							</div>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let reporte">
+							<span class="text-center w-100-p px-12">${{ ((reporte.saldo).toFixed(2)) | mask:'separator.2':',' }}</span>
+						</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="moneda">
+						<mat-header-cell *matHeaderCellDef>
+							<div fxLayout="column" class="w-100-p">
+								<span class="text-center text-nowrap w-100-p">Moneda</span>
+							</div>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let reporte">
+							<span class="text-center w-100-p px-12">{{ reporte.moneda }}</span>
+						</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="fechaVencimiento">
+						<mat-header-cell *matHeaderCellDef>
+							<div fxLayout="column" class="w-100-p">
+								<span class="text-center text-nowrap w-100-p">Fecha de vencimiento</span>
+							</div>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let reporte">
+							<span class="text-center w-100-p px-12">{{ reporte.fechaVencimiento | date:'dd/MM/yyyy' }}</span>
+						</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="fechaPago">
+						<mat-header-cell *matHeaderCellDef>
+							<div fxLayout="column" class="w-100-p">
+								<span class="text-center text-nowrap w-100-p">Fecha de pago</span>
+							</div>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let reporte">
+							<span class="text-center w-100-p px-12">{{ reporte.fechaPago | date:'dd/MM/yyyy' }}</span>
+						</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="formaPago">
+						<mat-header-cell *matHeaderCellDef>
+							<span class="text-center text-nowrap w-100-p">Forma de pago</span>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let reporte"> 
+							<span class="text-center w-100-p px-12">{{ reporte.formaPago }}</span>
+						</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="cuenta">
+						<mat-header-cell *matHeaderCellDef>
+							<span class="text-center text-nowrap w-100-p">Cuenta</span>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let reporte"> 
+							<span class="text-center w-100-p px-12">{{ reporte.cuenta }}</span>
+						</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="archivos">
+						<mat-header-cell *matHeaderCellDef>
+							<span class="text-center text-nowrap w-100-p">Documentos</span>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let reporte">
+							<div class="w-100-p text-center">
+								<button *ngIf="!!reporte.pdfId" mat-icon-button #tooltip="matTooltip" matTooltip="Descargar PDF" (click)="getDocument(reporte.pdfId,'pdf')">
+									<mat-icon>get_app</mat-icon>
+								</button>
+								<button *ngIf="!!reporte.xmlId" mat-icon-button #tooltip="matTooltip" matTooltip="Descargar XML" (click)="getDocument(reporte.xmlId,'xml')">
+									<mat-icon>get_app</mat-icon>
+								</button>
+							</div>
+						</mat-cell>
+					</ng-container>
+	
+					<ng-container>
+						<mat-header-row *matHeaderRowDef="displayedColumns; sticky:true"></mat-header-row>
+						<mat-row *matRowDef="let row; columns: displayedColumns;" class="element" matRipple></mat-row>
+					</ng-container>
+				</mat-table>
+			</ng-container>
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

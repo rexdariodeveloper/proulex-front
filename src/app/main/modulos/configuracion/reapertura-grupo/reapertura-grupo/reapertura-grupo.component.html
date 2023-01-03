@@ -1,0 +1,123 @@
+<div id="reapertura-grupo" class="page-layout carded left-sidebar fullwidth inner-scroll">
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+    <!-- CENTER -->
+    <div class="center layout-pad0">
+        <!-- HEADER -->
+        <ficha-crud *ngIf="config" [config]="config" [cargando]="_reaperturaGrupoService?.cargando"
+            [isGuardadoPersonalizado]="true" (output)="onSave()" [mostrarBorrar]="false" [mostrarEditar]="false"
+            [ocultarGuardar]="onSearchIsCheck()" [titulo]="'Reapertura de Grupo'" [form]="form" [currentId]="null"
+            [pageType]="'nuevo'" [dataService]="_reaperturaGrupoService" class="header accent" fxLayout="column"
+            fxLayoutAlign="center center" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center">
+        </ficha-crud>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <mat-progress-bar *ngIf="_reaperturaGrupoService?.cargando" [color]="'primary'" [mode]="'query'">
+            </mat-progress-bar>
+
+            <!-- CONTENT -->
+            <div class="content p-20" *ngIf="form">
+                <form focusInvalidInput name="form" id="form" [formGroup]="form" class="product w-100-p" fxLayout="column" fxFlex fxLayoutGap="20px">
+                    <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="100" fxFlex.gt-sm="30" fxFlex.gt-md="30">
+                            <mat-label>Código de grupo</mat-label>
+                            <input type="text" matInput name="codigo" formControlName="codigo"
+                                required="{{ isRequired('codigo', form) }}" (keydown.enter)="onSearchCodigo()">
+                            <button mat-button matPrefix mat-icon-button (click)="onSearchCodigo()">
+                                <mat-icon>search</mat-icon>
+                            </button>
+                            <mat-error *ngIf="(!!form.get('codigo').errors)">
+                                {{_validatorService.getMessage(form.get('codigo'))}}
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div fxLayout="row wrap" fxLayoutGap="20px grid" fusePerfectScrollbar>
+                        <div fxLayout="column" fxFlex fxLayoutGap="20px">
+                            <div *ngFor="let grupo of listaGrupoFormArray.controls; let i = index">
+                                <form fxLayout="column" name="grupo-{{ i }}" id="grupo-{{ i }}" [formGroup]="grupo" class="product w-100-p" fxFlex>
+                                    <div class="row warp" fxLayoutGap="20px grid">
+                                        <div fxLayout="column warp" fxFlex="5" fxFlex.gt-sm="100" fxFlex.gt-md="5">
+                                            <div fxFlex fxLayoutAlign="center center">
+                                                <mat-checkbox (click)="$event.stopPropagation()"
+                                                (change)="onChangeEsCheck($event, grupo)"
+                                                [checked]="grupo.controls.esCheck.value" [disabled]="onCheckDisabled(grupo)">
+                                                </mat-checkbox>
+                                            </div>
+                                        </div>
+                                        <div fxLayout="column" fxFlex="65" fxFlex.gt-sm="100" fxFlex.gt-md="65" fxLayoutAlign="center" fxLayoutGap="10px">
+                                            <div fxLayout="row warp" fxLayoutAlign="start center" fxLayoutGap="20px grid">
+                                                <div fxFlex="33" fxFlex.gt-sm="100" fxFlex.gt-md="33">
+                                                    <span class="text-bold">Sede: </span>
+                                                    <span>{{ grupo.value.sede }}</span>
+                                                </div>
+                                                <div fxFlex="33" fxFlex.gt-sm="100" fxFlex.gt-md="33">
+                                                    <span class="text-bold">Programa: </span>
+                                                    <span>{{ grupo.value.programa }}</span>
+                                                </div>
+                                                <div fxFlex="33" fxFlex.gt-sm="100" fxFlex.gt-md="33">
+                                                    <span class="text-bold">Idioma: </span>
+                                                    <span>{{ grupo.value.idioma }}</span>
+                                                </div>
+                                            </div>
+                                            <div fxLayout="row warp" fxLayoutAlign="start center" fxLayoutGap="20px grid">
+                                                <div fxFlex="33" fxFlex.gt-sm="100" fxFlex.gt-md="33">
+                                                    <span class="text-bold">Nivel: </span>
+                                                    <span>{{ grupo.value.nivel }}</span>
+                                                </div>
+                                                <div fxFlex="33" fxFlex.gt-sm="100" fxFlex.gt-md="33">
+                                                    <span class="text-bold">Horario: </span>
+                                                    <span>{{ grupo.value.horario }}</span>
+                                                </div>
+                                                <div fxFlex="33" fxFlex.gt-sm="100" fxFlex.gt-md="33">
+                                                    <span class="text-bold">Fecha de inicio: </span>
+                                                    <span>{{ grupo.value.fechaInicio | date: 'dd/MM/yyyy' }}</span>
+                                                </div>
+                                            </div>
+                                            <div fxLayout="row warp" fxLayoutAlign="start center" fxLayoutGap="20px grid">
+                                                <div fxFlex="33" fxFlex.gt-sm="100" fxFlex.gt-md="33">
+                                                    <span class="text-bold">Fin inscripción: </span>
+                                                    <span>{{ grupo.value.fechaFinInscripcion | date: 'dd/MM/yyyy' }}</span>
+                                                </div>
+                                                <div fxFlex="33" fxFlex.gt-sm="100" fxFlex.gt-md="33">
+                                                    <span class="text-bold">Fin inscripción beca: </span>
+                                                    <span>{{ grupo.value.fechaFinInscripcionBeca | date: 'dd/MM/yyyy' }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div fxLayout="column" fxFlex="30" fxFlex.gt-sm="100" fxFlex.gt-md="30">
+                                            <div *ngIf="grupo.controls.esCheck.value" fxLayout="row wrap" fxLayoutGap="20px grid" fxLayoutAlign="start center">
+                                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="100">
+                                                    <mat-label>Fecha fin inscripción</mat-label>
+                                                    <input matInput type="date" name="aFechaFinInscripcion" formControlName="aFechaFinInscripcion">
+                                                    <mat-error *ngIf="(!!grupo.get('aFechaFinInscripcion').errors)">
+                                                        {{_validatorService.getMessage(grupo.get('aFechaFinInscripcion'))}}
+                                                    </mat-error>
+                                                </mat-form-field>
+                                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="100">
+                                                    <mat-label>Fecha fin inscripción beca</mat-label>
+                                                    <input matInput type="date" name="aFechaFinInscripcionBeca" formControlName="aFechaFinInscripcionBeca">
+                                                    <mat-error *ngIf="(!!grupo.get('aFechaFinInscripcionBeca').errors)">
+                                                        {{_validatorService.getMessage(grupo.get('aFechaFinInscripcionBeca'))}}
+                                                    </mat-error>
+                                                </mat-form-field>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <hr />
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!-- /CONTENT -->
+        </div>
+        <!-- /CONTENT CARD -->
+    </div>
+    <!-- /CENTER -->
+</div>

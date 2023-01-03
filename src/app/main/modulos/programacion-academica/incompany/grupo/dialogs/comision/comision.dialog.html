@@ -1,0 +1,56 @@
+
+<mat-toolbar color="primary">
+	<mat-toolbar-row>
+		<span class="title dialog-title" style="text-align: center;width: 100%">{{ esNuevo ? 'Nuevo registro' : 'Editar registro' }}</span>
+	</mat-toolbar-row>
+</mat-toolbar>
+<div mat-dialog-content>
+	<div class="tab-content p-24" fusePerfectScrollbar>
+        <div fxLayout="row wrap" fxLayoutGap="20px grid">
+            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+        		<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+    				<form focusInvalidInput name="comisionForm" id="comisionForm" [formGroup]="comisionForm" class="product w-100-p" fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+    					<div class="tab-content p-24" fusePerfectScrollbar>
+                            <div fxLayout="row wrap" fxLayoutGap="20px grid">
+            					<pixvs-mat-select [matSelectCtrl]="comisionForm.get('usuario')" [datos]="listaUsuario"
+                                    [appearance]="'outline'"
+                                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                    [campoValor]="'nombreCompleto'" [label]="'Empleado'"
+                                    fxFlex="1 0 auto">
+                                </pixvs-mat-select>
+                            </div>
+                            <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                            	<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                    <mat-label>Porcentaje</mat-label>
+                                    <input type="text" matInput name="porcentaje" mask="0*.00" formControlName="porcentaje"><span matSuffix>%</span>
+                                    <mat-error *ngIf="(!!comisionForm.get('porcentaje').errors)">
+                                        {{_validatorService.getMessage(comisionForm.get('porcentaje'))}}
+                                    </mat-error>
+                                </mat-form-field>
+                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                    <mat-label>Monto de Comisión</mat-label>
+                                    <input type="number" matInput name="montoComision" formControlName="montoComision" readonly="true">
+                                    <mat-error *ngIf="(!!comisionForm.get('montoComision').errors)">
+                                        {{_validatorService.getMessage(comisionForm.get('montoComision'))}}
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                        </div>
+    				</form>
+        		</div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<div mat-dialog-actions align="end">
+	<button
+		mat-button
+		(click)="cancelar()"
+	>Cerrar</button>
+	<button
+		mat-raised-button class="mat-accent mr-16"
+		(click)="aceptar()"
+	>Aceptar</button>
+</div>

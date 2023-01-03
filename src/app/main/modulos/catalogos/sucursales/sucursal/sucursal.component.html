@@ -1,0 +1,687 @@
+<div
+	id="sucursal"
+	class="page-layout carded left-sidebar fullwidth inner-scroll"
+>
+
+	<!-- TOP BACKGROUND -->
+	<div class="top-bg accent"></div>
+	<!-- / TOP BACKGROUND -->
+
+	<!-- CENTER -->
+	<div class="center layout-pad0">
+
+		<!-- HEADER -->
+		<ficha-crud
+			*ngIf="config"
+			[config]="config"
+			[cargando]="_sucursalService?.cargando"
+			[isGuardadoPersonalizado]="true"
+			(output)="guardar($event)"
+			[mostrarBorrar]="false"
+			[mostrarEditar]="true"
+			[titulo]="titulo"
+			[subTituloTraduccion]="pageType"
+			[form]="form"
+			[currentId]="currentId"
+			[pageType]="pageType"
+			[dataService]="_sucursalService"
+			class="header accent"
+			fxLayout="column"
+			fxLayoutAlign="center center"
+			fxLayout.gt-sm="row"
+			fxLayoutAlign.gt-sm="space-between center"
+		>
+		</ficha-crud>
+		<!-- / HEADER -->
+
+		<!-- CONTENT CARD -->
+		<div class="content-card p-0">
+			<mat-tab-group #tabs class="h-100-p">
+                <form
+                    *ngIf="!!form"
+                    name="form"
+                    id="form"
+                    [formGroup]="form"
+                    class="product w-100-p"
+                    fxLayout="column"
+                    fxFlex
+                >
+                    <mat-tab label="Datos Generales">
+                        <div
+                            class="tab-content p-24"
+                            fusePerfectScrollbar
+                        >
+                            <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="20%">
+                                    <mat-label>Código sede</mat-label>
+                                    <input matInput name="codigoSucursal" formControlName="codigoSucursal"
+                                        required="{{ isRequired(form,'codigoSucursal') }}">
+                                    <mat-error *ngIf="(!!form.get('codigoSucursal').errors)">
+                                        {{validatorService.getMessage(form.get('codigoSucursal'))}}
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="20%">
+                                    <mat-label>Prefijo</mat-label>
+                                    <input matInput name="prefijo" formControlName="prefijo"
+                                        required="{{ isRequired(form,'prefijo') }}">
+                                    <mat-error *ngIf="(!!form.get('prefijo').errors)">
+                                        {{validatorService.getMessage(form.get('prefijo'))}}
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="20%">
+                                    <mat-label>Serie</mat-label>
+                                    <input matInput name="serie" formControlName="serie"
+                                        required="{{ isRequired(form,'serie') }}">
+                                    <mat-error *ngIf="(!!form.get('serie').errors)">
+                                        {{validatorService.getMessage(form.get('serie'))}}
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="40%">
+                                    <mat-label>Nombre</mat-label>
+                                    <input matInput name="nombre" formControlName="nombre"
+                                        required="{{ isRequired(form,'nombre') }}">
+                                    <mat-error *ngIf="(!!form.get('nombre').errors)">
+                                        {{validatorService.getMessage(form.get('nombre'))}}
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                            
+                            <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                <pixvs-mat-select [matSelectCtrl]="tipoSucursalControl" [datos]="tiposSucursal"
+                                    [appearance]="'outline'"
+                                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                    [campoValor]="'valor'" [label]="'Tipo sede'" [required]="isRequired(form,'tipoSucursal')"
+                                    [seleccionarUnicaOpcion]="!sucursal?.id"
+                                    fxFlex="1 0 auto">
+                                </pixvs-mat-select>
+
+                                <pixvs-mat-select [matSelectCtrl]="responsableControl" [datos]="usuarios"
+                                    [appearance]="'outline'"
+                                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                    [campoValor]="'nombreCompleto'" [label]="'Director de la sede'" [required]="isRequired(form,'responsable')"
+                                    [seleccionarUnicaOpcion]="!sucursal?.id"
+                                    fxFlex="1 0 auto">
+                                </pixvs-mat-select>
+
+                                <pixvs-mat-select [matSelectCtrl]="coordinadorControl" [datos]="usuarios"
+                                    [appearance]="'outline'"
+                                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                    [campoValor]="'nombreCompleto'" [label]="'Coordinador de la sede'" [required]="isRequired(form,'coordinador')"
+                                    [seleccionarUnicaOpcion]="!sucursal?.id"
+                                    fxFlex="1 0 auto">
+                                </pixvs-mat-select>
+
+                                <pixvs-mat-select [matSelectCtrl]="tipoFacturaGlobalControl" [datos]="tiposFacturaGlobal"
+                                    [appearance]="'outline'"
+                                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                    [campoValor]="'valor'" [label]="'Tipo factura global'" [required]="isRequired(form,'tipoFacturaGlobal')"
+                                    [seleccionarUnicaOpcion]="!sucursal?.id"
+                                    fxFlex="1 0 auto">
+                                </pixvs-mat-select>
+                            </div>
+                            
+                            <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+
+                                <pixvs-mat-select [matSelectCtrl]="form.get('almacenes')" [datos]="almacenes"
+                                    [appearance]="'outline'"
+                                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                    [campoValor]="'nombre'" [label]="'Almacén'" [required]="isRequired(form,'almacenes')"
+                                    [multiple]="true" [showToggleAllCheckbox]="true" fxFlex="1 0 auto">
+                                </pixvs-mat-select>
+
+                                <pixvs-mat-select [matSelectCtrl]="form.get('mediosPagoPV')" [datos]="mediosPagoPV"
+                                    [appearance]="'outline'"
+                                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                    [campoValor]="'nombre'" [label]="'Medios de pago'" [required]="isRequired(form, 'mediosPagoPV')" [multiple]="true"
+                                    [seleccionarUnicaOpcion]="!sucursal?.id"
+                                    fxFlex="1 0 auto">
+                                </pixvs-mat-select>
+
+                                <pixvs-mat-select [matSelectCtrl]="cuentaBancariaControl" [datos]="cuentasBancarias"
+                                    [appearance]="'outline'"
+                                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                    [campoValor]="'descripcion'" [label]="'Cuenta bancaria'" [required]="isRequired(form,'cuentaBancaria')"
+                                    [seleccionarUnicaOpcion]="!sucursal?.id"
+                                    fxFlex="25%">
+                                </pixvs-mat-select>
+                            </div>
+
+                            <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="50%">
+                                    <mat-label>Domicilio</mat-label>
+                                    <input matInput name="domicilio" formControlName="domicilio"
+                                        required="{{ isRequired(form,'domicilio') }}" [readonly]="mismaDireccionSucursalControl?.value">
+                                    <mat-error *ngIf="(!!form.get('domicilio').errors)">
+                                        {{validatorService.getMessage(form.get('domicilio'))}}
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="25%">
+                                    <mat-label>Código postal</mat-label>
+                                    <input matInput name="cp" formControlName="cp"
+                                        required="{{ isRequired(form,'cp') }}" [readonly]="mismaDireccionSucursalControl?.value"
+                                        mask="99999">
+                                    <mat-error *ngIf="(!!form.get('cp').errors)">
+                                        {{validatorService.getMessage(form.get('cp'))}}
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="25%">
+                                    <mat-label>Colonia</mat-label>
+                                    <input matInput name="colonia" formControlName="colonia"
+                                        required="{{ isRequired(form,'colonia') }}" [readonly]="mismaDireccionSucursalControl?.value">
+                                    <mat-error *ngIf="(!!form.get('colonia').errors)">
+                                        {{validatorService.getMessage(form.get('colonia'))}}
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+
+                            <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                <pixvs-mat-select [matSelectCtrl]="paisControl" [datos]="paises"
+                                    [appearance]="'outline'"
+                                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                    [campoValor]="'nombre'" [label]="'País'" [required]="isRequired(form,'pais')"
+                                    [seleccionarUnicaOpcion]="!sucursal?.id"
+                                    fxFlex="1 0 auto">
+                                </pixvs-mat-select>
+
+                                <pixvs-mat-select #estadoSelect [matSelectCtrl]="estadoControl" [datos]="estados"
+                                    [appearance]="'outline'"
+                                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                    [campoValor]="'nombre'" [label]="'Estado'" [required]="isRequired(form,'estado')"
+                                    [seleccionarUnicaOpcion]="!sucursal?.id"
+                                    fxFlex="1 0 auto">
+                                </pixvs-mat-select>
+
+                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                    <mat-label>Ciudad</mat-label>
+                                    <input matInput name="ciudad" formControlName="ciudad"
+                                        required="{{ isRequired(form,'ciudad') }}" [readonly]="mismaDireccionSucursalControl?.value">
+                                    <mat-error *ngIf="(!!form.get('ciudad').errors)">
+                                        {{validatorService.getMessage(form.get('ciudad'))}}
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+
+                            <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="33%">
+                                    <mat-label>Teléfono</mat-label>
+                                    <input matInput name="telefono" formControlName="telefono"
+                                        required="{{ isRequired(form,'telefono') }}"
+                                        mask="(00) 0000 0000"
+                                        [readonly]="mismaDireccionSucursalControl?.value">
+                                    <mat-error *ngIf="(!!form.get('telefono').errors)">
+                                        {{validatorService.getMessage(form.get('telefono'))}}
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="33%">
+                                    <mat-label>Extensión</mat-label>
+                                    <input matInput name="extension" formControlName="extension"
+                                        required="{{ isRequired(form,'extension') }}"
+                                        mask="999"
+                                        [readonly]="mismaDireccionSucursalControl?.value">
+                                    <mat-error *ngIf="(!!form.get('extension').errors)">
+                                        {{validatorService.getMessage(form.get('extension'))}}
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <pixvs-mat-select [matSelectCtrl]="listadoPrecioControl" [datos]="listados"
+                                    [appearance]="'outline'"
+                                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                    [campoValor]="'nombre'" [label]="'Listado de precios'" [required]="true"
+                                    [seleccionarUnicaOpcion]="!sucursal?.id"
+                                    fxFlex="1 0 auto">
+                                </pixvs-mat-select>
+                            </div>
+                            <div fxLayout="column" fxLayoutAlign="start start" style="width: 100%">
+                                <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid" style="width: 100%">
+                                    <div fxlayout="row" fxlayoutalign="start center" class="my-20" style="display: flex;border-bottom: solid 1px lightgray;width: 100%">
+                                        <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font"><span class="material-icons"><span class="material-icons">calendar_today</span></span></mat-icon>
+                                        <div class="h2 secondary-text ng-tns-c345-79">Semana Laboral</div>
+                                    </div>
+                                </div>
+                                <div fxLayout="row" fxFlex= "100 0 auto">
+                                    <mat-checkbox color="primary"  [(ngModel)]="selectTodosDias" [ngModelOptions]="{standalone: true}" (change)="seleccionarTodosLosDias()" [disabled]="form.disabled">
+                                        Días por semana
+                                    </mat-checkbox>
+                                </div>
+
+                                <div fxLayout="row" fxFlex= "100">
+                                    <mat-checkbox color="primary" name="lunes" formControlName="lunes" (change)="changeSelectTodos()">
+                                        Lunes
+                                    </mat-checkbox>
+                                </div>
+
+                                <div fxLayout="row" fxFlex= "100">
+                                    <mat-checkbox color="primary" name="martes" formControlName="martes" (change)="changeSelectTodos()">
+                                        Martes
+                                    </mat-checkbox>
+                                </div>
+
+                                <div fxLayout="row" fxFlex= "100">
+                                    <mat-checkbox color="primary" name="miercoles" formControlName="miercoles" (change)="changeSelectTodos()">
+                                        Miércoles
+                                    </mat-checkbox>
+                                </div>
+
+                                <div fxLayout="row" fxFlex= "100">
+                                    <mat-checkbox color="primary" name="jueves" formControlName="jueves" (change)="changeSelectTodos()">
+                                        Jueves
+                                    </mat-checkbox>
+                                </div>
+
+                                <div fxLayout="row" fxFlex= "100">
+                                    <mat-checkbox color="primary" name="viernes" formControlName="viernes" (change)="changeSelectTodos()">
+                                        Viernes
+                                    </mat-checkbox>
+                                </div>
+
+                                <div fxLayout="row" fxFlex= "100">
+                                    <mat-checkbox color="primary" name="sabado" formControlName="sabado" (change)="changeSelectTodos()">
+                                        Sábado
+                                    </mat-checkbox>
+                                </div>
+
+                                <div fxLayout="row" fxFlex= "100">
+                                    <mat-checkbox color="primary" name="domingo" formControlName="domingo" (change)="changeSelectTodos()">
+                                        Domingo
+                                    </mat-checkbox>
+                                </div>
+                                <br>
+                            </div>
+
+                            <div fxLayout="row" fxLayoutAlign="start center">
+                                <div fxLayout="row" fxLayoutAlign="center center" class="mb-20">
+                                    <mat-checkbox color="primary" name="activo" formControlName="activo">
+                                        Activo
+                                    </mat-checkbox>
+                                </div>
+
+                                <div fxLayout="row" fxLayoutAlign="center center" class="mb-20 ml-80">
+                                    <mat-checkbox color="primary" name="predeterminada" formControlName="predeterminada">
+                                        Sede matriz
+                                    </mat-checkbox>
+                                </div>
+
+                                <div fxLayout="row" fxLayoutAlign="center center" class="mb-20 ml-80">
+                                    <mat-checkbox color="primary" name="plantelesBandera" formControlName="plantelesBandera">
+                                        Planteles
+                                    </mat-checkbox>
+                                </div>
+
+                                <!-- <div fxLayout="row" fxLayoutAlign="center center" class="mb-20 ml-80">
+                                    <mat-checkbox color="primary" name="mostrarRed" formControlName="mostrarRed">
+                                        Mostrar datos de la red
+                                    </mat-checkbox>
+                                </div> -->
+                            </div>
+
+                            <!-- <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="100 0 auto">
+                                    <mat-label>Porcentaje de comisión</mat-label>
+                                    <input matInput name="porcentajeComision" formControlName="porcentajeComision"
+                                        required="{{ isRequired(form,'porcentajeComision') }}"
+                                        prefix="% " mask="separator.2" thousandSeparator=",">
+                                    <mat-error *ngIf="(!!form.get('porcentajeComision').errors)">
+                                        {{validatorService.getMessage(form.get('porcentajeComision'))}}
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="100 0 auto">
+                                    <mat-label>Presupuesto semanal</mat-label>
+                                    <input matInput name="presupuestoSemanal" formControlName="presupuestoSemanal"
+                                        required="{{ isRequired(form,'presupuestoSemanal') }}"
+                                        prefix="$ " mask="separator.2" thousandSeparator=",">
+                                    <mat-error *ngIf="(!!form.get('presupuestoSemanal').errors)">
+                                        {{validatorService.getMessage(form.get('presupuestoSemanal'))}}
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+
+                            <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px grid"  *ngIf="(!!form.get('mostrarRed').value)">
+                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                    <mat-label>Nombre de la red</mat-label>
+                                    <input matInput name="nombre" formControlName="nombreRed">
+                                    <mat-error *ngIf="(!!form.get('nombreRed').errors)">
+                                        {{validatorService.getMessage(form.get('nombreRed'))}}
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                    <mat-label>Contraseña de la red</mat-label>
+                                    <input matInput name="contraseniaRed" formControlName="contraseniaRed">
+                                    <mat-error *ngIf="(!!form.get('contraseniaRed').errors)">
+                                        {{validatorService.getMessage(form.get('contraseniaRed'))}}
+                                    </mat-error>
+                                </mat-form-field>
+                            </div> -->
+                        </div>
+                    </mat-tab>
+                    <mat-tab label="Planteles" *ngIf="form.get('plantelesBandera').value">
+                        <div class="w-100-p h-100-p" fxLayout="row" fxLayoutAlign="start start">
+                            <div fxFlex="30%">
+                                <div class="w-100-p" fxLayout="column">
+                                    <ng-container *ngFor="let plantel of sucursal.planteles">
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid" class="py-20 px-12">
+                                            <div fxFlex="80" fxLayout="column" (click)="editarPlantel(plantel)">
+                                                <span>{{ plantel.codigoSucursal + '-' + plantel.nombre}}</span>
+                                                <span><span class="font-weight-900">Responsable: </span>{{ plantel.responsable.nombreCompleto }}</span>
+                                                <span>Tel: {{ plantel.telefonoMovil || plantel.telefonoFijo || (plantel.telefonoTrabajo ? (plantel.telefonoTrabajo + (plantel.telefonoTrabajoExtension ? (' Ext. ' + plantel.telefonoTrabajoExtension) : '')) : null) || plantel.telefonoMensajeriaInstantanea }}</span>
+                                                <span>{{ plantel.correoElectronico }}</span>
+                                            </div>
+                                            <button *ngIf="form?.enabled" fxFlex="20" mat-icon-button type="button" (click)="eliminarPlantel(plantel.idTmp)">
+                                                <mat-icon>delete</mat-icon>
+                                            </button>
+                                        </div>
+                                        <hr class="w-100-p">
+                                    </ng-container>
+                                </div>
+                            </div>
+                            <div fxFlex="70%" class="p-20">
+                                <form *ngIf="!!formPlantel" focusInvalidInput name="formPlantel" id="formPlantel" [formGroup]="formPlantel" class="product w-100-p p-20" fxLayout="column" fxFlex>
+                                    <div fxLayout="row wrap" fxLayoutAlign="start end" fxLayoutGap="10px grid">
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                            <mat-label>Código Plantel</mat-label>
+                                            <input matInput name="codigoSucursal" formControlName="codigoSucursal"
+                                                required="{{ isRequired(formPlantel,'codigoSucursal') }}" maxlength="3">
+                                            <mat-error *ngIf="(!!formPlantel.get('codigoSucursal').errors)">
+                                                {{validatorService.getMessage(formPlantel.get('codigoSucursal'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                            <mat-label>Nombre</mat-label>
+                                            <input matInput name="nombre" formControlName="nombre"
+                                                required="{{ isRequired(formPlantel,'nombre') }}">
+                                            <mat-error *ngIf="(!!formPlantel.get('nombre').errors)">
+                                                {{validatorService.getMessage(formPlantel.get('nombre'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+
+                                    <div fxLayout="row wrap" fxLayoutAlign="start end" fxLayoutGap="10px grid">
+                                        <pixvs-mat-select
+                                            [matSelectCtrl]="responsablePlantelControl"
+                                            [datos]="usuarios"
+                                            [appearance]="'outline'"
+                                            [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                            [campoValor]="'nombreCompleto'"
+                                            [label]="'Responsable'"
+                                            [required]="true"
+                                            [seleccionarUnicaOpcion]="!plantelEditar"
+                                            fxFlex="100%"
+                                        >
+                                        </pixvs-mat-select>
+                                    </div>
+
+                                    <div fxLayout="row wrap" fxLayoutAlign="start start" fxLayoutGap="10px grid">
+                                        <pixvs-mat-select
+                                            [matSelectCtrl]="almacenPlantelControl"
+                                            [datos]="form.get('almacenes')?.value"
+                                            [appearance]="'outline'"
+                                            [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                            [campoValor]="'nombre'"
+                                            [label]="'Almacen'"
+                                            [required]="true"
+                                            [seleccionarUnicaOpcion]="!plantelEditar"
+                                            fxFlex="1 0 auto"
+                                        >
+                                        </pixvs-mat-select>
+
+                                        <pixvs-mat-select #localidadPlantelSelect
+                                            [matSelectCtrl]="localidadPlantelControl"
+                                            [datos]="localidades"
+                                            [appearance]="'outline'"
+                                            [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                            [campoValor]="'nombre'"
+                                            [label]="'Localidad'"
+                                            [required]="true"
+                                            [seleccionarUnicaOpcion]="!plantelEditar"
+                                            fxFlex="1 0 auto"
+                                        >
+                                        </pixvs-mat-select>
+                                        <!--<pixvs-mat-select
+                                            [matSelectCtrl]="parentescoControl"
+                                            [datos]="parentescos"
+                                            [appearance]="'outline'"
+                                            [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                            [campoValor]="'valor'"
+                                            [label]="'Parentesco'"
+                                            [required]="true"
+                                            [seleccionarUnicaOpcion]="!contactoEditar"
+                                            fxFlex="100%"
+                                        >
+                                        </pixvs-mat-select>-->
+                                    </div>
+                                    <div fxlayout="row" fxlayoutalign="start center" class="my-20" style="display: flex;border-bottom: solid 1px lightgray;width: 100%">
+                                        <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font">store</mat-icon>
+                                        <div class="h2 secondary-text ng-tns-c345-79">Domicilio</div>
+                                    </div>
+                                    <div fxLayout="row wrap" fxLayoutAlign="start end" fxLayoutGap="10px grid">
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                            <mat-label>Calle y número</mat-label>
+                                            <input matInput name="direccion" formControlName="direccion"
+                                                required="{{ isRequired(formPlantel,'direccion') }}">
+                                            <mat-error *ngIf="(!!formPlantel.get('direccion').errors)">
+                                                {{validatorService.getMessage(formPlantel.get('direccion'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                            <mat-label>C.P</mat-label>
+                                            <input matInput name="cp" formControlName="cp"
+                                                required="{{ isRequired(formPlantel,'cp') }}">
+                                            <mat-error *ngIf="(!!formPlantel.get('cp').errors)">
+                                                {{validatorService.getMessage(formPlantel.get('cp'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                            <mat-label>Colonia</mat-label>
+                                            <input matInput name="colonia" formControlName="colonia"
+                                                required="{{ isRequired(formPlantel,'colonia') }}">
+                                            <mat-error *ngIf="(!!formPlantel.get('colonia').errors)">
+                                                {{validatorService.getMessage(formPlantel.get('colonia'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+
+                                    <div fxLayout="row wrap" fxLayoutAlign="start end" fxLayoutGap="10px grid">
+                                        <pixvs-mat-select
+                                            [matSelectCtrl]="paisPlantelControl"
+                                            [datos]="paises"
+                                            [appearance]="'outline'"
+                                            [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                            [campoValor]="'nombre'"
+                                            [label]="'Pais'"
+                                            [required]="true"
+                                            [seleccionarUnicaOpcion]="!contactoEditar"
+                                            fxFlex="1 0 auto"
+                                        >
+                                        </pixvs-mat-select>
+                                        <pixvs-mat-select #estadoPlantelSelect
+                                            [matSelectCtrl]="estadoPlantelControl"
+                                            [datos]="estadosPlantel"
+                                            [appearance]="'outline'"
+                                            [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                            [campoValor]="'nombre'"
+                                            [label]="'Estado'"
+                                            [required]="true"
+                                            [seleccionarUnicaOpcion]="!contactoEditar"
+                                            fxFlex="1 0 auto"
+                                        >
+                                        </pixvs-mat-select>
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                            <mat-label>Ciudad</mat-label>
+                                            <input matInput name="municipio" formControlName="municipio"
+                                                required="{{ isRequired(formPlantel,'municipio') }}">
+                                            <mat-error *ngIf="(!!formPlantel.get('municipio').errors)">
+                                                {{validatorService.getMessage(formPlantel.get('municipio'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+                                    <div fxLayout="row wrap" fxLayoutAlign="start start" fxLayoutGap="10px grid">
+                                        <div fxFlex="50%" fxLayout="column">
+                                            
+                                            <div fxLayout="row wrap" fxLayoutAlign="start start" fxLayoutGap="10px grid">
+                                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="100%">
+                                                    <mat-label>Correo electrónico</mat-label>
+                                                    <input matInput name="correoElectronico" formControlName="correoElectronico"
+                                                        required="{{ isRequired(formPlantel,'correoElectronico') }}">
+                                                    <mat-error *ngIf="(!!formPlantel.get('correoElectronico').errors)">
+                                                        {{validatorService.getMessage(formPlantel.get('correoElectronico'))}}
+                                                    </mat-error>
+                                                </mat-form-field>
+                                            </div>
+
+                                            <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                                <mat-checkbox color="primary" name="activo" formControlName="activo">
+                                                    Activo
+                                                </mat-checkbox>
+                                            </div>
+                                        
+                                        </div>
+                                        <div fxFlex="50%" fxLayout="column">
+                                            <div fxFlex="auto" fxLayout="row wrap" fxLayoutAlign="start start" fxLayoutGap="10px grid" class="w-100-p">
+                                                <pixvs-phone-picker fxFlex="100%"
+                                                    [telefonoCasaControl]="telefonoFijoPlantelControl"
+                                                    [telefonoMovilControl]="telefonoMovilPlantelControl"
+                                                    [telefonoTrabajoControl]="telefonoTrabajoPlantelControl"
+                                                    [telefonoTrabajoExtensionControl]="telefonoTrabajoExtensionPlantelControl"
+                                                    [telefonoWhatsappControl]="telefonoMensajeriaInstantaneaPlantelControl"
+                                                ></pixvs-phone-picker>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div *ngIf="form?.enabled" fxLayout="row wrap" fxLayoutAlign="end start">
+                                        <button mat-raised-button type="button" class="mt-12" (click)="cancelarFormularioPlantel()">Cancelar</button>
+                                        <button mat-raised-button type="submit" class="boton-guardar mt-12 ml-12" (click)="guardarPlantel()">Agregar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </mat-tab>
+
+                    <mat-tab label="POS" *ngIf="permisoConfigPV?.valor == '1'">
+                        <div class="tab-content p-24" fusePerfectScrollbar>
+                            <div>
+                                <div fxLayout="row" fxLayoutAlign="start center" class="pb-16">
+                                    <mat-icon class="m-0 mr-16">payment</mat-icon>
+                                    <div class="h2 secondary-text">Formas de pago</div>
+                                </div>
+                                <div
+                                    fxLayout="row wrap"
+                                    fxLayoutGap="20px grid"
+                                    fxLayoupaltAlign="start center"
+                                    formArrayName="formasPago"
+                                >
+                                    <div
+                                        fxLayout="column"
+                                        fxFlex="100"
+                                        fxFlex.gt-sm="100"
+                                        fxFlex.gt-md="100"
+                                        >
+                                        <span>
+                                            <div *ngFor="let itemfp of form.get('formasPago').controls; let i=index">
+                                                <div  [formGroupName]="i">
+                                                    <mat-checkbox formControlName="usarEnPV" >
+                                                    {{ getFormaPago(i).nombre }}
+                                                    </mat-checkbox>
+                                                </div>
+                                            </div>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                            <div class="mt-4 pt-4">
+                                <p></p>
+                                <div fxLayout="row wrap" fxLayoutAlign="start center" class="pb-16 mt-4">
+                                    <mat-icon class="m-0 mr-16">local_printshop</mat-icon>
+                                    <div class="h2 secondary-text">Configuración de impresoras</div>
+                                </div>
+
+                                <div
+                                    fxLayout="row wrap"
+                                    fxLayoutGap="20px grid"
+                                    fxLayoupaltAlign="start center"
+                                >
+                                        <div
+                                            fxLayout="column"
+                                            fxFlex="100"
+                                            fxFlex.gt-sm="15"
+                                            fxFlex.gt-md="15"
+                                            >
+                                            <h3> Familia </h3>
+                                        </div>
+                                        <div
+                                            fxLayout="column"
+                                            fxFlex="100"
+                                            fxFlex.gt-sm="85"
+                                            fxFlex.gt-md="85"
+                                        >
+                                            <h3> Tipo de impresora </h3>
+                                        </div>
+                                </div>
+                                <ng-container formArrayName="impresoras">
+                                    <div
+                                        fxLayout="row wrap"
+                                        fxLayoutGap="20px grid"
+                                        fxLayoupaltAlign="start center"
+                                        *ngFor="let impresora of form.get('impresoras').controls; let i=index"
+                                    >
+                                        <ng-container [formGroupName]="i">
+                                            <div
+                                                fxLayout="column"
+                                                fxFlex="100"
+                                                fxFlex.gt-sm="15"
+                                                fxFlex.gt-md="15"
+                                                >
+                                                <h3> {{getFamilia(i).nombre}}</h3>
+                                            </div>
+                                            <div
+                                                fxLayout="column"
+                                                fxFlex="100"
+                                                fxFlex.gt-md="25"
+                                                fxFlex.gt-sm="25"
+                                            >
+                                                <mat-radio-group fxFlex="1 2 auto" formControlName="tipoImpresoraId" (change)="disableInput(impresora, 'tipoImpresoraId', 'ip')">
+                                                    <mat-radio-button *ngFor="let tipo of tipoImpresoras;" [value]="tipo.id" checked="{{ impresora.get('tipoImpresoraId').value == tipo.id }}">{{ tipo.valor }}&nbsp;&nbsp;</mat-radio-button>
+                                                </mat-radio-group>
+                                            </div>
+
+                                            <div
+                                                fxLayout="column"
+                                                fxFlex="100"
+                                                fxFlex.gt-sm="25"
+                                                fxFlex.gt-md="25"
+                                            >
+                                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                    <mat-label>Ip</mat-label>
+                                                    <input matInput formControlName="ip" mask="IP" [dropSpecialCharacters]="false" required="{{ impresora.get('tipoImpresoraId').value == impresorasTipoCMM.IP }}" >
+                                                    <mat-error *ngIf="(!!impresora.get('tipoImpresoraId').errors)">
+                                                        {{validatorService.getMessage(impresora.get('tipoImpresoraId'))}}
+                                                    </mat-error>
+                                                </mat-form-field>
+                                            </div>
+
+                                        </ng-container>
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </div>
+                    </mat-tab>
+				</form>
+			</mat-tab-group>
+		</div>
+
+	</div>
+
+</div>

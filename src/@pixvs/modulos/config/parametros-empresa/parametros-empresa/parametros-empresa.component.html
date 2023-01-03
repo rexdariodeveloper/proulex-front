@@ -1,0 +1,346 @@
+<div id="parametros-empresa" class="page-layout carded left-sidebar fullwidth inner-scroll">
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+    <!-- CENTER -->
+    <div class="center layout-pad0">
+        <!-- HEADER -->
+        <ficha-crud *ngIf="config" [config]="config" [cargando]="_parametrosEmpresaService?.cargando"
+            [isGuardadoPersonalizado]="true" (output)="onSave()" [mostrarBorrar]="false" [mostrarEditar]="false"
+            [ocultarGuardar]="true" [titulo]="titulo" [form]="form" [currentId]="null"
+            [pageType]="'nuevo'" [dataService]="_parametrosEmpresaService" class="header accent" fxLayout="column"
+            fxLayoutAlign="center center" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center">
+        </ficha-crud>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card p-24 h-100-p" fusePerfectScrollbar *ngIf="form">
+            <mat-progress-bar *ngIf="_parametrosEmpresaService?.cargando" [color]="'primary'" [mode]="'query'">
+            </mat-progress-bar>
+            <div fxLayout="row wrap" class="h-100-p" fxLayoutGap="10px grid">
+                <form focusInvalidInput name="form" id="form" [formGroup]="form" class="product w-100-p"
+                    fxLayout="column" fxFlex>
+                    <mat-tab-group>
+                        <mat-tab label="Datos Generales">
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                        <mat-label>Razón Social</mat-label>
+                                        <input type="text" matInput name="razonSocial" formControlName="razonSocial"
+                                            required="{{ isRequired('razonSocial', form) }}" (keydown.enter)="onSaveRazonSocial()" style="text-transform: uppercase">
+                                        <button mat-button matPrefix mat-icon-button (click)="onSaveRazonSocial()">
+                                            <mat-icon>save</mat-icon>
+                                          </button>
+                                        <mat-error *ngIf="(!!form.get('razonSocial').errors)">
+                                            {{validatorService.getMessage(form.get('razonSocial'))}}
+                                        </mat-error>
+                                    </mat-form-field>
+
+                                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                        <mat-label>Nombre de la empresa</mat-label>
+                                        <input type="text" matInput name="nombre" formControlName="nombre"
+                                            required="{{ isRequired('nombre', form) }}" (keydown.enter)="onSaveNombre()" style="text-transform: uppercase">
+                                        <button mat-button matPrefix mat-icon-button (click)="onSaveNombre()">
+                                            <mat-icon>save</mat-icon>
+                                          </button>
+                                        <mat-error *ngIf="(!!form.get('nombre').errors)">
+                                            {{validatorService.getMessage(form.get('nombre'))}}
+                                        </mat-error>
+                                    </mat-form-field>
+
+                                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                        <mat-label>RFC</mat-label>
+                                        <input type="text" matInput name="rfc" formControlName="rfc"
+                                            required="{{ isRequired('rfc', form) }}" (keydown.enter)="onSaveRfc()" style="text-transform: uppercase">
+                                        <button mat-button matPrefix mat-icon-button (click)="onSaveRfc()">
+                                            <mat-icon>save</mat-icon>
+                                        </button>
+                                        <mat-error *ngIf="(!!form.get('rfc').errors)">
+                                            {{validatorService.getMessage(form.get('rfc'))}}
+                                        </mat-error>
+                                    </mat-form-field>
+                                </div>
+
+                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                    <pixvs-mat-select 
+                                        [matSelectCtrl]="regimenFiscalControl"
+                                        [datos]="listRegimenFiscal"
+                                        [appearance]="'outline'"
+                                        [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                        [campoValor]="'valor'" 
+                                        [label]="'Régimen Fiscal'" 
+                                        [required]="true"
+                                        fxFlex="1 0 auto">
+                                    </pixvs-mat-select>
+
+                                    <mat-form-field *ngIf="!!plazoDiasReinscripcion" appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                        <mat-label>Días plazo reinscripción</mat-label>
+                                        <input type="text" matInput name="plazoDiasReinscripcion" formControlName="plazoDiasReinscripcion" (keydown.enter)="onSavePlazoDiasReinscripcion()"
+                                            required="{{ isRequired('plazoDiasReinscripcion', form) }}">
+                                        <button mat-button matPrefix mat-icon-button (click)="onSavePlazoDiasReinscripcion()">
+                                            <mat-icon>save</mat-icon>
+                                        </button>
+                                        <mat-error *ngIf="(!!form.get('plazoDiasReinscripcion').errors)">
+                                            {{validatorService.getMessage(form.get('plazoDiasReinscripcion'))}}
+                                        </mat-error>
+                                    </mat-form-field>
+
+                                    <mat-form-field *ngIf="!!sumaDiasFechaFin" appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                        <mat-label>Días tolerancia fecha fin grupo</mat-label>
+                                        <input type="text" matInput name="sumaDiasFechaFin" formControlName="sumaDiasFechaFin"
+                                            required="{{ isRequired('sumaDiasFechaFin', form) }}" (keydown.enter)="onSumaDiasFechaFin()">
+                                        <button mat-button matPrefix mat-icon-button (click)="onSumaDiasFechaFin()">
+                                            <mat-icon>save</mat-icon>
+                                        </button>
+                                        <mat-error *ngIf="(!!form.get('sumaDiasFechaFin').errors)">
+                                            {{validatorService.getMessage(form.get('sumaDiasFechaFin'))}}
+                                        </mat-error>
+                                    </mat-form-field>
+                                </div>
+
+                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                    <div fxLayout="row" fxLayoutAlign="center center" class="mb-20">
+                                        <mat-checkbox color="primary" name="precioTotal" formControlName="precioTotal" (click)="clickPrecio()">
+                                            Calculo por precio venta
+                                        </mat-checkbox>
+                                    </div>
+
+                                    <div fxLayout="row" fxLayoutAlign="center center" class="mb-20">
+                                        <mat-checkbox color="primary" name="precioUnitario" formControlName="precioUnitario" (click)="clickPrecio()">
+                                            Calculo por precio unitario
+                                        </mat-checkbox>
+                                    </div>
+                                    <div fxFlex="auto"></div>
+                                </div>
+
+                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                    <pixvs-mat-select [matSelectCtrl]="directorGeneralControl" [datos]="responsables"
+                                        [appearance]="'outline'"
+                                        [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                        [campoValor]="'nombre'" [label]="'Director General'" [required]="false"
+                                        fxFlex="1 0 auto">
+                                    </pixvs-mat-select>
+                                    <pixvs-mat-select [matSelectCtrl]="directorRecursosHumanosControl" [datos]="responsables"
+                                        [appearance]="'outline'"
+                                        [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                        [campoValor]="'nombre'" [label]="'Director De Recursos Humanos'" [required]="false"
+                                        fxFlex="1 0 auto">
+                                    </pixvs-mat-select>
+                                </div>
+
+                                <div fxLayout="column" fxLayoutAlign="start start" style="width: 100%">
+                                    <div fxlayout="row" fxlayoutalign="start center" class="my-20" style="display: flex;border-bottom: solid 1px lightgray;width: 100%">
+                                        <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font">location_on</mat-icon>
+                                        <div class="h2 secondary-text ng-tns-c345-79">Domicilio Fiscal</div>
+                                    </div>
+
+                                    <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid" style="width: 100%">
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="3 0 auto">
+                                            <mat-label>Domicilio</mat-label>
+                                            <input type="text" matInput name="domicilio" formControlName="domicilio"
+                                                required="{{ isRequired('domicilio', form) }}">
+                                            <mat-error *ngIf="(!!form.get('domicilio').errors)">
+                                                {{validatorService.getMessage(form.get('domicilio'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="3 0 auto">
+                                            <mat-label>Colonia</mat-label>
+                                            <input type="text" matInput name="colonia" formControlName="colonia"
+                                                required="{{ isRequired('colonia', form) }}">
+                                            <mat-error *ngIf="(!!form.get('colonia').errors)">
+                                                {{validatorService.getMessage(form.get('colonia'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                            <mat-label>CP</mat-label>
+                                            <input type="text" matInput name="cp" formControlName="cp"
+                                                required="{{ isRequired('cp', form) }}" mask="99999">
+                                            <mat-error *ngIf="(!!form.get('cp').errors)">
+                                                {{validatorService.getMessage(form.get('cp'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+
+                                    <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid" style="width: 100%">
+                                        <pixvs-mat-select [matSelectCtrl]="paisControl" [datos]="paises"
+                                            [appearance]="'outline'"
+                                            [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                            [campoValor]="'nombre'" [label]="'País'" [required]="true"
+                                            [seleccionarUnicaOpcion]="!cliente?.id"
+                                            fxFlex="1 0 auto">
+                                        </pixvs-mat-select>
+                                        
+                                        <pixvs-mat-select #estadoSelect [matSelectCtrl]="estadoControl" [datos]="estados"
+                                            [appearance]="'outline'"
+                                            [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                            [campoValor]="'nombre'" [label]="'Estado'" [required]="true"
+                                            [seleccionarUnicaOpcion]="!cliente?.id"
+                                            fxFlex="1 0 auto">
+                                        </pixvs-mat-select>
+
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                            <mat-label>Ciudad</mat-label>
+                                            <input type="text" matInput name="ciudad" formControlName="ciudad"
+                                                required="{{ isRequired('ciudad', form) }}">
+                                            <mat-error *ngIf="(!!form.get('ciudad').errors)">
+                                                {{validatorService.getMessage(form.get('ciudad'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+
+                                    <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid" style="width: 100%">
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                            <mat-label>Teléfono</mat-label>
+                                            <input matInput name="telefono" formControlName="telefono"
+                                                mask="(00) 0000 0000" required="{{ isRequired('telefono', form) }}">
+                                            <mat-error *ngIf="(!!form.get('telefono').errors)">
+                                                {{validatorService.getMessage(form.get('telefono'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                            <mat-label>Extensión</mat-label>
+                                            <input type="text" matInput name="extension" formControlName="extension"
+                                                required="{{ isRequired('extension', form) }}">
+                                            <mat-error *ngIf="(!!form.get('extension').errors)">
+                                                {{validatorService.getMessage(form.get('extension'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+
+                                    <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid" style="width: 100%">
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                            <mat-label>Correo Electrónico</mat-label>
+                                            <input type="text" matInput name="correoElectronico"
+                                                formControlName="correoElectronico"
+                                                required="{{ isRequired('correoElectronico', form) }}">
+                                            <mat-error *ngIf="(!!form.get('correoElectronico').errors)">
+                                                {{validatorService.getMessage(form.get('correoElectronico'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                            <mat-label>Página Web</mat-label>
+                                            <input type="text" matInput name="paginaWeb" formControlName="paginaWeb"
+                                                required="{{ isRequired('paginaWeb', form) }}">
+                                            <mat-error *ngIf="(!!form.get('paginaWeb').errors)">
+                                                {{validatorService.getMessage(form.get('paginaWeb'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+
+                                    <div fxLayout="row wrap" fxLayoutAlign="end center " fxLayoutGap="grid" style="width: 100%">
+                                        <div fxLayout="row wrap" fxLayoutAlign="end center" class="mb-20" fxLayoutGap="10px">
+                                            <button mat-raised-button color="primary" (click)="onSaveDatosFiscales()">
+                                                <span>Guardar</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>    
+                        </mat-tab>
+
+                        <mat-tab label="Dias no laborables">
+                            <div class="tab-content" fusePerfectScrollbar>
+                                <div fxLayout="row wrap" fxFlex="100" fxFlex.gt-sm="49" fxFlex.gt-md="49">
+                                    <!--<mat-list style="width: 100%">
+                                        <div mat-subheader>Días no laborales fijos</div>
+                                        <mat-divider></mat-divider>
+                                        <ng-container *ngFor="let dia of diasNoLaboralesFijos" style="height: 100%;">
+                                            <mat-list-item *ngIf="dia.activo">
+                                                
+                                                    <div mat-line>{{convertDiaFijo(dia)+'-'+dia.descripcion}}</div>
+                                                    <mat-icon mat-list-icon style="cursor: pointer;" (click)="deleteDiaFijo(dia)">delete</mat-icon>
+                                                    <mat-divider></mat-divider>
+                                                
+                                            </mat-list-item>
+                                            <mat-list-item *ngIf="dia.activo">
+                                                <mat-icon mat-list-icon style="cursor: pointer;" (click)="deleteDiaFijo(dia)">delete</mat-icon>{{convertDiaFijo(dia)+'-'+dia.descripcion}}
+                                            </mat-list-item>
+                                        </ng-container>
+                                    </mat-list>-->
+                                    <div fxLayout="column" style="width: 100%">
+                                        <div fxlayout="row" fxlayoutalign="start center" class="my-20" style="display: flex; border-bottom: solid 1px lightgray;">
+                                            <div class="h2 secondary-text ng-tns-c345-79" style="width: 100%;">Días no laborales fijos</div>
+                                            <mat-divider></mat-divider>
+                                        </div>
+                                        <div fxLayout="row wrap" *ngFor="let dia of diasNoLaboralesFijos" style="align-items: center;">
+                                            <ng-container *ngIf="dia.activo">
+                                                <button mat-icon-button color="primary" (click)="deleteDiaFijo(dia)">
+                                                    <mat-icon>delete</mat-icon>
+                                                </button>
+                                                <span style="font-size: 16px">{{convertDiaFijo(dia)+'-'+dia.descripcion}}</span>
+                                            </ng-container>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                                <div fxLayout="row wrap" fxFlex="100" fxFlex.gt-sm="1" fxFlex.gt-md="1" style="border-left-style: outset;"></div>
+                                <div fxLayout="row wrap" fxFlex="100" fxFlex.gt-sm="49" fxFlex.gt-md="49">
+                                    <div fxLayout="column" style="width: 100%">
+                                        <div fxlayout="row" fxlayoutalign="start center" class="my-20" style="display: flex; border-bottom: solid 1px lightgray; align-items: flex-end;">
+                                            <div class="h2 secondary-text ng-tns-c345-79" style="width: 100%;">Días no laborales por año</div>
+                                            <button mat-fab color="accent" style="float: right;position: absolute;right: 0" (click)="abrirModal()">
+                                              <mat-icon>add</mat-icon>
+                                            </button>
+                                            <mat-divider></mat-divider>
+                                        </div>
+                                        <mat-tab-group flex="1" vertical headerPosition="above">
+                                            <ng-container *ngFor="let anios of aniosDiasNoLaborales">
+                                                <mat-tab label="{{anios.anio}}">
+                                                    <div fxLayout="column" style="width: 100%">
+                                                        <div fxLayout="row wrap" *ngFor="let dia of anios.datos">
+                                                            <button mat-icon-button color="primary" (click)="deleteDia(dia,anios.anio)">
+                                                                <mat-icon>delete</mat-icon>
+                                                            </button>
+                                                            <span style="font-size: 16px">{{dia}}</span>
+                                                        </div>
+                                                    </div>
+                                                    <!--<mat-list-item *ngFor="let dia of anios.datos">
+                                                        <div mat-line>{{dia}}</div>
+                                                        <mat-icon mat-list-icon (click)="deleteDia(dia,anios.anio)" style="cursor: pointer;">delete</mat-icon>
+                                                        <mat-divider></mat-divider>
+                                                    </mat-list-item>-->
+                                                </mat-tab>
+                                            </ng-container>
+                                        </mat-tab-group>
+                                    </div>
+  
+                                    <!--<div fxLayout="column" style="width: 100%">
+                                        <div fxlayout="row" fxlayoutalign="start center" class="my-20" style="display: flex; border-bottom: solid 1px lightgray; align-items: flex-end;">
+                                            <div class="h2 secondary-text ng-tns-c345-79" style="width: 100%;">Días no laborales fijos</div>
+                                            <button mat-fab color="accent" style="float: right;position: absolute;right: 0" (click)="abrirModal()">
+                                              <mat-icon>add</mat-icon>
+                                            </button>
+                                            <mat-divider></mat-divider>
+                                        </div>
+                                        <mat-tab-group flex="1" vertical headerPosition="above">
+                                            <ng-container *ngFor="let anios of aniosDiasNoLaborales">
+                                                <mat-tab label="{{anios.anio}}">
+                                                    <div fxLayout="row wrap" *ngFor="let dia of diasNoLaboralesFijos" style="align-items: center;">
+                                                        <ng-container *ngFor="let dia of anios.datos">
+                                                            <ng-container *ngIf="dia.activo">
+                                                                <button mat-icon-button color="primary"  (click)="deleteDia(dia,anios.anio)">
+                                                                    <mat-icon>delete</mat-icon>
+                                                                </button>
+                                                                <span style="font-size: 16px">{{dia}}</span>
+                                                            </ng-container>
+                                                        </ng-container>
+                                                    </div>
+                                                </mat-tab>
+                                            </ng-container>
+                                        </mat-tab-group>
+                                    </div>-->
+                                </div>
+                            </div>
+                        </mat-tab>
+
+                    </mat-tab-group>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- /CENTER -->
+</div>

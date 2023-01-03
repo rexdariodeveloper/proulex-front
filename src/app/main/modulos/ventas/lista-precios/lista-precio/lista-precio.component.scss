@@ -1,0 +1,48 @@
+@import "@fuse/scss/fuse";
+
+#ficha-empleado {
+	.course-search {
+        width: 320px;
+    }
+	.btn-nuevo{
+		position: absolute;
+		top: 5px;
+		right: 5px;
+		z-index: 200;
+	}
+
+	.clickable{
+		cursor: pointer;
+		&:hover{
+			background-color: #F0F0F0;
+		}
+	}
+
+	.mat-table {
+	  overflow: auto;
+	  max-height: 500px;
+	}
+
+	.mat-header-cell {
+	    background: rgb(206 220 234);
+	}
+
+	.element-row {
+	  position: relative;
+	}
+
+	.element-row {
+	  cursor: pointer;
+	}
+
+	.element-row:not(.expanded):hover {
+	  background: #f5f5f5;
+	}
+
+	.element-row.expanded {
+	  border-bottom-color: transparent;
+	}
+	mat-header-cell, mat-cell {
+	  justify-content: center;
+	}
+}

@@ -1,0 +1,59 @@
+<mat-dialog-title fxLayout="row" fxLayoutAlign="start start">
+	<span class="mat-title">{{ tipoContrato }}</span>
+</mat-dialog-title>
+<mat-dialog-content>
+	<div fxLayout="row" fxLayoutAlign="center center">
+		<span class="mat-subheading-2">{{ tipoDocumento }}</span>
+	</div>
+	<div *ngIf="!!form">
+		<form focusInvalidInput name="form" id="form" class="w-100-p" [formGroup]="form" (submit)="aceptar()" fxLayout="column">
+			<div fxLayout="row" class="py-16">
+				<mat-radio-group class="w-100-p" formControlName="tipoOpcionId" *ngFor="let opcion of listaTipoOpcion" (change)="onChangeTipoOpcion()">
+					<mat-radio-button [value]="opcion.id" [checked]="form.get('tipoOpcionId').value == opcion.id" fxFlex="0 0 25%" color="accent" >{{ opcion.valor }}</mat-radio-button>
+				</mat-radio-group>
+			</div>
+			<div fxLayout="row" class="pb-16" *ngIf="form.get('tipoOpcionId').value == 2000910 || form.get('tipoOpcionId').value == 2000911">
+				<mat-form-field appearance="outline" fxFlex="100">
+					<mat-label>Tipo de Vigencia</mat-label>
+					<mat-select formControlName="tipoVigenciaId" (selectionChange)="onChangeTipoVigencia()" required>
+						<mat-option>--</mat-option>
+						<mat-option *ngFor="let vigencia of listaTipoVigencia" [value]="vigencia.id">
+							{{ vigencia.valor }}
+						</mat-option>
+					</mat-select>
+					<mat-error *ngIf="(!!form.get('tipoVigenciaId').errors)">
+						{{validatorService.getMessage(form.get('tipoVigenciaId'))}}
+					</mat-error>
+				</mat-form-field>
+			</div>
+			<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid" class="pb-16" *ngIf="form.get('tipoVigenciaId').value == 2000920">
+				<mat-form-field appearance="outline" fxFlex="1 0 auto">
+					<mat-label>Unidad de Medida</mat-label>
+					<mat-select formControlName="tipoTiempoId" (selectionChange)="onChangeTipoTiempo()" required>
+						<mat-option>--</mat-option>
+						<mat-option *ngFor="let tiempo of listaTipoTiempo" [value]="tiempo.id">
+							{{ tiempo.valor }}
+						</mat-option>
+					</mat-select>
+					<mat-error *ngIf="(!!form.get('tipoTiempoId').errors)">
+						{{validatorService.getMessage(form.get('tipoTiempoId'))}}
+					</mat-error>
+				</mat-form-field>
+				<mat-form-field appearance="outline" fxFlex="1 0 auto" >
+					<mat-label>Cantidad</mat-label>
+					<input type="number" matInput formControlName="vigenciaCantidad" required>
+					<mat-error *ngIf="(!!form.get('vigenciaCantidad').errors)">
+						{{validatorService.getMessage(form.get('vigenciaCantidad'))}}
+					</mat-error>
+				</mat-form-field>
+			</div>
+		</form>
+	</div>
+	
+</mat-dialog-content>
+<mat-dialog-actions fxLayout="row" fxLayoutAlign="end end">
+	<div fxLayout="row" fxLayoutGap="5px" fxLayoutAlign="end end">
+		<button mat-button (click)="cancelar()">Cerrar</button> 
+		<button type="submit" mat-raised-button class="mat-accent mr-16" (click)="aceptar()">Aceptar</button>
+	</div>
+</mat-dialog-actions>

@@ -1,0 +1,99 @@
+<div id="ficha-configuracion-documentos-rh" class="page-layout carded left-sidebar fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <ficha-crud *ngIf="config" [config]="config" [isGuardadoPersonalizado]="true" (output)="guardar()"
+            [mostrarEditar]="true" [titulo]="titulo"
+            [subTituloTraduccion]="pageType" [form]="form" [currentId]="null" [pageType]="pageType"
+            [dataService]="_configuracionDocumentosService" class="header accent" fxLayout="column" fxLayoutAlign="center center"
+            fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center" (outputDesHabilitarCampos)="setEnable()" [isDesHabilitarPersonalizado]="true">
+        </ficha-crud>
+        <!-- / HEADER -->
+
+         <!-- CONTENT CARD -->
+        <div class="content-card">
+            <mat-progress-bar *ngIf="_configuracionDocumentosService?.cargando" [color]="'primary'" [mode]="'query'">
+            </mat-progress-bar>
+
+            <!-- CONTENT -->
+            <div class="content">
+                <form focusInvalidInput name="form" id="form" class="product w-100-p" fxLayout="column" fxFlex>
+                    <mat-tab-group>
+
+                        <mat-tab label="{{ proceso.valor }}" *ngFor="let proceso of listaTipoProcesoRH">
+                            <div class="tab-content pt-0 pr-24 pb-24 pl-24" fusePerfectScrollbar>
+                                <div class="p-15" fxLayout="row" fxLayoutGap="30px" fxLayoutAlign="end end">
+                                    <div fxLayout="row" fxLayoutGap="20px" fxLayoutAlign="center center">
+                                        <span class="dot grey-600-bg"></span>
+                                        <p>Opcional</p>
+                                    </div>
+                                    <div fxLayout="row" fxLayoutGap="20px" fxLayoutAlign="center center">
+                                        <span class="dot green-600-bg"></span>
+                                        <p>Oblitatorio</p>
+                                    </div>
+                                    <div fxLayout="row" fxLayoutGap="20px" fxLayoutAlign="center center">
+                                        <span class="dot red-600-bg"></span>
+                                        <p>No requerido</p>
+                                    </div>
+                                </div>
+                                <div fxLayout="row">
+                                    <mat-table fxFlex="fill" [dataSource]="cargaDataSource(proceso)" fusePerfectScrollbar>
+                                      
+                                        <div>
+                                            <!-- Position Column -->
+                                            <ng-container matColumnDef="TipoDocumento">
+                                                <mat-header-cell *matHeaderCellDef class="theme-green-light accent">Tipo de Documento</mat-header-cell>
+                                                <mat-cell *matCellDef="let data" class="green-600-fg"> {{ getTipoDocumento(data.documento.id) }} </mat-cell>
+                                            </ng-container>
+    
+                                            <ng-container [matColumnDef]="contrato.valor" *ngFor="let contrato of listaTipoContrato" >
+                                                <mat-header-cell *matHeaderCellDef class="theme-green-light accent">{{ contrato.valor }}</mat-header-cell>
+                                                <mat-cell *matCellDef="let data">  
+                                                    <button mat-raised-button type="button" class="w-90-p" id="{{ data.id + '-' + contrato.id }}" [ngClass]="getColor(proceso, contrato, data.documento)" (click)="!disabled ? openTipoOpcionModal(proceso, contrato, data.documento) : null">{{ getTipoOpcion(proceso, contrato, data.documento) }}</button> 
+                                                </mat-cell>
+                                            </ng-container>
+                                        </div>
+                                      
+                                        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                                        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+                                    </mat-table>
+                                </div>
+                                
+                            </div>
+                            
+
+                        </mat-tab>
+
+                        <!-- <mat-tab label="Renovación">
+                            
+                        </mat-tab>
+
+                        <mat-tab label="Baja">
+
+                           
+
+                        </mat-tab>
+
+                        <mat-tab label="Cambios">
+
+                           
+
+                        </mat-tab> -->
+
+                        
+
+                    </mat-tab-group>
+
+                </form>
+            </div>
+        </div>
+         <!-- / CONTENT CARD -->
+    </div>
+    <!-- - CENTER -->
+</div>

@@ -1,0 +1,316 @@
+<div id="solicitud-pago" class="pixvs-theme-listado page-layout carded fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <ficha-crud *ngIf="config" [config]="config" [cargando]="_solicitudRHService?.cargando" [isGuardadoPersonalizado]="true" (output)="guardar($event)" [mostrarAprobar]="pageType == 'alerta'" [mostrarRechazar]="pageType == 'alerta'" [ocultarGuardar]="pageType == 'alerta'"
+            [mostrarBorrar]="solicitud?.estatus?.valor == 'Aceptada'" [mostrarEditar]="false" [titulo]="titulo" [subTituloTraduccion]="pageType" [form]="form" [currentId]="currentId" [pageType]="pageType" [dataService]="_solicitudRHService" [historial]="historial || []"
+            class="header accent" fxLayout="column" fxLayoutAlign="center center" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center">
+        </ficha-crud>
+        <!-- / HEADER -->
+    <div class="content-card">
+        <!--<div style="height: 0px;">
+            <button debounceClick mat-mini-fab class="boton-refresh" (debounceClick)="recargar()"
+                matTooltip="{{ 'INTERFAZ.RECARGAR' | translate  }}">
+                <mat-icon class="s-16">refresh</mat-icon>
+            </button>
+        </div>-->
+
+        <!-- CONTENT -->
+            <div class="content" *ngIf="form">
+
+                <form focusInvalidInput name="form" id="form" [formGroup]="form" class="product w-100-p"
+                    fxLayout="column" fxFlex>
+
+                    <mat-tab-group>
+
+                        <mat-tab label="Datos Generales">
+
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+
+                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                    <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+                            <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                <pixvs-mat-select [matSelectCtrl]="form.get('empleado')" [datos]="empleados" [appearance]="'outline'" [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate" [campoValor]="'nombreCompleto'" [label]="'Empleado'" [required]="isRequired('empleado',form)"
+                                    fxFlex="1 0 auto">
+                                </pixvs-mat-select>
+                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 calc(16% - 10px)">
+                                    <mat-label>Fecha solicitud</mat-label>
+                                    <input matInput type="date" name="fechaCreacion" formControlName="fechaCreacion">
+                                    <mat-error *ngIf="(!!form.get('fechaCreacion').errors)">
+                                        {{validatorService.getMessage(form.get('fechaCreacion'))}}
+                                    </mat-error>
+                                </mat-form-field>
+
+                            </div>
+                            <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                <pixvs-mat-select [matSelectCtrl]="form.get('sucursal')" [datos]="sucursales" [appearance]="'outline'" [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate" [campoValor]="'nombre'" [label]="'Sucursal'" [required]="isRequired('sucursal',form)" fxFlex="1 0 auto">
+                                </pixvs-mat-select>
+                                <pixvs-mat-select [matSelectCtrl]="form.get('tipoPago')" [datos]="tipoSolicitudes" [appearance]="'outline'" [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate" [campoValor]="'valor'" [label]="'Tipo de solicitud'" [required]="isRequired('tipoPago',form)"
+                                    fxFlex="1 0 auto">
+                                </pixvs-mat-select>
+                            </div>
+
+                            <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                <mat-form-field
+                                    appearance="outline"
+                                    floatLabel="auto"
+                                    fxFlex="1 0 auto"
+                                >
+                                    <mat-label>Comentarios</mat-label>
+                                    <textarea
+                                        type="text"
+                                        matInput
+                                        name="comentarios"
+                                        formControlName="comentarios"
+                                        [required]="isRequired('comentarios',form)"
+                                    ></textarea>
+                                    <mat-error *ngIf="(!!form.get('comentarios').errors)">
+                                        {{validatorService.getMessage(form.get('comentarios'))}}
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                        
+
+                            <div fxlayout="row" fxlayoutalign="start center" class="my-20" style="display: flex; border-bottom: solid 1px lightgray;">
+                                <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font">attach_money</mat-icon>
+                                <div class="h2 secondary-text ng-tns-c345-79">Datos del pago</div>
+                            </div>
+
+                            <div *ngIf="!!retiroCajaAhorroGroup && solicitudSelected==ControlesMaestrosMultiples.CMM_CPXSPRH_TipoPago.RETIRO_CAJA_AHORRO" name="retiroCajaAhorroGroup">
+                                <form id="retiroCajaAhorroGroup" [formGroup]="retiroCajaAhorroGroup" class="product w-100-p" fxLayout="column" fxFlex>
+                                    <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                        <pixvs-mat-select [matSelectCtrl]="retiroCajaAhorroGroup.get('tipoRetiro')" [datos]="tipoRetiros" [appearance]="'outline'" [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate" [campoValor]="'valor'" [label]="'Tipo de retiro'" [required]="isRequired('tipoRetiro',retiroCajaAhorroGroup)"
+                                            fxFlex="1 0 auto">
+                                        </pixvs-mat-select>
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                            <mat-label>Ahorro acumulado</mat-label>
+                                            <input type="number" matInput name="ahorroAcumulado" formControlName="ahorroAcumulado" required="{{ isRequired('ahorroAcumulado', retiroCajaAhorroGroup) }}">
+                                            <mat-error *ngIf="(!!retiroCajaAhorroGroup.get('ahorroAcumulado').errors)">
+                                                {{validatorService.getMessage(retiroCajaAhorroGroup.get('ahorroAcumulado'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                            <mat-label>Cantidad a retirar</mat-label>
+                                            <input type="number" matInput name="cantidadRetirar" formControlName="cantidadRetirar" required="{{ isRequired('cantidadRetirar', retiroCajaAhorroGroup) }}">
+                                            <mat-error *ngIf="(!!retiroCajaAhorroGroup.get('cantidadRetirar').errors)">
+                                                {{validatorService.getMessage(retiroCajaAhorroGroup.get('cantidadRetirar'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+                                    <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                            <mat-label>Motivo del retiro</mat-label>
+                                            <input type="text" matInput name="motivoRetiro" formControlName="motivoRetiro" required="{{ isRequired('motivoRetiro', retiroCajaAhorroGroup) }}">
+                                            <mat-error *ngIf="(!!retiroCajaAhorroGroup.get('motivoRetiro').errors)">
+                                                {{validatorService.getMessage(retiroCajaAhorroGroup.get('motivoRetiro'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+                                        <ng-container *ngIf="pageType == 'nuevo' || esCopia">
+                                            <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font" (click)="pdf.click(); $event.preventDefault()" style="cursor: pointer;">attach_file</mat-icon><input #pdf type="file" (change)="pdfChangeEvent($event)" style="display:none;" />
+                                        </ng-container>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div *ngIf="!!pensionAlimenticiaGroup && solicitudSelected==2000357">
+                                <form name="pensionAlimenticiaGroup" id="pensionAlimenticiaGroup" [formGroup]="pensionAlimenticiaGroup" class="product w-100-p" fxLayout="column" fxFlex>
+                                    <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                            <mat-label>Nombre del beneficiario</mat-label>
+                                            <input type="text" matInput name="nombreBeneficiario" formControlName="nombreBeneficiario" required="{{ isRequired('nombreBeneficiario', pensionAlimenticiaGroup) }}">
+                                            <mat-error *ngIf="(!!pensionAlimenticiaGroup.get('nombreBeneficiario').errors)">
+                                                {{validatorService.getMessage(pensionAlimenticiaGroup.get('nombreBeneficiario'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+                                    <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                            <mat-label>Número de resolución judicial</mat-label>
+                                            <input type="number" matInput name="numeroResolucion" formControlName="numeroResolucion" required="{{ isRequired('numeroResolucion', pensionAlimenticiaGroup) }}">
+                                            <mat-error *ngIf="(!!pensionAlimenticiaGroup.get('numeroResolucion').errors)">
+                                                {{validatorService.getMessage(pensionAlimenticiaGroup.get('numeroResolucion'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                            <mat-label>Cantidad quincenal</mat-label>
+                                            <input type="number" matInput name="monto" formControlName="monto" required="{{ isRequired('monto', pensionAlimenticiaGroup) }}">
+                                            <mat-error *ngIf="(!!pensionAlimenticiaGroup.get('monto').errors)">
+                                                {{validatorService.getMessage(pensionAlimenticiaGroup.get('monto'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+                                        <ng-container *ngIf="pageType == 'nuevo' || esCopia">
+                                            <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font" (click)="pdf.click(); $event.preventDefault()" style="cursor: pointer;">attach_file</mat-icon><input #pdf type="file" (change)="pdfChangeEvent($event)" style="display:none;" />
+                                        </ng-container>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div *ngIf="solicitudSelected == ControlesMaestrosMultiples.CMM_CPXSPRH_TipoPago.PAGO_BECARIO">
+                                <form *ngIf="!!form" name="form" id="form" [formGroup]="form" class="product w-100-p" fxLayout="column" fxFlex>
+                                    <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                            <mat-label>Importe</mat-label>
+                                            <input type="number" matInput name="monto" formControlName="monto" required="{{ isRequired('monto', form) }}">
+                                            <mat-error *ngIf="(!!form.get('monto').errors)">
+                                                {{validatorService.getMessage(form.get('monto'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+                                        <ng-container *ngIf="pageType == 'nuevo' || esCopia">
+                                            <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font" (click)="pdf.click(); $event.preventDefault()" style="cursor: pointer;">attach_file</mat-icon><input #pdf type="file" (change)="pdfChangeEvent($event)" style="display:none;" />
+                                        </ng-container>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div *ngIf="!!incapacidadGroup && solicitudSelected==ControlesMaestrosMultiples.CMM_CPXSPRH_TipoPago.INCAPACIDAD_PERSONAL">
+                                <form id="incapacidadGroup" [formGroup]="incapacidadGroup" class="product w-100-p" fxLayout="column" fxFlex>
+                                    <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                            <mat-label>Folio de la incapacidad</mat-label>
+                                            <input type="text" matInput name="folioIncapacidad" formControlName="folioIncapacidad" required="{{ isRequired('folioIncapacidad', incapacidadGroup) }}">
+                                            <mat-error *ngIf="(!!incapacidadGroup.get('folioIncapacidad').errors)">
+                                                {{validatorService.getMessage(incapacidadGroup.get('folioIncapacidad'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 calc(16% - 10px)">
+                                            <mat-label>Fecha de inicio</mat-label>
+                                            <input matInput type="date" name="fechaInicio" formControlName="fechaInicio">
+                                            <mat-error *ngIf="(!!incapacidadGroup.get('fechaInicio').errors)">
+                                                {{validatorService.getMessage(incapacidadGroup.get('fechaInicio'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 calc(16% - 10px)">
+                                            <mat-label>Fecha de fin</mat-label>
+                                            <input matInput type="date" name="fechaFin" formControlName="fechaFin" [min]="!!incapacidadGroup.get('fechaInicio').value">
+                                            <mat-error *ngIf="(!!incapacidadGroup.get('fechaFin').errors)">
+                                                {{validatorService.getMessage(incapacidadGroup.get('fechaFin'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+
+                                    <div *ngIf="incapacidadDetalleTipo.length > 0" fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                        <div fxlayout="row" fxlayoutalign="start center" class="my-20" style="display: flex; border-bottom: solid 1px lightgray;">
+                                            <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font">attach_money</mat-icon>
+                                            <div class="h2 secondary-text ng-tns-c345-79">Incapacidad</div>
+                                        </div>
+                                        <table mat-table [dataSource]="incapacidadDetalleTipo" class="mat-elevation-z8" style="width: 100%;">
+                                            <!-- Tipo incapacidad Column -->
+                                            <ng-container matColumnDef="tipo.valor">
+                                                <th mat-header-cell *matHeaderCellDef> Tipo de incapacidad </th>
+                                                <td mat-cell *matCellDef="let element"> {{element.tipo?.valor}} </td>
+                                                <td mat-footer-cell *matFooterCellDef> <b>Total</b> </td>
+                                            </ng-container>
+
+                                            <!-- SDI Column -->
+                                            <ng-container matColumnDef="salarioDiario">
+                                                <th mat-header-cell *matHeaderCellDef> S.D.I. </th>
+                                                <td mat-cell *matCellDef="let element; let i = index">
+                                                    <input matInput type="text" [(ngModel)]="incapacidadDetalleTipo[i].salarioDiario" [ngModelOptions]="{standalone: true}" prefix="$ " mask="separator.2" thousandSeparator="," [readonly]="pageType != 'nuevo'">
+                                                </td>
+                                                <td mat-footer-cell *matFooterCellDef></td>
+                                            </ng-container>
+
+                                            <ng-container matColumnDef="porcentaje">
+                                                <th mat-header-cell *matHeaderCellDef> Porcentaje </th>
+                                                <td mat-cell *matCellDef="let element; let i = index">
+                                                    <input matInput type="number" [(ngModel)]="incapacidadDetalleTipo[i].porcentaje" [ngModelOptions]="{standalone: true}" [readonly]="pageType != 'nuevo'">
+                                                </td>
+                                                <td mat-footer-cell *matFooterCellDef></td>
+                                            </ng-container>
+
+                                            <!-- Dias Column -->
+                                            <ng-container matColumnDef="dias">
+                                                <th mat-header-cell *matHeaderCellDef> Días </th>
+                                                <td mat-cell type="number" *matCellDef="let element; let i = index">
+                                                    <input matInput type="text" [(ngModel)]="incapacidadDetalleTipo[i].dias" [ngModelOptions]="{standalone: true}" [readonly]="pageType != 'nuevo'">
+                                                </td>
+                                                <td mat-footer-cell *matFooterCellDef></td>
+                                            </ng-container>
+
+                                            <!-- Dias Column -->
+                                            <ng-container matColumnDef="importeTotal">
+                                                <th mat-header-cell *matHeaderCellDef> Importe total </th>
+                                                <td mat-cell *matCellDef="let element; let i = index">
+                                                    {{(incapacidadDetalleTipo[i].salarioDiario * (incapacidadDetalleTipo[i].porcentaje / 100) * incapacidadDetalleTipo[i].dias) | currency}}
+                                                </td>
+                                                <td mat-footer-cell *matFooterCellDef> {{getTotalCostTipo() | currency}} </td>
+                                            </ng-container>
+
+                                            <tr mat-header-row *matHeaderRowDef="displayedColumnsTipo"></tr>
+                                            <tr mat-row *matRowDef="let row; columns: displayedColumnsTipo;"></tr>
+                                            <tr mat-footer-row *matFooterRowDef="displayedColumnsTipo"></tr>
+                                        </table>
+                                    </div>
+                                    <br>
+
+                                    <div *ngIf="incapacidadDetalleMovimiento.length > 0" fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                        <div fxlayout="row" fxlayoutalign="start center" class="my-20" style="display: flex; border-bottom: solid 1px lightgray;">
+                                            <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font">query_builder</mat-icon>
+                                            <div class="h2 secondary-text ng-tns-c345-79">Deducciones</div>
+                                        </div>
+                                        <table mat-table [dataSource]="incapacidadDetalleMovimiento" class="mat-elevation-z8" style="width: 100%;">
+                                            <!-- Tipo incapacidad Column -->
+                                            <ng-container matColumnDef="tipoMovimiento.valor">
+                                                <th mat-header-cell *matHeaderCellDef> Tipo de deducción </th>
+                                                <td mat-cell *matCellDef="let element"> {{element.tipoMovimiento?.valor}} </td>
+                                                <td mat-footer-cell *matFooterCellDef> <b>Total</b> </td>
+                                            </ng-container>
+
+                                            <!-- SDI Column -->
+                                            <ng-container matColumnDef="salarioDiario">
+                                                <th mat-header-cell *matHeaderCellDef style="text-align: end"> Importe </th>
+                                                <td mat-cell *matCellDef="let element; let i = index">
+                                                    <input matInput type="text" [(ngModel)]="incapacidadDetalleMovimiento[i].salarioDiario" [ngModelOptions]="{standalone: true}" style="text-align: end" name="inputIncapacidad" prefix="$ " mask="separator.2" thousandSeparator="," [readonly]="pageType != 'nuevo'">
+                                                </td>
+                                                <td mat-footer-cell *matFooterCellDef style="text-align: end"> {{getTotalCostMovimiento() | currency}} </td>
+                                            </ng-container>
+
+                                            <tr mat-header-row *matHeaderRowDef="displayedColumnsMovimiento"></tr>
+                                            <tr mat-row *matRowDef="let row; columns: displayedColumnsMovimiento;"></tr>
+                                            <tr mat-footer-row *matFooterRowDef="displayedColumnsMovimiento"></tr>
+                                        </table>
+                                        <div fxlayout="row" fxlayoutalign="start center" class="my-20" style="display: flex; border-bottom: solid 1px; width: 100%">
+                                            <div class="h2 secondary-text ng-tns-c345-79" style="text-align: end; width: 100%">Total: {{(getTotalCostTipo()-getTotalCostMovimiento()) | currency}}</div>
+                                            <ng-container *ngIf="pageType == 'nuevo' || esCopia">
+                                                <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font" (click)="pdf.click(); $event.preventDefault()" style="cursor: pointer;">attach_file</mat-icon><input #pdf type="file" (change)="pdfChangeEvent($event)" style="display:none;" />
+                                            </ng-container>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                <div fxLayout="column" fxFlex>
+                                    <div *ngIf="archivos?.length > 0" fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid" style="padding: 0px 15px 0px 15px;">
+                                        <!--<button *ngFor="let archivo of archivos" mat-stroked-button color="accent" (click)="descargarPDF(archivo)" fxFlex="1 0 calc(25% - 10px)" class="mb-32 text-truncate">{{archivo?.nombreOriginal}}</button>-->
+                                        <div *ngFor="let archivo of archivos" class="attachment-list" fxFlex="1 0 calc(25% - 10px)">
+                                            <div class="attachment" (click)="descargarPDF(archivo)" style="cursor: pointer">
+                                                <div fxFlex="1 0 80%" class="text-truncate">
+                                                    <span class="filename" dir="rtl">{{archivo?.nombreOriginal}}</span>
+                                                </div>
+
+                                                <button mat-icon-button aria-label="Download attachment" fxFlex="1 0 20%">
+                                                        <mat-icon class="s-16">{{ pageType != 'nuevo' ? 'cloud_download': 'cloud_upload' }}</mat-icon>
+                                                    </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                    </mat-tab>
+                </mat-tab-group>
+            </form>
+        </div>
+    </div>
+
+    </div>
+
+</div>

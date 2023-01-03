@@ -1,0 +1,25 @@
+:host {
+    display: flex;
+    flex: 0 0 auto;
+    z-index: 3;
+
+   .logo-icon {
+            width: 25px;
+            height: 25px;
+    }
+
+    .mat-toolbar-row, .mat-toolbar-single-row {
+        height: 40px;
+    }
+
+    .mat-toolbar {
+        background: inherit;
+        color: inherit;
+        box-shadow: 0px -1px 1px -1px rgba(0, 0, 0, 0.2), 0px 0px 1px 0px rgba(0, 0, 0, 0.14), 0px -1px 3px 0px rgba(0, 0, 0, 0.12);
+    }
+
+    &.above {
+        position: relative;
+        z-index: 99;
+    }
+}

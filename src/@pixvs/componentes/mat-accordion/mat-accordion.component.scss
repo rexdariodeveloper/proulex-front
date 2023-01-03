@@ -1,0 +1,27 @@
+@import "@fuse/scss/fuse";
+
+pixvs-mat-accordion {
+    div {
+        span {
+            color: rgba(0,0,0,0.5);
+        }
+    }
+
+    mat-accordion {
+        mat-expansion-panel {
+            table {
+                tr {
+                    border-bottom: lightgray solid 1px;
+
+                        .text-header {
+                            color: rgba(0,0,0,0.5);
+                        }
+
+                        .text-detail {
+                            color: rgba(0,0,0,0.5);
+                        }
+                }
+            }
+        }
+    }
+}

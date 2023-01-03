@@ -1,0 +1,271 @@
+<div
+	id="ficha-recibo"
+	class="pixvs-theme-listado page-layout carded fullwidth inner-scroll"
+>
+
+	<!-- TOP BACKGROUND -->
+	<div class="top-bg accent"></div>
+	<!-- / TOP BACKGROUND -->
+
+	<!-- CENTER -->
+	<div class="center">
+
+		<!-- HEADER -->
+		<ficha-crud
+			*ngIf="config"
+			[config]="config"
+			[isGuardadoPersonalizado]="true"
+			(output)="guardar()"
+			[mostrarBorrar]="false"
+			[mostrarEditar]="false"
+			[mostrarEnviar]="false"
+			[titulo]="titulo"
+			[subTituloTraduccion]="pageType"
+			[form]="form"
+			[currentId]="currentId"
+			[pageType]="pageType"
+			[dataService]="_reciboOrdenCompraService"
+			class="header accent"
+			fxLayout="column"
+			fxLayoutAlign="center center"
+			fxLayout.gt-sm="row"
+			fxLayoutAlign.gt-sm="space-between center"
+		>
+		</ficha-crud>
+		<!-- / HEADER -->
+
+		<!-- CONTENT CARD -->
+		<div class="content-card">
+			<mat-progress-bar
+				*ngIf="_reciboOrdenCompraService?.cargando"
+				[color]="'primary'"
+				[mode]="'query'"
+			>
+			</mat-progress-bar>
+
+			<!-- CONTENT -->
+			<div class="content">
+
+				<form
+					focusInvalidInput
+					name="form"
+					id="form"
+					[formGroup]="form"
+					class="product w-100-p"
+					fxLayout="column"
+					fxFlex
+				>
+
+					<mat-tab-group>
+
+						<mat-tab label="Artículos">
+
+							<div
+								class="tab-content p-24"
+								fusePerfectScrollbar
+							>
+
+								<div
+									fxLayout="row wrap"
+									fxLayoutGap="20px grid"
+								>
+									<div
+										fxLayout="column"
+										fxFlex="100"
+										fxFlex.gt-sm="100"
+										fxFlex.gt-md="100"
+									>
+
+										<div fxLayout="row" fxLayoutAlign="start center" class="pb-16">
+											<mat-icon class="m-0 mr-16">account_circle</mat-icon>
+											<div class="h2 secondary-text">Proveedor</div>
+										</div>
+
+										<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+											<div class="h2 secondary-text" fxFlex="1 0 25">Proveedor</div>
+
+											<div class="h2 secondary-text" fxFlex="1 0 25">Fecha promesa</div>
+
+											<div class="h2 secondary-text" fxFlex="1 0 25">Fecha recibo</div>
+
+											<div class="h2 secondary-text" fxFlex="1 0 25">Localidad</div>
+										</div>
+
+										<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+											<div class="h3" fxFlex="1 0 25">{{ ordenCompra?.proveedor?.nombre }}</div>
+
+											<div class="h3" fxFlex="1 0 25">{{ ordenCompra?.fechaRequerida | date:'dd/MM/yyyy' }}</div>
+
+											<div class="h3" fxFlex="1 0 25">{{ fechaActual | date:'dd/MM/yyyy' }}</div>
+
+											<pixvs-mat-select [matSelectCtrl]="localidadControl" [datos]="localidades"
+												[appearance]="'outline'"
+												[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+												[campoValor]="'nombre'" [label]="'Localidad'" [required]="isRequired('localidadRecibir')"
+												fxFlex="1 0 25">
+											</pixvs-mat-select>
+										</div>
+
+										<div fxLayout="column" class="w-100-p h-100-p">
+											<mat-table #tableDetalles
+												fxFlex="fill"
+												[dataSource]="dataSourceDetalles"
+												matSort
+												[@animateStagger]="{value:'50'}"
+												id="tableDetalles"
+												fusePerfectScrollbar
+											>
+												
+												<ng-container matColumnDef="codigoArticulo">
+													<mat-header-cell *matHeaderCellDef> Código artículo </mat-header-cell>
+													<mat-cell *matCellDef="let detalle"> {{detalle.articulo?.codigoArticulo}} </mat-cell>
+												</ng-container>
+
+												<ng-container matColumnDef="nombre">
+													<mat-header-cell *matHeaderCellDef> Nombre </mat-header-cell>
+													<mat-cell *matCellDef="let detalle"> {{detalle.articulo?.nombreArticulo}} </mat-cell>
+												</ng-container>
+
+												<ng-container matColumnDef="um">
+													<mat-header-cell *matHeaderCellDef> UM </mat-header-cell>
+													<mat-cell *matCellDef="let detalle"> {{detalle.unidadMedida?.nombre}} </mat-cell>
+												</ng-container>
+
+												<ng-container matColumnDef="cantidadRequerida">
+													<mat-header-cell *matHeaderCellDef> Cantidad requerida </mat-header-cell>
+													<mat-cell *matCellDef="let detalle"> {{detalle.cantidad}} </mat-cell>
+												</ng-container>
+
+												<ng-container matColumnDef="cantidadPendiente">
+													<mat-header-cell *matHeaderCellDef> Cantidad pendiente </mat-header-cell>
+													<mat-cell *matCellDef="let detalle"> {{detalle.cantidadPendiente}} </mat-cell>
+												</ng-container>
+
+												<ng-container matColumnDef="cantidadRecibida">
+													<mat-header-cell *matHeaderCellDef> Cantidad recibida </mat-header-cell>
+													<mat-cell *matCellDef="let detalle">
+														<mat-form-field *ngIf="detalle.cantidadPendiente > 0"
+															appearance="outline"
+															floatLabel="auto"
+															fxFlex="90%"
+														>
+															<mat-label>Cantidad recibida</mat-label>
+															<input
+																type="text"
+																matInput
+																[formControl]="detalle.cantidadRecibidaControl"
+																mask="separator.6" thousandSeparator=","
+															>
+														</mat-form-field>
+													</mat-cell>
+												</ng-container>
+
+												<ng-container matColumnDef="acciones">
+													<mat-header-cell *matHeaderCellDef>
+														<span class="text-center text-nowrap w-100-p"></span>
+													</mat-header-cell>
+													<mat-cell *matCellDef="let detalle">
+														<div class="w-100-p" fxLayout="row" fxLayoutAlign="center center">
+															<button *ngIf="detalle?.comentarios || detalle?.requisicionPartida?.comentarios" mat-icon-button matTooltip="Comentarios" (click)="onModalComentarios(detalle)">
+																<mat-icon>message</mat-icon>
+															</button>
+															<button *ngIf="detalle?.requisicionPartida?.imagenArticulo" mat-icon-button matTooltip="Descargar imagen" (click)="onMostrarImagen(detalle)">
+																<mat-icon>image</mat-icon>
+															</button>
+														</div>
+													</mat-cell>
+												</ng-container>
+												
+												
+												<mat-header-row *matHeaderRowDef="displayedColumnsDetalles; sticky:true"></mat-header-row>
+												<mat-row *matRowDef="let row; columns: displayedColumnsDetalles;"></mat-row>
+											</mat-table>
+										</div>
+
+									</div>
+
+								</div>
+
+							</div>
+
+						</mat-tab>
+
+						<mat-tab label="Evidencia y Factura">
+
+							<div
+								class="tab-content p-24"
+								fusePerfectScrollbar
+							>
+
+								<div
+									fxLayout="row wrap"
+									fxLayoutGap="20px grid"
+								>
+
+									<div
+										fxLayout="column"
+										fxFlex="100"
+										fxFlex.gt-sm="100"
+										fxFlex.gt-md="100"
+									>
+										<div fxLayout="column" class="w-100-p h-100-p">
+
+											<button mat-mini-fab class="btn-nuevo" (click)="nuevoArchivo()">
+												<mat-icon>add</mat-icon>
+											</button>
+
+											<mat-table #tableArchivos
+												fxFlex="fill"
+												[dataSource]="dataSourceArchivos"
+												matSort
+												[@animateStagger]="{value:'50'}"
+												id="tableArchivos"
+												fusePerfectScrollbar
+											>
+												<ng-container matColumnDef="nombre">
+													<mat-header-cell *matHeaderCellDef> Nombre </mat-header-cell>
+													<mat-cell *matCellDef="let archivo"> {{archivo.nombreOriginal}} </mat-cell>
+												</ng-container>
+
+												<ng-container matColumnDef="tipo">
+													<mat-header-cell *matHeaderCellDef> Tipo </mat-header-cell>
+													<mat-cell *matCellDef="let archivo"> {{archivo.tipo.valor}} </mat-cell>
+												</ng-container>
+
+												<ng-container matColumnDef="creadoPor">
+													<mat-header-cell *matHeaderCellDef> Creado por </mat-header-cell>
+													<mat-cell *matCellDef="let archivo"> {{(archivo.creadoPor || usuarioActual)?.nombreCompleto}} </mat-cell>
+												</ng-container>
+
+												<ng-container matColumnDef="fecha">
+													<mat-header-cell *matHeaderCellDef> Fecha </mat-header-cell>
+													<mat-cell *matCellDef="let archivo"> {{(archivo.fechaCreacion || fechaActual) | date:'dd/MM/yyyy'}} </mat-cell>
+												</ng-container>
+
+												<mat-header-row *matHeaderRowDef="displayedColumnsArchivos; sticky:true"></mat-header-row>
+												<mat-row *matRowDef="let row; columns: displayedColumnsArchivos;"></mat-row>
+											</mat-table>
+										</div>
+									</div>
+
+								</div>
+
+							</div>
+
+						</mat-tab>
+
+					</mat-tab-group>
+
+				</form>
+
+
+			</div>
+			<!-- / CONTENT -->
+
+		</div>
+		<!-- / CONTENT CARD -->
+
+
+	</div>
+	<!-- / CENTER -->
+</div>

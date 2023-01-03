@@ -1,0 +1,3 @@
+<pixvs-bloqueo-pantalla [style.z-index]="10000" *ngIf="polizasService.cargando || _fichasDataService.cargando">
+</pixvs-bloqueo-pantalla>
+<ficha-listado #ficha class="page-layout carded fullwidth inner-scroll" [config]="config" [filtros]="regConfig" [filtrosOpciones]="[]" (outputMenu)="generarReporte($event)" (clickButton)="click($event)"></ficha-listado>

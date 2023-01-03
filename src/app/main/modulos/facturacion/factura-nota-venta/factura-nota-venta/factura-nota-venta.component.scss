@@ -1,0 +1,32 @@
+@import "@fuse/scss/fuse";
+
+#ficha-CRUD {
+	>.center {
+
+		// Header
+		>.header {
+			height: 100px !important;
+			min-height: 100px !important;
+			max-height: 100px !important;
+		}
+	}
+
+	.btn-nueva-nota-venta {
+		position: absolute;
+		top: 95px;
+		right: 15px;
+		z-index: 200;
+	}
+
+	.btn-nueva-relacion {
+		position: absolute;
+		top: 25px;
+		right: 15px;
+		z-index: 200;
+	}
+
+	.totales {
+		margin-left: auto;
+		margin-right: 0;
+	}
+}

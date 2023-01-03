@@ -1,0 +1,14 @@
+@mixin perfil-theme($theme) {
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+  $is-dark: map-get($theme, is-dark);
+  $accent: map-get($theme, accent);
+
+  perfil {
+    .header {
+      background: linear-gradient(0deg, mat-color($accent, 600, 0.7), mat-color($accent, 900, 0.9)) 0% 0% / cover,
+        url("/assets/images/backgrounds/light-material-bg.jpg") no-repeat;
+      background-size: cover;
+    }
+  }
+}

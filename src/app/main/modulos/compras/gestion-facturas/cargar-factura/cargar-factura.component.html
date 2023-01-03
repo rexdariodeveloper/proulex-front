@@ -1,0 +1,707 @@
+<div
+	id="ficha-cargar-factura"
+	class="pixvs-theme-listado page-layout carded fullwidth inner-scroll"
+>
+
+	<!-- TOP BACKGROUND -->
+	<div class="top-bg accent"></div>
+	<!-- / TOP BACKGROUND -->
+
+	<!-- CENTER -->
+	<div class="center">
+
+		<!-- HEADER -->
+		<ficha-crud
+			*ngIf="config"
+			[config]="config"
+			[isGuardadoPersonalizado]="true"
+			[isEnviarPersonalizado]="true"
+			(output)="guardar()"
+			[mostrarBorrar]="true"
+			[mostrarEditar]="mostrarEditar"
+			[mostrarEnviar]="false"
+			[titulo]="titulo"
+			[subTituloTraduccion]="pageType"
+			[form]="form"
+			[currentId]="currentId"
+			[pageType]="pageType"
+			[dataService]="_cargarFacturaService"
+			class="header accent"
+			fxLayout="column"
+			fxLayoutAlign="center center"
+			fxLayout.gt-sm="row"
+			fxLayoutAlign.gt-sm="space-between center"
+		>
+		</ficha-crud>
+		<!-- / HEADER -->
+
+		<!-- CONTENT CARD -->
+		<div class="content-card">
+			<mat-progress-bar
+				*ngIf="_cargarFacturaService?.cargando"
+				[color]="'primary'"
+				[mode]="'query'"
+			>
+			</mat-progress-bar>
+
+			<!-- CONTENT -->
+			<div class="content">
+
+				<form
+					focusInvalidInput
+					name="form"
+					id="form"
+					[formGroup]="form"
+					class="product w-100-p"
+					fxLayout="column"
+					fxFlex
+				>
+
+					<div
+						fxLayout="row wrap"
+						fxLayoutGap="20px grid"
+						class="px-20 py-40 w-100-p"
+					>
+						<div
+							fxFlex="66"
+							fxLayout="column"
+						>
+							<div fxLayout="row wrap" fxLayoutAlign="start start" fxLayoutGap="10px grid">
+								<pixvs-mat-select *ngIf="editarProveedor" [matSelectCtrl]="proveedorControl" [datos]="proveedores"
+									[appearance]="'outline'"
+									[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+									[campoValor]="['codigo','nombre','rfc']" [label]="'Proveedor'" [required]="isRequired('proveedor')"
+									fxFlex="1 0 auto">
+								</pixvs-mat-select>
+
+								<mat-form-field *ngIf="!editarProveedor"
+									appearance="outline"
+									floatLabel="auto"
+									fxFlex="1 0 auto"
+								>
+									<mat-label>Proveedor</mat-label>
+									<input
+										matInput
+										[value]="proveedorControl?.value?.nombre"
+										readonly
+									>
+								</mat-form-field>
+
+								<div fxFlex="50"
+									fxLayout="row wrap"
+								>
+									<button mat-button type="button" fxFlex="50" class="py-12 px-4" (click)="pdfInput.click()" [disabled]="!proveedorRelacionar?.id || !!factura?.id">
+										
+										<ng-container *ngIf="!!archivoPDF?.id">
+											<span class="text-truncate">{{ archivoPDF.nombreOriginal }}</span>
+										</ng-container>
+										<ng-container *ngIf="!archivoPDF?.id">
+											PDF *
+										</ng-container>
+										
+										<input
+											#pdfInput
+											type="file"
+											accept=".pdf"
+											(change)="pdfChangeEvent($event)"
+											style="display:none;"
+										/>
+									</button>
+									<button mat-button type="button" fxFlex="50" class="py-12 px-4" (click)="xmlInput.click()" [disabled]="!proveedorRelacionar?.id || !!factura?.id">
+										<ng-container *ngIf="!!archivoXML?.id">
+											<span class="text-truncate">{{ archivoXML.nombreOriginal }}</span>
+										</ng-container>
+										<ng-container *ngIf="!archivoXML?.id">
+											XML *
+										</ng-container>
+										
+										<input
+											#xmlInput
+											type="file"
+											accept=".xml"
+											(change)="xmlChangeEvent($event)"
+											style="display:none;"
+										/>
+									</button>
+								</div>
+							</div>
+
+							<div fxLayout="row wrap" fxLayoutAlign="start start" fxLayoutGap="10px grid">
+								<mat-form-field
+									appearance="outline"
+									floatLabel="auto"
+									fxFlex="1 0 auto"
+								>
+									<mat-label>Folio factura</mat-label>
+									<input
+										type="text"
+										matInput
+										name="codigoRegistro"
+										formControlName="codigoRegistro"
+										readonly
+									>
+								</mat-form-field>
+
+								<mat-form-field
+									appearance="outline"
+									floatLabel="auto"
+									fxFlex="1 0 auto"
+								>
+									<mat-label>Fecha factura</mat-label>
+									<input
+										matInput
+										[matDatepicker]="fechaRegistro"
+										name="fechaRegistro"
+										formControlName="fechaRegistro"
+										readonly
+									>
+									<mat-datepicker-toggle
+										matSuffix
+										[for]="fechaRegistro"
+									>
+									</mat-datepicker-toggle>
+									<mat-datepicker
+										#fechaRegistro
+										disabled
+									></mat-datepicker>
+								</mat-form-field>
+
+								<mat-form-field
+									appearance="outline"
+									floatLabel="auto"
+									fxFlex="1 0 auto"
+								>
+									<mat-label>Monto</mat-label>
+									<input
+										type="text"
+										matInput
+										[value]="form?.controls['montoRegistro']?.value | NumeroFormatoPipe"
+										readonly
+									>
+								</mat-form-field>
+
+								<mat-form-field
+									appearance="outline"
+									floatLabel="auto"
+									fxFlex="1 0 auto"
+								>
+									<mat-label>Moneda</mat-label>
+									<input
+										type="text"
+										matInput
+										name="monedaCodigo"
+										formControlName="monedaCodigo"
+										readonly
+									>
+								</mat-form-field>
+							</div>
+
+							<div fxLayout="row wrap" fxLayoutAlign="start start" fxLayoutGap="10px grid">
+								<mat-form-field
+									appearance="outline"
+									floatLabel="auto"
+									fxFlex="1 0 auto"
+								>
+									<mat-label>Vencimiento</mat-label>
+									<input
+										matInput
+										[matDatepicker]="fechaVencimiento"
+										[formControl]="fechaVencimientoControl"
+										readonly
+									>
+									<mat-datepicker-toggle
+										matSuffix
+										[for]="fechaVencimiento"
+									>
+									</mat-datepicker-toggle>
+									<mat-datepicker
+										#fechaVencimiento
+										disabled
+									></mat-datepicker>
+								</mat-form-field>
+
+								<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+									<mat-label>Dias de crédito</mat-label>
+									<input matInput type="number" [formControl]="diasCreditoControl"
+										required="{{ isRequired('diasCredito') }}" [readonly]="!!factura?.id">
+									<mat-error *ngIf="(!!diasCreditoControl?.errors)">
+										{{validatorService.getMessage(diasCreditoControl)}}
+									</mat-error>
+								</mat-form-field>
+
+								<pixvs-mat-select [matSelectCtrl]="tipoPagoControl" [datos]="tiposPago"
+									[appearance]="'outline'"
+									[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+									[campoValor]="['valor']" [label]="'Tipo de pago'" [required]="isRequired('tipoPago')"
+									fxFlex="1 0 auto">
+								</pixvs-mat-select>
+
+								<mat-form-field
+									appearance="outline"
+									floatLabel="auto"
+									fxFlex="1 0 auto"
+								>
+									<mat-label>Fecha recibo factura</mat-label>
+									<input
+										matInput
+										[matDatepicker]="fechaReciboRegistro"
+										name="fechaReciboRegistro"
+										formControlName="fechaReciboRegistro"
+										readonly
+									>
+									<mat-datepicker-toggle
+										matSuffix
+										[for]="fechaReciboRegistro"
+									>
+									</mat-datepicker-toggle>
+									<mat-datepicker
+										#fechaReciboRegistro
+										[disabled]="!!factura?.id"
+									></mat-datepicker>
+								</mat-form-field>
+							</div>
+
+							<div fxLayout="row wrap" fxLayoutAlign="start start" fxLayoutGap="10px grid">
+								<mat-form-field
+                                    appearance="outline"
+                                    floatLabel="auto"
+                                    fxFlex="1 0 auto"
+                                >
+                                    <mat-label>Comentarios</mat-label>
+                                    <textarea
+                                        type="text"
+                                        matInput
+                                        name="comentarios"
+                                        formControlName="comentarios"
+                                    ></textarea>
+                                </mat-form-field>
+							</div>
+						</div>
+
+						<div
+							fxFlex="33"
+							fxLayout="row wrap"
+							fxLayoutGap="20px grid"
+						>
+							<table class="tabla-totales w-100-p">
+								<thead>
+									<tr>
+										<th></th>
+										<th class="text-center">XML</th>
+										<th class="text-center">Relación OC</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>Subtotal</td>
+										<td class="text-right text-nowrap px-4">{{ (jsonFacturaXML?.datosFactura?.subtotal || 0) | NumeroFormatoPipe }}</td>
+										<td class="text-right text-nowrap px-4">{{ (this | SubtotalCargarFacturaPipe : actualizarTotalesCont) | NumeroFormatoPipe }}</td>
+									</tr>
+									<tr>
+										<td>Descuento</td>
+										<td class="text-right text-nowrap px-4">{{ (jsonFacturaXML?.datosFactura?.montoDescuento || 0) | NumeroFormatoPipe }}</td>
+										<td class="text-right text-nowrap px-4">{{ (this | DescuentoCargarFacturaPipe : actualizarTotalesCont) | NumeroFormatoPipe }}</td>
+									</tr>
+									<tr>
+										<td>IVA</td>
+										<td class="text-right text-nowrap px-4">{{ (jsonFacturaXML?.datosFactura?.montoIva || 0) | NumeroFormatoPipe }}</td>
+										<td class="text-right text-nowrap px-4">{{ (this | IvaCargarFacturaPipe : actualizarTotalesCont) | NumeroFormatoPipe }}</td>
+									</tr>
+									<tr>
+										<td>IEPS</td>
+										<td class="text-right text-nowrap px-4">{{ (jsonFacturaXML?.datosFactura?.montoIeps || 0) | NumeroFormatoPipe }}</td>
+										<td class="text-right text-nowrap px-4">{{ (this | IepsCargarFacturaPipe : actualizarTotalesCont) | NumeroFormatoPipe }}</td>
+									</tr>
+									<tr>
+										<td>Retención</td>
+										<td class="text-right text-nowrap px-4">{{ (jsonFacturaXML?.datosFactura?.montoRetenciones || 0) | NumeroFormatoPipe }}</td>
+										<td class="text-right text-nowrap px-4">{{ (this | RetencionesCargarFacturaPipe : actualizarTotalesCont) | NumeroFormatoPipe }}</td>
+									</tr>
+									<tr>
+										<td>Total</td>
+										<td class="text-right text-nowrap px-4">{{ (jsonFacturaXML?.datosFactura?.total || 0) | NumeroFormatoPipe }}</td>
+										<td class="text-right text-nowrap px-4">{{ (this | TotalCargarFacturaPipe : actualizarTotalesCont) | NumeroFormatoPipe }}</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+
+					<div
+						fxLayout="column"
+						class="p-0"
+					>
+						<mat-tab-group>
+
+							<mat-tab label="Relacionar">
+
+								<div
+									class="tab-content p-24 h-100-p"
+									fxLayout="column"
+								>
+									<mat-table #tableOC
+										fxFlex="fill"
+										[dataSource]="dataSourceOC"
+										matSort
+										[@animateStagger]="{value:'50'}"
+										id="tableOC"
+										fusePerfectScrollbar
+									>
+
+										<ng-container matColumnDef="fecha">
+											<mat-header-cell *matHeaderCellDef> Fecha </mat-header-cell>
+											<mat-cell *matCellDef="let oc"> {{oc.fechaOC | date:'dd/MM/yyyy'}} </mat-cell>
+										</ng-container>
+										
+										<ng-container matColumnDef="codigoOC">
+											<mat-header-cell *matHeaderCellDef> Código OC </mat-header-cell>
+											<mat-cell *matCellDef="let oc"> {{oc.codigo}} </mat-cell>
+										</ng-container>
+
+										<ng-container matColumnDef="montoOC">
+											<mat-header-cell *matHeaderCellDef> Monto OC </mat-header-cell>
+											<mat-cell *matCellDef="let oc"> <span redondear [montoRedondear]="oc.montoOC"></span> </mat-cell>
+										</ng-container>
+
+										<ng-container matColumnDef="montoRelacionar">
+											<mat-header-cell *matHeaderCellDef> Monto por relacionar </mat-header-cell>
+											<mat-cell *matCellDef="let oc"> <span redondear [montoRedondear]="oc.montoPendienteRelacionar"></span> </mat-cell>
+										</ng-container>
+
+										<ng-container matColumnDef="acciones">
+											<mat-header-cell *matHeaderCellDef></mat-header-cell>
+											<mat-cell *matCellDef="let oc">
+												<button *ngIf="!ocsSeleccionadasIds[oc.id]" type="button" mat-icon-button matTooltip="Marcar completa"
+													(click)="getDetallesOC(oc,false)">
+													<mat-icon>crop_square</mat-icon>
+												</button>
+												<button *ngIf="ocsSeleccionadasIds[oc.id]" type="button" mat-icon-button matTooltip="Marcar completa"
+													(click)="getDetallesOC(oc,false)">
+													<mat-icon style="color: #039be5">check_box</mat-icon>
+												</button>
+												<button type="button" mat-icon-button matTooltip="Ver detalles"
+													(click)="getDetallesOC(oc,true)">
+													<mat-icon>playlist_add_check</mat-icon>
+												</button>
+											</mat-cell>
+										</ng-container>
+										
+										
+										<mat-header-row *matHeaderRowDef="displayedColumnsOC; sticky:true"></mat-header-row>
+										<mat-row *matRowDef="let row; columns: displayedColumnsOC;"></mat-row>
+									</mat-table>
+								</div>
+
+							</mat-tab>
+
+							<mat-tab label="Artículos/Misceláneos">
+
+								<div
+									class="tab-content p-24 h-100-p"
+									fxLayout="column"
+								>
+									<mat-table #tableDetalles
+										fxFlex="fill"
+										[dataSource]="dataSourceOCDetalles"
+										matSort
+										[@animateStagger]="{value:'50'}"
+										id="tableDetalles"
+										fusePerfectScrollbar
+									>
+
+										<ng-container matColumnDef="codigoOC">
+											<mat-header-cell *matHeaderCellDef> Código OC </mat-header-cell>
+											<mat-cell *matCellDef="let detalle"> {{ detalle?.codigoOC }} </mat-cell>
+										</ng-container>
+
+										<ng-container matColumnDef="codigoArticulo">
+											<mat-header-cell *matHeaderCellDef> Código artículo </mat-header-cell>
+											<mat-cell *matCellDef="let detalle"> {{ detalle?.articulo?.codigoArticulo }} </mat-cell>
+										</ng-container>
+
+										<ng-container matColumnDef="descripcion">
+											<mat-header-cell *matHeaderCellDef> Descripción </mat-header-cell>
+											<mat-cell *matCellDef="let detalle"> {{ detalle?.articulo?.nombreArticulo }} </mat-cell>
+										</ng-container>
+
+										<ng-container matColumnDef="um">
+											<mat-header-cell *matHeaderCellDef> UM </mat-header-cell>
+											<mat-cell *matCellDef="let detalle"> {{ detalle?.unidadMedida?.nombre }} </mat-cell>
+										</ng-container>
+
+										<ng-container matColumnDef="cantidadOC">
+											<mat-header-cell *matHeaderCellDef> Cantidad OC </mat-header-cell>
+											<mat-cell *matCellDef="let detalle"> {{ detalle?.cantidad }} </mat-cell>
+										</ng-container>
+
+										<ng-container matColumnDef="precioOC">
+											<mat-header-cell *matHeaderCellDef> Precio OC </mat-header-cell>
+											<mat-cell *matCellDef="let detalle"> {{ detalle?.precio }} </mat-cell>
+										</ng-container>
+
+										<ng-container matColumnDef="descuentoOC">
+											<mat-header-cell *matHeaderCellDef> Descuento OC </mat-header-cell>
+											<mat-cell *matCellDef="let detalle"> {{ detalle?.descuento }} </mat-cell>
+										</ng-container>
+
+										<ng-container matColumnDef="cantidadRelacionada">
+											<mat-header-cell *matHeaderCellDef> Cantidad relacionada </mat-header-cell>
+											<mat-cell *matCellDef="let detalle"> {{ detalle?.cantidadRelacionar }} </mat-cell>
+										</ng-container>
+
+										<ng-container matColumnDef="precioUnitario">
+											<mat-header-cell *matHeaderCellDef> Precio unitario </mat-header-cell>
+											<mat-cell *matCellDef="let detalle">
+												<mat-form-field *ngIf="!factura?.id && !!precioControls[detalle.id]"
+													appearance="outline"
+													floatLabel="auto"
+													class="w-100-p"
+												>
+													<mat-label>Precio unitario</mat-label>
+													<input
+														type="text"
+														matInput
+														[formControl]="precioControls[detalle.id]"
+														prefix="$ " mask="separator.6" thousandSeparator=","
+													>
+												</mat-form-field>
+												<ng-container *ngIf="!!factura?.id">{{ precioControls[detalle.id]?.value }}</ng-container>
+											</mat-cell>
+										</ng-container>
+
+										<ng-container matColumnDef="descuento">
+											<mat-header-cell *matHeaderCellDef> Descuento </mat-header-cell>
+											<mat-cell *matCellDef="let detalle">
+												<mat-form-field *ngIf="!factura?.id && !!descuentoControls[detalle.id]"
+													appearance="outline"
+													floatLabel="auto"
+													class="w-100-p"
+												>
+													<mat-label>Descuento</mat-label>
+													<input
+														type="text"
+														matInput
+														[formControl]="descuentoControls[detalle.id]"
+														prefix="$ " mask="separator.6" thousandSeparator=","
+													>
+												</mat-form-field>
+												<ng-container *ngIf="!!factura?.id">{{ descuentoControls[detalle.id]?.value || 0 }}</ng-container>
+											</mat-cell>
+										</ng-container>
+
+										<ng-container matColumnDef="iva">
+											<mat-header-cell *matHeaderCellDef> IVA </mat-header-cell>
+											<mat-cell *matCellDef="let detalle">
+												<mat-form-field *ngIf="!factura?.id && !!ivaControls[detalle.id]"
+													appearance="outline"
+													floatLabel="auto"
+													class="w-100-p"
+												>
+													<mat-label>IVA</mat-label>
+													<input
+														type="text"
+														mask="percent"
+														suffix="%"
+														mask="separator.0"
+														matInput
+														[formControl]="ivaControls[detalle.id]"
+													>
+												</mat-form-field>
+												<ng-container *ngIf="!!factura?.id">{{ ivaControls[detalle.id]?.value || 0 }}</ng-container>
+											</mat-cell>
+										</ng-container>
+
+										<ng-container matColumnDef="ieps">
+											<mat-header-cell *matHeaderCellDef> IEPS </mat-header-cell>
+											<mat-cell *matCellDef="let detalle">
+												<ng-container *ngIf="!factura?.id">
+													<button *ngIf="!!iepsControls[detalle.id] && detalle.iepsCuotaFijaChk" type="button" mat-icon-button matTooltip="IEPS"
+														(click)="detalle.iepsCuotaFijaChk = !detalle.iepsCuotaFijaChk">
+														<mat-icon>crop_square</mat-icon>
+													</button>
+													<mat-form-field *ngIf="!!iepsControls[detalle.id] && !detalle.iepsCuotaFijaChk"
+														appearance="outline"
+														floatLabel="auto"
+														class="w-100-p"
+													>
+														<mat-label>IEPS</mat-label>
+														<input
+															type="text"
+															matInput
+															suffix="%"
+															mask="separator.0"
+															[formControl]="iepsControls[detalle.id]"
+														>
+													</mat-form-field>
+												</ng-container>
+												<ng-container *ngIf="!!factura?.id">{{ iepsControls[detalle.id]?.value || 0 }}</ng-container>
+											</mat-cell>
+										</ng-container>
+
+										<ng-container matColumnDef="iepsCuotaFija">
+											<mat-header-cell *matHeaderCellDef> IEPS (cuota fija) </mat-header-cell>
+											<mat-cell *matCellDef="let detalle">
+												<ng-container *ngIf="!factura?.id">
+													<button *ngIf="!!iepsControls[detalle.id] && !detalle.iepsCuotaFijaChk" type="button" mat-icon-button matTooltip="IEPS (cuota fija)"
+														(click)="detalle.iepsCuotaFijaChk = !detalle.iepsCuotaFijaChk">
+														<mat-icon>crop_square</mat-icon>
+													</button>
+													<mat-form-field *ngIf="!!iepsCuotaFijaControls[detalle.id] && detalle.iepsCuotaFijaChk"
+														appearance="outline"
+														floatLabel="auto"
+														class="w-100-p"
+													>
+														<mat-label>IEPS (cuota fija)</mat-label>
+														<input
+															type="text"
+															matInput
+															mask="separator.6"
+															[formControl]="iepsCuotaFijaControls[detalle.id]"
+														>
+													</mat-form-field>
+												</ng-container>
+												<ng-container *ngIf="!!factura?.id">{{ iepsCuotaFijaControls[detalle.id]?.value || 0 }}</ng-container>
+											</mat-cell>
+										</ng-container>
+
+										<ng-container matColumnDef="totalPartida">
+											<mat-header-cell *matHeaderCellDef> Total partida </mat-header-cell>
+											<mat-cell *matCellDef="let detalle">
+												<span
+													monto
+													formato="moneda"
+													[cantidad]="detalle.cantidadRelacionar"
+													[precioUnitario]="precioControls[detalle.id].value || 0"
+													[descuento]="descuentoControls[detalle.id].value || 0"
+													[ivaPorcentaje]="ivaControls[detalle.id].value || 0"
+													[iepsPorcentaje]="iepsControls[detalle.id].value || null"
+													[cuotaFija]="iepsCuotaFijaControls[detalle.id].value || null"
+												></span>
+											</mat-cell>
+										</ng-container>
+										
+										<ng-container matColumnDef="acciones">
+											<mat-header-cell *matHeaderCellDef>
+												<span class="text-center text-nowrap w-100-p"></span>
+											</mat-header-cell>
+											<mat-cell *matCellDef="let detalle">
+												<div *ngIf="detalle?.comentarios || detalle?.comentariosPartida" class="w-100-p" fxLayout="row" fxLayoutAlign="center center">
+													<button type="button" mat-icon-button matTooltip="Comentarios" (click)="$event.stopPropagation(); onModalComentarios(detalle)">
+														<mat-icon>message</mat-icon>
+													</button>
+													<button type="button" *ngIf="detalle?.imagenArticulo" mat-icon-button matTooltip="Descargar imagen" (click)="$event.stopPropagation(); onMostrarImagen(detalle)">
+														<mat-icon>image</mat-icon>
+													</button>
+												</div>
+											</mat-cell>
+										</ng-container>
+										
+										<mat-header-row *matHeaderRowDef="displayedColumnsOCDetalles; sticky:true"></mat-header-row>
+										<mat-row *matRowDef="let row; columns: displayedColumnsOCDetalles;"></mat-row>
+									</mat-table>
+								</div>
+							</mat-tab>
+
+							<mat-tab label="Retenciones">
+
+								<div
+									class="tab-content p-24 h-100-p"
+									fxLayout="column"
+								>
+									<button *ngIf="!factura?.id"type="button" mat-mini-fab class="btn-nuevo" (click)="onNuevaRetencion()">
+										<mat-icon>add</mat-icon>
+									</button>
+									<mat-table #tableRetenciones
+										fxFlex="fill"
+										[dataSource]="dataSourceRetenciones"
+										matSort
+										[@animateStagger]="{value:'50'}"
+										id="tableRetenciones"
+										fusePerfectScrollbar
+									>
+
+										<ng-container matColumnDef="concepto">
+											<mat-header-cell *matHeaderCellDef> Concepto </mat-header-cell>
+											<mat-cell *matCellDef="let retencionIdTmp">
+												<mat-form-field *ngIf="!factura?.id && !!retencionConceptoControls[retencionIdTmp]"
+													appearance="outline"
+													floatLabel="auto"
+												>
+													<mat-label>Concepto</mat-label>
+													<input
+														type="text"
+														matInput
+														[formControl]="retencionConceptoControls[retencionIdTmp]"
+														[required]="true"
+													>
+												</mat-form-field>
+												<ng-container *ngIf="!!factura?.id">{{ retencionConceptoControls[retencionIdTmp]?.value || '' }}</ng-container>
+											</mat-cell>
+										</ng-container>
+
+										<ng-container matColumnDef="monto">
+											<mat-header-cell *matHeaderCellDef> Monto </mat-header-cell>
+											<mat-cell *matCellDef="let retencionIdTmp">
+												<mat-form-field *ngIf="!factura?.id && !!retencionMontoControls[retencionIdTmp]"
+													appearance="outline"
+													floatLabel="auto"
+												>
+													<mat-label>Monto</mat-label>
+													<input
+														type="text"
+														matInput
+														[formControl]="retencionMontoControls[retencionIdTmp]"
+														[required]="true"
+														prefix="$ " mask="separator.2" thousandSeparator=","
+													>
+												</mat-form-field>
+												<ng-container *ngIf="!!factura?.id">{{ retencionMontoControls[retencionIdTmp]?.value || 0 }}</ng-container>
+											</mat-cell>
+										</ng-container>
+
+										<ng-container matColumnDef="tipo">
+											<mat-header-cell *matHeaderCellDef> Tipo </mat-header-cell>
+											<mat-cell *matCellDef="let retencionIdTmp">
+												<pixvs-mat-select *ngIf="!factura?.id && !!retencionTipoControls[retencionIdTmp]" [matSelectCtrl]="retencionTipoControls[retencionIdTmp]" [datos]="tiposRetencion"
+													[appearance]="'outline'"
+													[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+													[campoValor]="['valor']" [label]="'Tipo'" [required]="true"
+													>
+												</pixvs-mat-select>
+												<ng-container *ngIf="!!factura?.id">{{ retencionTipoControls[retencionIdTmp]?.value?.valor || '' }}</ng-container>
+											</mat-cell>
+										</ng-container>
+
+										<ng-container matColumnDef="acciones">
+											<mat-header-cell *matHeaderCellDef></mat-header-cell>
+											<mat-cell *matCellDef="let retencionIdTmp">
+												<button type="button" mat-icon-button matTooltip="Eliminar retención" class="red-fg"
+													(click)="onBorrarRetencion(retencionIdTmp)">
+													<mat-icon>delete</mat-icon>
+												</button>
+											</mat-cell>
+										</ng-container>
+										
+										
+										<mat-header-row *matHeaderRowDef="displayedColumnsRetenciones; sticky:true"></mat-header-row>
+										<mat-row *matRowDef="let row; columns: displayedColumnsRetenciones;"></mat-row>
+									</mat-table>
+								</div>
+							</mat-tab>
+
+						</mat-tab-group>
+					</div>
+
+				</form>
+
+
+			</div>
+			<!-- / CONTENT -->
+
+		</div>
+		<!-- / CONTENT CARD -->
+
+
+	</div>
+	<!-- / CENTER -->
+</div>

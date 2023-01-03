@@ -1,0 +1,156 @@
+<div id="ficha-CRUD" class="pixvs-theme-listado page-layout carded fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <ficha-crud *ngIf="config" [config]="config" [cargando]="_facturaService?.cargando"
+            [etiquetaBotonGuardar]="'Facturar'"[isGuardadoPersonalizado]="true" (output)="guardar()" [mostrarBorrar]="false"
+            [mostrarCancelar]="factura?.id && factura?.estatusId != 2000493" [isCancelarPersonalizado]="true" (outputCancelar)="cancelar()"
+            [mostrarEditar]="false" [titulo]="titulo" [subTituloTraduccion]="pageType" [form]="form"
+            [currentId]="currentId" [pageType]="pageType" [dataService]="_facturaService" class="header accent"
+            fxLayout="column" fxLayoutAlign="center center" fxLayout.gt-sm="row"
+            fxLayoutAlign.gt-sm="space-between center">
+        </ficha-crud>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <mat-progress-bar *ngIf="_facturaService?.cargando" [color]="'primary'" [mode]="'query'">
+            </mat-progress-bar>
+
+            <div style="height: 0px;">
+                <button debounceClick mat-mini-fab class="boton-refresh" (debounceClick)="recargar()"
+                    matTooltip="{{ 'INTERFAZ.RECARGAR' | translate  }}">
+                    <mat-icon class="s-16">refresh</mat-icon>
+                </button>
+            </div>
+
+            <!-- CONTENT -->
+            <div class="content">
+                <form name="form" id="form" [formGroup]="form" class="product w-100-p" fxLayout="column" fxFlex>
+                    <mat-tab-group>
+                        <mat-tab label="Datos Generales">
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <ng-container *ngIf="esVersion4">
+                                    <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                        <pixvs-mat-select [matSelectCtrl]="periodicidadControl" [datos]="listPeriodicidades"
+                                            [appearance]="'outline'"
+                                            [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                            [campoValor]="'valor'" [label]="'Periodicidad'"
+                                            [required]="isRequired('periodicidad')" fxFlex="1 0 auto">
+                                        </pixvs-mat-select>
+
+                                        <pixvs-mat-select [matSelectCtrl]="mesesControl" [datos]="listMesesFiltrado"
+                                            [appearance]="'outline'"
+                                            [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                            [campoValor]="'valor'" [label]="'Meses'"
+                                            [required]="isRequired('meses')" fxFlex="1 0 auto">
+                                        </pixvs-mat-select>
+
+                                        <pixvs-mat-select [matSelectCtrl]="anioControl" [datos]="listAnios"
+                                            [appearance]="'outline'"
+                                            [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                            [campoValor]="'valor'" [label]="'Año'"
+                                            [required]="isRequired('anio')" fxFlex="1 0 auto">
+                                        </pixvs-mat-select>
+                                    </div>
+                                </ng-container>
+
+                                <div fxlayout="row" fxlayoutalign="start center" class="my-20" style="display: flex; border-bottom: solid 1px lightgray;">
+                                    <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font">attach_money</mat-icon>
+                                    <div class="h2 secondary-text ng-tns-c345-79">Notas de Venta</div>
+                                    <ng-container>
+                                        <button mat-icon-button matTooltip="Acciones" [matMenuTriggerFor]="listadoMenu" (click)="$event.stopPropagation();" [disabled]="_facturaService.cargando">
+                                            <mat-icon>more_vert</mat-icon>
+                                        </button>
+                                        <mat-menu #listadoMenu="matMenu">
+                                            <button mat-menu-item *ngIf="pageType != 'ver'" (click)="guardar(true)">
+                                                <mat-icon>insert_drive_file</mat-icon>
+                                                <span>Previsualizar factura</span>
+                                            </button>
+                                            <button mat-menu-item (click)="exportarExcel()">
+                                                <mat-icon>arrow_downward</mat-icon>
+                                                <span>Exportar a excel</span>
+                                            </button>
+                                        </mat-menu>
+                                    </ng-container>
+                                </div>
+
+                                <div fxLayout="row">
+                                    <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+                                        <button mat-mini-fab class="btn-nuevo" *ngIf="pageType != 'ver'" (click)="agregarNotasVenta()" [disabled]="_facturaService.cargando">
+                                            <mat-icon>add</mat-icon>
+                                        </button>
+
+                                        <div fxLayout="row" fxLayoutAlign="space-between start" class="h-100-p">
+                                            <div fxFlex="100" class="h-100-p">
+                                                <pixvs-mat-accordion class="h-100-p" *ngIf="data.length > 0"
+                                                    [columnaId]="'id'"
+                                                    [headers]="headers"
+                                                    [details]="details"
+                                                    [data]="data"
+                                                    (onRecargarTabla)="recargarTabla($event)">
+                                                </pixvs-mat-accordion>
+                                            </div>
+                                        </div>
+
+                                        <ng-container *ngIf="pageType === 'ver'">
+                                            <div mat-dialog-actions>
+                                                <button mat-button (click)="descargarXML()">
+                                                    <mat-icon>attachment</mat-icon>XML
+                                                </button>
+        
+                                                <button mat-button (click)="descargarPDF()">
+                                                    <mat-icon>attachment</mat-icon>PDF
+                                                </button>
+                                            </div>
+                                        </ng-container>
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-tab>
+
+                        <mat-tab label="CFDI Relacionados">
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <div fxLayout="row">
+                                    <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+                                        <div fxlayout="row" fxlayoutalign="start center" class="my-20" style="display: flex; border-bottom: solid 1px lightgray;">
+                                            <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font">attach_money</mat-icon>
+                                            <div class="h2 secondary-text ng-tns-c345-79">Facturas</div>
+                                        </div>
+
+                                        <button mat-mini-fab class="btn-nueva-relacion" *ngIf="pageType != 'ver'" (click)="agregarFacturaRelacion()" [disabled]="_facturaService.cargando">
+                                            <mat-icon>add</mat-icon>
+                                        </button>
+
+                                        <div fxLayout="row" fxLayoutAlign="space-between start" class="h-100-p">
+                                            <div fxFlex="100" class="h-100-p">
+                                                <pixvs-tabla-simple #tablaFacturasRelacionadas
+                                                    [columnaId]="'id'"
+                                                    [service]="_facturasRelacionService"
+                                                    [localeEN]="localeEN" [localeES]="localeES"
+                                                    [columnas]="columnasTablaFacturasRelacion" 
+                                                    [columnasFechas]="columnasFechasFacturasRelacion" 
+                                                    [displayedColumns]="displayedColumnsFacturasRelacion" 
+                                                    [reordenamiento]="false">
+                                                </pixvs-tabla-simple>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-tab>
+                    </mat-tab-group>
+                </form>
+            </div>
+            <!-- / CONTENT -->
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

@@ -1,0 +1,88 @@
+<div style="background-color: white;" class="h-100-p p-20">
+    <style>
+        
+    </style>
+
+    <div id="print-ticket" class="print-container">
+        <div fxFlex="0 0 33.33%" class="h-200">
+            <img src="app/main/img/logos/logo_reportes.png" class="logo-icon">
+        </div>
+        <div fxFlex="0 0 33.33%" class="h-200 pt-68">
+            <p class="mat-title">Salida de inventario</p>
+            <p class="mat-subheading-1">Destino: {{data?.destinoSede?.nombre}} / {{data?.destinoAlmacen?.nombre}}</p>
+        </div>
+        <div fxFlex="0 0 33.33%" class="h-200">
+        </div>
+        <div fxFlex="0 0 100%" class="h-200">
+            <table class="w-100-p text-left">
+                <tbody>
+                    <tr>
+                        <td class="mat-subheading-1 w-15-p">Pedido:</td>
+                        <td class="mat-subheading-1">{{data?.codigo}}</td>
+                    </tr>
+                    <tr>
+                        <td class="mat-subheading-1 w-15-p">Sede / Almacén:</td>
+                        <td class="mat-subheading-1">{{data?.cedisSede?.nombre}} / {{data?.cedisAlmacen?.nombre}}</td>
+                    </tr>
+                    <tr>
+                        <td class="mat-subheading-1 w-15-p">Fecha:</td>
+                        <td class="mat-subheading-1">{{data?.fecha}}</td>
+                    </tr>
+                    <tr>
+                        <td class="mat-subheading-1 w-15-p">Usuario:</td>
+                        <td class="mat-subheading-1">{{data?.usuario?.nombreCompleto}}</td>
+                    </tr>
+                    <tr>
+                        <td class="mat-subheading-1 w-15-p">Módulo:</td>
+                        <td class="mat-subheading-1">{{data?.modulo}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div fxFlex="0 0 100%" *ngIf="data?.data">
+            <table id="print-table" mat-table [dataSource]="data.data" class="w-100-p">
+        
+                <ng-container matColumnDef="codigo">
+                    <th mat-header-cell *matHeaderCellDef class="table-data-header" style="width: 15%;"> CÓDIGO </th>
+                    <td mat-cell *matCellDef="let element" class="table-data-item text-left"> {{ element.articulo.codigoArticulo }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="descripcion">
+                    <th mat-header-cell *matHeaderCellDef class="table-data-header" style="width: 40%;"> DESCRIPCIÓN </th>
+                    <td mat-cell *matCellDef="let element" class="table-data-item text-left"> {{ element.articulo.nombreArticulo }} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="cantidad">
+                    <th mat-header-cell *matHeaderCellDef class="table-data-header" style="width: 15%;"> CANTIDAD </th>
+                    <td mat-cell *matCellDef="let element" class="table-data-item text-right"> {{ element.surtir | number : '1.2-2' }} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="costo">
+                    <th mat-header-cell *matHeaderCellDef class="table-data-header" style="width: 15%;"> COSTO </th>
+                    <td mat-cell *matCellDef="let element" class="table-data-item text-right"> ${{ element.articulo.costoUltimo | number : '1.2-2' }} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="importe">
+                    <th mat-header-cell *matHeaderCellDef class="table-data-header" style="width: 15%;"> IMPORTE </th>
+                    <td mat-cell *matCellDef="let element" class="table-data-item text-right"> ${{ (element.surtir * element.articulo.costoUltimo) | number : '1.2-2' }} </td>
+                </ng-container>
+                
+                <tr mat-header-row *matHeaderRowDef="data.columns" class="h-24"></tr>
+                <tr mat-row *matRowDef="let row; columns: data.columns;" class="h-24"></tr>
+            </table>
+        </div>
+        <div fxFlex="0 0 100%">
+            <table class="w-100-p">
+                <thead>
+                    <tr>
+                        <td class="table-data-footer text-right" style="width: 55%;">No. registros: {{totalArticulos}}</td>
+                        <td class="table-data-footer text-right" style="width: 15%;">{{totalCantidad | number : '1.2-2'}}</td>
+                        <td class="table-data-footer text-right" style="width: 15%;"></td>
+                        <td class="table-data-footer text-right" style="width: 15%;">${{totalImporte | number : '1.2-2'}}</td>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>

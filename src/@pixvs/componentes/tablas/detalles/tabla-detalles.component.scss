@@ -1,0 +1,11 @@
+@import "@fuse/scss/fuse";
+
+#pixvs-tabla-detalles {
+	position: relative;
+	.btn-nuevo{
+		position: absolute;
+		top: 5px;
+		right: 5px;
+		z-index: 200;
+	}    
+}

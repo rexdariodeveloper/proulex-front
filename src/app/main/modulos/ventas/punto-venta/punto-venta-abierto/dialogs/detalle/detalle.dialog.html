@@ -1,0 +1,20 @@
+<h1 mat-dialog-title class="font-size-32">
+	{{ nombreArticulo }}
+</h1>
+<div mat-dialog-content class="font-size-20 warn-fg pb-12" *ngIf="eliminar">
+    ¿Realmente deseas eliminar el registro?
+</div>
+<div mat-dialog-actions align="end" fxLayout="row" fxLayoutAlign="space-between center">
+	<button
+		mat-button
+        class="py-8 px-16" style="font-size: 25px !important;"
+		(click)="cancelar()"
+	>Cancelar</button>
+	<button
+		mat-raised-button
+        class="mat-warn py-8 px-16" style="font-size: 25px !important;"
+		(click)="onEliminar()"
+	>
+        {{ eliminar ? 'Continuar' : 'Eliminar' }}
+    </button>
+</div>

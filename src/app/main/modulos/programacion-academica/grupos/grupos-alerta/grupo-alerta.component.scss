@@ -1,0 +1,42 @@
+// @import "@fuse/scss/fuse";
+
+#ficha-curso {
+    $borderColor: gray;
+	table.tabla-encabezado{
+		border-spacing: 0;
+		td{
+			padding: 1rem;
+		}
+		thead{
+			td{
+				border: solid 1px $borderColor;
+				border-left: none;
+				border-right: none;
+			}
+		}
+		tbody{
+			td{
+				border-bottom: solid 1px $borderColor;
+			}
+		}
+	}
+
+	table.tabla-alumnos{
+		border-spacing: 0;
+		td{
+			padding: 1rem;
+		}
+		thead{
+			td{
+				border: solid 1px $borderColor;
+				border-left: none;
+				border-right: none;
+			}
+		}
+		tbody{
+			td{
+				border-bottom: solid 1px $borderColor;
+			}
+		}
+	}
+}

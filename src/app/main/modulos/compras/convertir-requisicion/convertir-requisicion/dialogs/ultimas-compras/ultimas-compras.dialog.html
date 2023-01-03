@@ -1,0 +1,23 @@
+<h1 mat-dialog-title>
+	Historial de compras ({{ articulo.nombreArticulo }})
+</h1>
+<div mat-dialog-content>
+	<div fxLayout="column">
+		<div fxLayout="row" fxLayoutAlign="space-between center">
+			<span style="font-weight: 900;" fxFlex="33%" class="text-left">Fecha</span>
+			<span style="font-weight: 900;" fxFlex="33%" class="text-center">Órden de compra</span>
+			<span style="font-weight: 900;" fxFlex="33%" class="text-right">Precio unitario</span>
+		</div>
+		<div *ngFor="let compra of ultimasCompras" fxLayout="row" fxLayoutAlign="space-between center">
+			<span fxFlex="33%" class="text-left">{{ compra.fecha | date:'dd/MM/yyyy' }}</span>
+			<span fxFlex="33%" class="text-center">{{ compra.codigoOC }}</span>
+			<span fxFlex="33%" class="text-right">$ {{ compra.precio | mask : 'separator.2' :',' }}</span>
+		</div>
+	</div>
+</div>
+<div mat-dialog-actions>
+	<button
+		mat-button
+		(click)="cancelar()"
+	>Cerrar</button>
+</div>

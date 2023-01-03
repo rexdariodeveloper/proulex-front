@@ -1,0 +1,138 @@
+<div id="ficha-CRUD" class="pixvs-theme-listado page-layout carded fullwidth inner-scroll">
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+        <!-- HEADER -->
+        <ficha-crud *ngIf="config" [config]="config" [cargando]="_transferenciaService?.cargando" [isGuardadoPersonalizado]="true"
+            (output)="guardar()" [mostrarBorrar]="false" [mostrarEditar]="false" [mostrarGuardar]="cambios" [mostrarRechazar]="mostrarRechazar && !cambios" [titulo]="titulo"
+            [subTituloTraduccion]="pageType == 'nuevo' ? pageType : null" [form]="form" [currentId]="currentId" [pageType]="pageType"
+            [dataService]="_transferenciaService" [historial]="historial" class="header accent" fxLayout="column" fxLayoutAlign="center center"
+            fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center">
+        </ficha-crud>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <mat-progress-bar *ngIf="_transferenciaService?.cargando" [color]="'primary'" [mode]="'query'">
+            </mat-progress-bar>
+            <!-- CONTENT -->
+            <div class="content">
+                <form name="form" id="form" [formGroup]="form" class="product w-100-p" fxLayout="column" fxFlex>
+                    <mat-tab-group>
+                        <mat-tab label="{{ 'DATOS' | translate }}">
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <div fxLayout="column">
+                                    <div fxLayout="row">
+                                        <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+                                            <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+
+                                                <pixvs-mat-select
+                                                    [matSelectCtrl]="form.get('localidadOrigen')" 
+                                                    [datos]="localidades" 
+                                                    [appearance]="'outline'"
+                                                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate" 
+                                                    [campoValor]="['almacen.codigoAlmacen', 'almacen.nombre']"
+                                                    [label]="'ALMACEN_ORIGEN' | translate"
+                                                    fxFlex="1 0 auto">
+                                                </pixvs-mat-select>
+
+                                                <pixvs-mat-select
+                                                    [matSelectCtrl]="form.get('localidadOrigen')" 
+                                                    [datos]="localidades" 
+                                                    [appearance]="'outline'"
+                                                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate" 
+                                                    [campoValor]="['codigoLocalidad', 'nombre']"
+                                                    [label]="'LOCALIDAD_ORIGEN' | translate"
+                                                    fxFlex="1 0 auto">
+                                                </pixvs-mat-select>
+
+                                                <pixvs-mat-select
+                                                    [matSelectCtrl]="form.get('localidadDestino')" 
+                                                    [datos]="localidades" 
+                                                    [appearance]="'outline'"
+                                                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate" 
+                                                    [campoValor]="['almacen.codigoAlmacen', 'almacen.nombre']"
+                                                    [label]="'ALMACEN_DESTINO' | translate"
+                                                    fxFlex="1 0 auto">
+                                                </pixvs-mat-select>
+
+                                                <pixvs-mat-select
+                                                    [matSelectCtrl]="form.get('localidadDestino')" 
+                                                    [datos]="localidades" 
+                                                    [appearance]="'outline'"
+                                                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate" 
+                                                    [campoValor]="['codigoLocalidad', 'nombre']"
+                                                    [label]="'LOCALIDAD_DESTINO' | translate"
+                                                    fxFlex="1 0 auto">
+                                                </pixvs-mat-select>
+                                            </div>
+                                            <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                    <mat-label>{{ 'ENVIADO_POR' | translate }}</mat-label>
+                                                    <input matInput name="enviadoPor" formControlName="enviadoPor">
+                                                </mat-form-field>
+                                                
+                                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                    <mat-label>{{ 'FECHA_TRANSFERENCIA' | translate }}</mat-label>
+                                                    <input matInput type="date" name="fecha" formControlName="fecha">
+                                                </mat-form-field>
+
+                                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                    <mat-label>{{ 'FECHA_RECIBO' | translate }}</mat-label>
+                                                    <input matInput type="date" name="fechaRecibo" formControlName="fechaRecibo">
+                                                </mat-form-field>
+
+                                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                    <mat-label>{{ 'ESTATUS' | translate }}</mat-label>
+                                                    <input matInput name="estatus" formControlName="estatus">
+                                                </mat-form-field>
+                                            </div>
+                                            <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                    <mat-label>{{ 'COMENTARIO' | translate }}</mat-label>
+                                                    <input matInput name="comentario" formControlName="comentario">
+                                                </mat-form-field>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div fxlayout="row" fxlayoutalign="start center" class="pb-4 mx-28" style="display: flex; border-bottom: solid 1px lightgray;">
+                                        <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font">free_breakfast</mat-icon>
+                                        <div class="h2 secondary-text ng-tns-c345-79">Artículos</div>
+                                    </div>
+
+                                    <div fxLayout="row">
+                                        <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+                                            <div fxLayout="row" fxLayoutAlign="space-between start" class="h-100-p">
+                                                <div fxFlex="100" class="h-100-p">
+                                                    <pixvs-tabla-simple
+                                                        *ngIf="_detallesService.datos.length > 0"
+                                                        [service]="_detallesService"
+                                                        [localeEN]="localeEN"
+                                                        [localeES]="localeES"
+                                                        [columnas]="columnasTabla"
+                                                        [columnasFechas]="columnasFechas"
+                                                        [displayedColumns]="displayedColumns"
+                                                        [reordenamiento]="false"
+                                                        [columnaId]="'id'"
+                                                        (onSeleccionarRegistro)="onEditar($event)"
+                                                    ></pixvs-tabla-simple>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-tab>
+                    </mat-tab-group>
+                </form>
+            </div>
+            <!-- / CONTENT -->
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

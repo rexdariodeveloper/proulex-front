@@ -1,0 +1,79 @@
+button{
+	&.mat-mini-fab{
+		height: 30px;
+		width: 30px;
+		.mat-button-wrapper{
+			line-height: 16px;
+		}
+	}
+
+	&.mat-menu-item{
+		line-height: 30px;
+		height: 30px;
+	}
+
+	&.mat-fab{
+		line-height: 30px;
+		height: 30px;
+		width: 30px;
+		span.mat-button-wrapper{
+			padding: 6px 0 !important;
+		}
+	}
+	&.mat-icon-button{
+		line-height: 25px !important;
+		height: 25px !important;
+		width: 25px !important;
+	}
+}
+
+mat-paginator{
+	.mat-paginator-container{
+		min-height: 35px;
+	}
+}
+
+div.mat-menu-panel{
+	min-height: 42px;
+}
+
+mat-accordion{
+	// .mat-accordion{
+	// }
+	mat-expansion-panel-header{
+		font-size: 12px !important;
+		height: 38px !important;
+	}
+}
+
+mat-tree-node{
+	min-height: 25px !important;
+}
+
+div.modal-titulo-bg{
+	mat-dialog-container{
+		padding: 0 !important;
+		.header-bg{
+			position: relative;
+			width: 100%;
+			div.dialog-header-bg{
+				width: 100%;
+				height: 50px;
+			}
+			h1[mat-dialog-title]{
+				position: absolute;
+				left: 0;
+				top: 0;
+				padding: 0 10px;
+				white-space: nowrap;
+				color: white;
+			}
+			div[mat-dialog-content]{
+				padding: 24px 24px 0 24px;
+			}
+			div[mat-dialog-actions]{
+				padding: 0 24px 24px 24px;
+			}
+		}
+	}
+}

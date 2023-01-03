@@ -1,0 +1,106 @@
+<div mat-dialog-content>
+	<div class="vertical-stepper-wrapper">
+		<mat-vertical-stepper [linear]="true">
+			<mat-step [stepControl]="form">
+				<ng-template matStepLabel>Nota de Venta</ng-template>
+
+				<div fxFlex="1 0 auto" fxLayout="column">
+					<pixvs-dynamic-components #camposDinamicos [regConfig]="camposListado"></pixvs-dynamic-components>
+				</div>
+
+				<div fxLayout="row" fxLayoutAlign="center center">
+					<button mat-raised-button type="button" color="accent" matStepperNext (click)="buscarNotaVenta()">Buscar</button>
+				</div>
+			</mat-step>
+
+			<mat-step>
+				<ng-template matStepLabel>Artículos</ng-template>
+
+				<div fxFlex="1 0 auto" fxLayout="column">
+					<ng-container *ngIf="ordenVenta">
+						<div fxFlex="0 0 8%" fxLayout="column">
+							<div fxLayout="row" fxLayoutAlign="end center">
+								<span class="text-nowrap font-weight-900 font-size-20">Orden de venta: {{ ordenVenta?.codigo }}</span>
+							</div>
+						</div>
+		
+						<div fxFlex="0 0 61%" fxLayout="row">
+							<mat-table fxFlex="100" style="max-height: 100%;" class="tabla-resumen ficha-table" #tablaResumen
+								[dataSource]="dataSourceResumenOVD" matSort [@animateStagger]="{value:'50'}" cdkDropList id="tablaResumenOVD">
+								
+								<ng-container matColumnDef="nombre">
+									<mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</mat-header-cell>
+									<mat-cell *matCellDef="let detalle">
+										<p>
+											<span class="font-weight-900">{{ detalle.conceptoLinea1 }}</span>
+											<br>
+											{{ detalle.conceptoLinea2 }}
+										</p>
+									</mat-cell>
+								</ng-container>
+							
+								<ng-container matColumnDef="cantidad">
+									<mat-header-cell *matHeaderCellDef mat-sort-header>Cantidad</mat-header-cell>
+									<mat-cell *matCellDef="let detalle">
+										<p class="w-100-p text-right">{{ detalle.cantidad }}</p>
+									</mat-cell>
+								</ng-container>
+							
+								<ng-container matColumnDef="precio">
+									<mat-header-cell *matHeaderCellDef mat-sort-header>Precio</mat-header-cell>
+									<mat-cell *matCellDef="let detalle">
+										<p class="w-100-p text-right">{{ detalle.precio | NumeroFormatoPipe }}</p>
+									</mat-cell>
+								</ng-container>
+							
+								<ng-container matColumnDef="descuento">
+									<mat-header-cell *matHeaderCellDef mat-sort-header>Descuento</mat-header-cell>
+									<mat-cell *matCellDef="let detalle">
+										<p class="w-100-p text-right">{{ detalle.descuento | NumeroFormatoPipe }}</p>
+									</mat-cell>
+								</ng-container>
+							
+								<ng-container matColumnDef="total">
+									<mat-header-cell *matHeaderCellDef mat-sort-header>Total</mat-header-cell>
+									<mat-cell *matCellDef="let detalle">
+										<p class="w-100-p text-right">{{ detalle.montoTotal | NumeroFormatoPipe }}</p>
+									</mat-cell>
+								</ng-container>
+							
+								<mat-header-row *matHeaderRowDef="displayedColumnsResumenOVD; sticky:true"></mat-header-row>
+								<mat-row *matRowDef="let row; columns: displayedColumnsResumenOVD;" class="element">
+								</mat-row>
+							</mat-table>
+						</div>
+		
+						<div fxFlex="0 0 15%" fxLayout="column">
+							<div fxLayout="row" fxLayoutAlign="space-between center">
+								<span class="font-weight-900">Usuario:</span>
+								<span class="text-nowrap">{{ ordenVenta?.usuario }}</span>
+							</div>
+
+							<div fxLayout="row" fxLayoutAlign="space-between center">
+								<span class="font-weight-900">Fecha:</span>
+								<span class="text-nowrap">{{ ordenVenta?.fecha | date : 'dd/MM/yyyy HH:mm' }}</span>
+							</div>
+							
+							<div fxLayout="row" fxLayoutAlign="space-between center">
+								<span class="font-weight-900">Total a pagar:</span>
+								<span class="text-nowrap">{{ ordenVenta?.montoTotal | NumeroFormatoPipe }}</span>
+							</div>
+
+							<div fxLayout="row" fxLayoutAlign="space-between center">
+								<span class="font-weight-900">Forma pago:</span>
+								<span class="text-nowrap">{{ ordenVenta?.medioPago }}</span>
+							</div>
+						</div>
+					</ng-container>
+				</div>
+			</mat-step>
+		</mat-vertical-stepper>
+	</div>
+</div>
+<div mat-dialog-actions>
+	<button mat-button (click)="cancelar()">Cancelar</button>
+	<button mat-button (click)="aceptar()">Agregar</button>
+</div>

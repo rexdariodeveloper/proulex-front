@@ -1,0 +1,455 @@
+<div
+	id="ficha-pago-proveedores"
+	class="pixvs-theme-listado page-layout carded fullwidth inner-scroll"
+>
+
+	<!-- TOP BACKGROUND -->
+	<div class="top-bg accent"></div>
+	<!-- / TOP BACKGROUND -->
+
+	<!-- CENTER -->
+	<div class="center">
+
+		<!-- HEADER -->
+		<ficha-crud
+			*ngIf="config"
+			[config]="config"
+			[isGuardadoPersonalizado]="true"
+			[isEnviarPersonalizado]="true"
+			(output)="guardar()"
+			[mostrarBorrar]="true"
+			[mostrarEditar]="false"
+			[mostrarEnviar]="false"
+			[mostrarImprimir]="mostrarImprimir"
+			[titulo]="'Pago a proveedores'"
+			[subTitulo]="solicitudSeleccionada?.codigoSolicitud || ''" 
+			[subTextoExtra]="subTextoExtra" 
+			[form]="form"
+			[currentId]="currentId"
+			[pageType]="'editar'"
+			[dataService]="_pagoProveedoresService"
+			[ocultarGuardar]="vista != 'F'"
+			[mostrarVolver]="vista != 'S'"
+			(onVolver)="onVolverVista()"
+			(outputImprimir)="descargarPdf(solicitudSeleccionada?.id)"
+			class="header accent"
+			fxLayout="column"
+			fxLayoutAlign="center center"
+			fxLayout.gt-sm="row"
+			fxLayoutAlign.gt-sm="space-between center"
+		>
+		</ficha-crud>
+		<!-- / HEADER -->
+
+		<!-- CONTENT CARD -->
+		<div class="content-card">
+			<mat-progress-bar
+				*ngIf="_pagoProveedoresService?.cargando"
+				[color]="'primary'"
+				[mode]="'query'"
+			>
+			</mat-progress-bar>
+
+			<!-- CONTENT -->
+			<div class="content">
+
+				<div *ngIf="vista == 'S'" fxLayout="column" class="w-100-p">
+					<mat-table
+						fxFlex="fill"
+						[dataSource]="dataSourceSolicitudes"
+						matSort
+						[@animateStagger]="{value:'50'}"
+						id="tableSolicitudes"
+						fusePerfectScrollbar
+					>
+
+						<ng-container matColumnDef="folioSolicitud">
+							<mat-header-cell *matHeaderCellDef> Folio de solicitud </mat-header-cell>
+							<mat-cell *matCellDef="let solicitud"> {{ solicitud.codigoSolicitud }} </mat-cell>
+						</ng-container>
+
+						<ng-container matColumnDef="fechaSolicitud">
+							<mat-header-cell *matHeaderCellDef> Fecha de solicitud </mat-header-cell>
+							<mat-cell *matCellDef="let solicitud"> {{ solicitud.fechaCreacion | date:'dd/MM/yyyy' }} </mat-cell>
+						</ng-container>
+
+						<ng-container matColumnDef="proveedores">
+							<mat-header-cell *matHeaderCellDef> # Proveedores </mat-header-cell>
+							<mat-cell *matCellDef="let solicitud"> {{ solicitud.proveedores?.length || 0 }} </mat-cell>
+						</ng-container>
+
+						<ng-container matColumnDef="montoProgramado">
+							<mat-header-cell *matHeaderCellDef> Monto programado </mat-header-cell>
+							<mat-cell *matCellDef="let solicitud"> {{ solicitud.montoProgramado | NumeroFormatoPipe }} </mat-cell>
+						</ng-container>
+
+						<ng-container matColumnDef="facturas">
+							<mat-header-cell *matHeaderCellDef> # Facturas </mat-header-cell>
+							<mat-cell *matCellDef="let solicitud"> {{ solicitud.totalFacturas }} </mat-cell>
+						</ng-container>
+
+						<ng-container matColumnDef="enviadoPor">
+							<mat-header-cell *matHeaderCellDef> Enviado por </mat-header-cell>
+							<mat-cell *matCellDef="let solicitud"> {{ solicitud.creadoPor?.nombreCompleto || '' }} </mat-cell>
+						</ng-container>
+
+						<ng-container matColumnDef="estatus">
+							<mat-header-cell *matHeaderCellDef> Estatus </mat-header-cell>
+							<mat-cell *matCellDef="let solicitud"> {{ solicitud.estatus?.valor || '' }} </mat-cell>
+						</ng-container>
+
+						<ng-container matColumnDef="acciones">
+							<mat-header-cell *matHeaderCellDef> Acciones </mat-header-cell>
+							<mat-cell *matCellDef="let solicitud">
+								<ng-container *ngIf="solicitud.estatus?.id == CMM_CXPS_EstadoSolicitudPago?.ACEPTADA">
+									<button type="button" mat-icon-button matTooltip="Ver solicitud"
+										(click)="verSolicitud(solicitud)">
+										<mat-icon>remove_red_eye</mat-icon>
+									</button>
+									<button type="button" mat-icon-button matTooltip="Rechazar solicitud"
+										(click)="cancelarSolicitud(solicitud)">
+										<mat-icon>cancel</mat-icon>
+									</button>
+								</ng-container>
+								<button type="button" mat-icon-button matTooltip="Descargar"
+									(click)="descargarPdf(solicitud.id)">
+									<mat-icon>cloud_download</mat-icon>
+								</button>
+								<ng-container *ngIf="solicitud.facturaXMLId != null">
+									<button type="button" mat-icon-button matTooltip="XML" (click)="getXML(solicitud.facturaXMLId)">
+										<mat-icon>receipt</mat-icon>
+									</button>
+								</ng-container>
+								<button type="button" mat-icon-button matTooltip="Historial"
+									(click)="onHistorial(solicitud.id)">
+									<mat-icon>history</mat-icon>
+								</button>
+							</mat-cell>
+						</ng-container>
+
+						<mat-header-row *matHeaderRowDef="displayedColumnsSolicitudes; sticky:true"></mat-header-row>
+						<mat-row *matRowDef="let row; columns: displayedColumnsSolicitudes;"></mat-row>
+					</mat-table>
+				</div>
+
+				<div *ngIf="vista == 'P'" fxLayout="column" class="w-100-p">
+					<mat-table
+						fxFlex="fill"
+						[dataSource]="dataSourceProveedores"
+						matSort
+						[@animateStagger]="{value:'50'}"
+						id="tableProveedores"
+						fusePerfectScrollbar
+					>
+
+						<ng-container matColumnDef="proveedor">
+							<mat-header-cell *matHeaderCellDef> Proveedor </mat-header-cell>
+							<mat-cell *matCellDef="let proveedor"> {{ proveedor.nombre }} </mat-cell>
+						</ng-container>
+
+						<ng-container matColumnDef="montoProgramado">
+							<mat-header-cell *matHeaderCellDef> Monto programado </mat-header-cell>
+							<mat-cell *matCellDef="let proveedor"> {{ proveedor.montoProgramado | NumeroFormatoPipe }} </mat-cell>
+						</ng-container>
+
+						<ng-container matColumnDef="facturas">
+							<mat-header-cell *matHeaderCellDef> # Facturas </mat-header-cell>
+							<mat-cell *matCellDef="let proveedor"> {{ proveedor.facturas?.length || 0 }} </mat-cell>
+						</ng-container>
+
+						<ng-container matColumnDef="enviadoPor">
+							<mat-header-cell *matHeaderCellDef> Enviado por </mat-header-cell>
+							<mat-cell *matCellDef="let proveedor"> {{ solicitudSeleccionada?.creadoPor?.nombreCompleto || '' }} </mat-cell>
+						</ng-container>
+
+						<ng-container matColumnDef="saldo">
+							<mat-header-cell *matHeaderCellDef fxLayout="row" fxLayoutAlign="end center" class="px-12"> Saldo </mat-header-cell>
+							<mat-cell *matCellDef="let proveedor" fxLayout="row" fxLayoutAlign="end center" class="px-12"> {{ proveedor.montoProgramado | NumeroFormatoPipe }} </mat-cell>
+						</ng-container>
+
+						<ng-container matColumnDef="acciones">
+							<mat-header-cell *matHeaderCellDef> Acciones </mat-header-cell>
+							<mat-cell *matCellDef="let proveedor">
+								<button type="button" mat-icon-button matTooltip="Ver proveedor"
+									(click)="verProveedor(proveedor)">
+									<mat-icon>remove_red_eye</mat-icon>
+								</button>
+							</mat-cell>
+						</ng-container>
+
+						<mat-header-row *matHeaderRowDef="displayedColumnsProveedores; sticky:true"></mat-header-row>
+						<mat-row *matRowDef="let row; columns: displayedColumnsProveedores;"></mat-row>
+					</mat-table>
+				</div>
+
+				<div *ngIf="vista == 'F'" fxLayout="column" class="w-100-p px-40 py-20">
+
+					<div fxLayout="row" fxLayoutAlign="center center" class="py-20 font-weight-900">
+						({{ !!proveedorSeleccionado?.rfc ? proveedorSeleccionado?.rfc: 'Tipo de solicitud' }}) {{ proveedorSeleccionado.nombre }}
+					</div>
+
+					<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid" class="py-12">
+						<div fxFlex="1 0 auto" fxLayoutAlign="start center">
+							<span class="font-weight-900">Monto a pagar:</span> {{ (montoPagarControls | MontoPagarPipe : actualizarCont || 0) | NumeroFormatoPipe }}
+						</div>
+						<div fxFlex="1 0 auto" fxLayoutAlign="center center">
+							<span class="font-weight-900">Fecha de solicitud:</span> {{ solicitudSeleccionada?.fechaCreacion | date:'dd/MM/yyyy' }}
+						</div>
+						<div fxFlex="1 0 auto" fxLayoutAlign="end center">
+							<span class="font-weight-900">Enviado por:</span> {{ solicitudSeleccionada?.creadoPor?.nombreCompleto }}
+						</div>
+					</div>
+
+					<form
+						focusInvalidInput
+						name="form"
+						id="form"
+						[formGroup]="form"
+						class="product w-100-p"
+						fxLayout="column"
+						fxFlex
+					>
+
+						<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+
+							<pixvs-mat-select [matSelectCtrl]="form.get('cuentaBancaria')" [datos]="cuentas"
+								[appearance]="'outline'"
+								[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+								[campoValor]="['codigo','descripcion']" [label]="'Cuenta bancaria'" [required]="true"
+								fxFlex="1 0 auto">
+							</pixvs-mat-select>
+
+							<pixvs-mat-select [matSelectCtrl]="formaPagoControl" [datos]="formasPago"
+								[appearance]="'outline'"
+								[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+								[campoValor]="['nombre']" [label]="'Forma de pago'" [required]="true"
+								fxFlex="1 0 auto">
+							</pixvs-mat-select>
+						</div>
+
+						<div fxLayout="row wrap" fxLayoutAlign="start start" fxLayoutGap="10px grid">
+							<mat-form-field
+								appearance="outline"
+								floatLabel="auto"
+								fxFlex="1 0 auto"
+							>
+								<mat-label>Fecha de pago</mat-label>
+								<input
+									matInput
+									[matDatepicker]="fechaPago"
+									name="fechaPago"
+									formControlName="fechaPago"
+									readonly
+								>
+								<mat-datepicker-toggle
+									matSuffix
+									[for]="fechaPago"
+								>
+								</mat-datepicker-toggle>
+								<mat-datepicker
+									#fechaPago
+									[disabled]="false"
+								></mat-datepicker>
+							</mat-form-field>
+
+							<mat-form-field
+								appearance="outline"
+								floatLabel="auto"
+								fxFlex="1 0 auto"
+							>
+								<mat-label>Identificador del pago</mat-label>
+								<input
+									matInput
+									name="identificacionPago"
+									formControlName="identificacionPago"
+									[required]="true"
+								>
+							</mat-form-field>
+
+							<button mat-button type="button" fxFlex="1 0 auto" class="py-12 px-4" (click)="comprobanteInput.click()">
+										
+								<ng-container *ngIf="!!comprobante?.id">
+									<span class="text-truncate">{{ comprobante.nombreOriginal }}</span>
+								</ng-container>
+								<ng-container *ngIf="!comprobante?.id">
+									<mat-icon>attachment</mat-icon> Comprobante *
+								</ng-container>
+								
+								<input
+									#comprobanteInput
+									type="file"
+									accept=".*"
+									(change)="comprobanteChangeEvent($event)"
+									style="display:none;"
+								/>
+							</button>
+							<button *ngIf="!!comprobante?.id" mat-icon-button type="button" fxFlex="1 0 auto" class="py-12 px-4" (click)="deleteComprobante()">
+								<mat-icon>delete</mat-icon>
+							</button>
+						</div>
+
+					</form>
+					
+					<mat-table
+						fxFlex="fill"
+						[dataSource]="dataSourceFacturas"
+						matSort
+						[@animateStagger]="{value:'50'}"
+						id="tableFacturas"
+						fusePerfectScrollbar
+					>
+
+						<ng-container matColumnDef="pagar">
+							<mat-header-cell *matHeaderCellDef> Pagar </mat-header-cell>
+							<mat-cell *matCellDef="let factura">
+								<button *ngIf="!facturasSeleccionadas[factura.id]" type="button" mat-icon-button matTooltip="Pagar?"
+									(click)="marcarFactura(factura)">
+									<mat-icon>crop_square</mat-icon>
+								</button>
+								<button *ngIf="!!facturasSeleccionadas[factura.id]" type="button" mat-icon-button matTooltip="Pagar?"
+									(click)="marcarFactura(factura)">
+									<mat-icon style="color: #039be5">check_box</mat-icon>
+								</button>
+							</mat-cell>
+						</ng-container>
+
+						<ng-container matColumnDef="folioFactura">
+							<mat-header-cell *matHeaderCellDef> {{ !!proveedorSeleccionado?.rfc ? 'Número de documento' : 'Beneficiario' }} </mat-header-cell>
+							<mat-cell *matCellDef="let factura"> {{ !!proveedorSeleccionado?.rfc ? factura.codigoRegistro : getBeneficiario(factura.id) }} </mat-cell>
+						</ng-container>
+
+						<ng-container matColumnDef="monto">
+							<mat-header-cell *matHeaderCellDef fxLayout="row" fxLayoutAlign="end center" class="px-12"> Monto </mat-header-cell>
+							<mat-cell *matCellDef="let factura" fxLayout="row" fxLayoutAlign="end center" class="px-12"> {{ factura.montoRegistro | NumeroFormatoPipe }} </mat-cell>
+						</ng-container>
+
+						<ng-container matColumnDef="saldo">
+							<mat-header-cell *matHeaderCellDef fxLayout="row" fxLayoutAlign="end center" class="px-12"> Saldo </mat-header-cell>
+							<mat-cell *matCellDef="let factura" fxLayout="row" fxLayoutAlign="end center" class="px-12"> {{ factura.saldo | NumeroFormatoPipe }} </mat-cell>
+						</ng-container>
+
+						<ng-container matColumnDef="montoProgramado">
+							<mat-header-cell *matHeaderCellDef fxLayout="row" fxLayoutAlign="end center" class="px-12"> Monto programado </mat-header-cell>
+							<mat-cell *matCellDef="let factura" fxLayout="row" fxLayoutAlign="end center" class="px-12"> {{ factura.montoProgramado | NumeroFormatoPipe }} </mat-cell>
+						</ng-container>
+
+						<ng-container matColumnDef="fechaFactura">
+							<mat-header-cell *matHeaderCellDef> Fecha de factura </mat-header-cell>
+							<mat-cell *matCellDef="let factura"> {{ factura.fechaRegistro | date:'dd/MM/yyyy' }} </mat-cell>
+						</ng-container>
+
+						<ng-container matColumnDef="fechaVencimiento">
+							<mat-header-cell *matHeaderCellDef> Fecha de vencimiento </mat-header-cell>
+							<mat-cell *matCellDef="let factura"> {{ factura.fechaVencimiento | date:'dd/MM/yyyy' }} </mat-cell>
+						</ng-container>
+
+						<ng-container matColumnDef="ordenCompra">
+							<mat-header-cell *matHeaderCellDef> Folio </mat-header-cell>
+							<mat-cell *matCellDef="let factura"> {{ (factura.folioSolicitudPagoServicio || '-') != '-' ? factura.folioSolicitudPagoServicio : factura.ordenCompraTexto }} </mat-cell>
+						</ng-container>
+
+						<ng-container matColumnDef="montoPagar">
+							<mat-header-cell *matHeaderCellDef> Monto a pagar </mat-header-cell>
+							<mat-cell *matCellDef="let factura">
+								<mat-form-field *ngIf="!!facturasSeleccionadas[factura.id]"
+									appearance="outline"
+									floatLabel="auto"
+									fxFlex="90%"
+								>
+									<mat-label>Monto a pagar</mat-label>
+									<input
+										type="text"
+										matInput
+										[formControl]="montoPagarControls[factura.id]"
+										style="text-align: right;"
+										mask="separator.2" thousandSeparator="," prefix="$ "
+									>
+									<mat-error *ngIf="(!!montoPagarControls[factura.id].errors)">
+										{{validatorService.getMessage(montoPagarControls[factura.id])}}
+									</mat-error>
+								</mat-form-field>
+							</mat-cell>
+						</ng-container>
+
+						<ng-container matColumnDef="acciones">
+							<mat-header-cell *matHeaderCellDef> Documentos </mat-header-cell>
+							<mat-cell *matCellDef="let factura">
+								<ng-container *ngIf="factura.evidencia?.length == 1">
+									<button mat-icon-button matTooltip="Descargar evidencia" (click)="onMostrarEvidencia(factura.evidencia[0])">
+										<mat-icon>attachment</mat-icon>
+									</button>
+								</ng-container>
+
+								<ng-container *ngIf="factura.evidencia?.length > 1">
+									<button mat-icon-button matTooltip="Descargar evidencia" [matMenuTriggerFor]="listadoMenu">
+										<mat-icon>attachment</mat-icon>
+									</button>
+									<mat-menu #listadoMenu="matMenu">
+										<button *ngFor="let evidenciaArchivo of factura.evidencia" mat-menu-item (click)="onMostrarEvidencia(evidenciaArchivo)">
+											<span>{{evidenciaArchivo.nombreOriginal}}</span>
+										</button>
+										<button mat-menu-item (click)="onMostrarEvidencia(factura.evidencia,factura)">
+											<span>Todo</span>
+										</button>
+									</mat-menu>
+								</ng-container>
+
+								<!--Documentos RH -->
+								<ng-container *ngIf="factura.evidenciaRh?.length == 1">
+									<button mat-icon-button matTooltip="Descargar evidencia" (click)="onMostrarEvidencia(factura.evidenciaRh[0])">
+										<mat-icon>attachment</mat-icon>
+									</button>
+								</ng-container>
+
+								<ng-container *ngIf="factura.evidenciaRh?.length > 1">
+									<button mat-icon-button matTooltip="Descargar evidencia" [matMenuTriggerFor]="listadoMenu">
+										<mat-icon>attachment</mat-icon>
+									</button>
+									<mat-menu #listadoMenu="matMenu">
+										<button *ngFor="let evidenciaArchivo of factura.evidenciaRh" mat-menu-item (click)="onMostrarEvidencia(evidenciaArchivo)">
+											<span>{{evidenciaArchivo.nombreOriginal}}</span>
+										</button>
+										<button mat-menu-item (click)="onMostrarEvidencia(factura.evidenciaRh,factura)">
+											<span>Todo</span>
+										</button>
+									</mat-menu>
+								</ng-container>
+
+								<ng-container *ngIf="factura.facturas?.length == 1">
+									<button mat-icon-button matTooltip="Descargar factura" (click)="onMostrarFactura(factura.facturas[0])">
+										<mat-icon>receipt</mat-icon>
+									</button>
+								</ng-container>
+
+								<ng-container *ngIf="factura.facturas?.length > 1">
+									<button mat-icon-button matTooltip="Descargar factura" [matMenuTriggerFor]="listadoMenuFactura">
+										<mat-icon>receipt</mat-icon>
+									</button>
+									<mat-menu #listadoMenuFactura="matMenu">
+										<button *ngFor="let facturaArchivo of factura.facturas" mat-menu-item (click)="onMostrarFactura(facturaArchivo)">
+											<span>{{facturaArchivo.nombreOriginal}}</span>
+										</button>
+										<button mat-menu-item (click)="onMostrarFactura(factura.facturas,factura)">
+											<span>Todo</span>
+										</button>
+									</mat-menu>
+								</ng-container>
+
+							</mat-cell>
+						</ng-container>
+
+						<mat-header-row *matHeaderRowDef="displayedColumnsFacturas; sticky:true"></mat-header-row>
+						<mat-row *matRowDef="let row; columns: displayedColumnsFacturas;"></mat-row>
+					</mat-table>
+				</div>
+
+			</div>
+			<!-- / CONTENT -->
+
+		</div>
+		<!-- / CONTENT CARD -->
+
+
+	</div>
+	<!-- / CENTER -->
+</div>

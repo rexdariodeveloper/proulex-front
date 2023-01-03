@@ -1,0 +1,68 @@
+
+<h1 matDialogTitle>
+    <span class="title dialog-title">Editar Contrato</span>
+</h1>
+<mat-dialog-content fxLayout="column" fxLayoutAlign="start start">
+    <div style="margin-bottom: 10px;">
+        {{ detalle.empleado.nombre + ' ' + detalle.empleado.primerApellido + ' ' + detalle.empleado.segundoApellido }}
+    </div>
+    <div *ngIf="!!form" fxLayout="column wrap" fxLayoutGap="20px" class="w-100-p">
+        <form focusInvalidInput name="form" id="form" [formGroup]="form">
+            <div fxLayout="row wrap" fxLayoutGap="20px">
+                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                    <mat-label>Fecha Inicio</mat-label>
+                    <input
+                        matInput
+                        type="date"
+                        name="fechaInicio"
+                        formControlName="fechaInicio" 
+                        required="true" readonly>
+                    <mat-error *ngIf="(!!form.get('fechaInicio').errors)">
+                        {{_validatorService.getMessage(form.get('fechaInicio'))}}
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                    <mat-label>Fecha Fin</mat-label>
+                    <input
+                        matInput
+                        type="date"
+                        name="fechaFin"
+                        formControlName="fechaFin" 
+                        required="true" [min]="form.get('fechaInicio')?.value">
+                    <mat-error *ngIf="(!!form.get('fechaFin').errors)">
+                        {{_validatorService.getMessage(form.get('fechaFin'))}}
+                    </mat-error>
+                </mat-form-field>
+            </div>
+            <div fxLayout="row wrap" fxLayoutGap="20px">
+                <pixvs-mat-select
+                    [matSelectCtrl]="form.get('puesto')"
+                    [datos]="listaDepartamento"
+                    [appearance]="'outline'"
+                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                    [campoValor]="['prefijo','nombre']"
+                    [label]="'Puesto'"
+                    [required]="isRequired('puesto', form)"
+                    fxFlex="1 0 auto"
+                >
+                </pixvs-mat-select>
+                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                    <mat-label>Sueldo Mensual</mat-label>
+                    <input matInput name="sueldoMensual" formControlName="sueldoMensual"
+                        required="{{ isRequired('sueldoMensual', form) }}"
+                        prefix="$ " mask="separator.2" thousandSeparator="," >
+                    <mat-error *ngIf="(!!form.get('sueldoMensual').errors)">
+                        {{_validatorService.getMessage(form.get('sueldoMensual'))}}
+                    </mat-error>
+                </mat-form-field>
+            </div>
+        </form>
+    </div>
+    
+</mat-dialog-content>
+<mat-dialog-actions fxLayout="row" fxLayoutAlign="end end">
+    <div fxLayout="row" fxLayoutGap="5px" fxLayoutAlign="end end">
+        <button mat-button (click)="cancelar()">Cerrar</button> 
+        <button type="submit" mat-raised-button class="mat-accent mr-16" (click)="aceptar()">Aceptar</button>
+    </div>
+</mat-dialog-actions>

@@ -1,0 +1,81 @@
+<div mat-dialog-content>
+	<div class="vertical-stepper-wrapper">
+		<mat-vertical-stepper [linear]="true">
+			<mat-step [stepControl]="form">
+				<ng-template matStepLabel>Factura</ng-template>
+
+				<div fxFlex="1 0 auto" fxLayout="column">
+					<pixvs-dynamic-components #camposDinamicos [regConfig]="camposListado"></pixvs-dynamic-components>
+				</div>
+
+				<div fxLayout="row" fxLayoutAlign="center center">
+					<button mat-raised-button type="button" color="accent" matStepperNext (click)="buscarFactura()">Buscar</button>
+				</div>
+			</mat-step>
+
+			<mat-step>
+				<ng-template matStepLabel>Detalles</ng-template>
+
+				<div fxFlex="1 0 auto" fxLayout="column">
+					<ng-container *ngIf="factura">
+						<div fxFlex="0 0 8%" fxLayout="column">
+							<div fxLayout="row" fxLayoutAlign="end center">
+								<span class="text-nowrap font-weight-900 font-size-20">Factura: {{ factura?.folio }}</span>
+							</div>
+						</div>
+						
+						<div fxFlex="1 0 auto">
+							<pixvs-tabla-simple #tablaDetalles
+								[columnaId]="'id'"
+								[service]="_facturaDetallesServices"
+								[localeEN]="localeEN" [localeES]="localeES"
+								[columnas]="columnasTabla" 
+								[columnasFechas]="columnasFechas" 
+								[displayedColumns]="displayedColumns" 
+								[reordenamiento]="false">
+							</pixvs-tabla-simple>
+						</div>
+
+						<!-- <div fxLayout="row">
+							<mat-card class="totales">
+								<mat-card-content class="p-20">
+									<div fxLayout="column" fxLayoutGap="10px grid" class="totales">
+										<div fxLayout="row" fxLayoutGap="10px grid">
+											<span class="font-weight-900" fxFlex="fill">Subtotal:</span>
+											<span class="text-nowrap" fxFlex="auto">$ {{ getTotales().subtotal }}</span>
+										</div>
+
+										<div fxLayout="row" fxLayoutGap="10px grid">
+											<span class="font-weight-900" fxFlex="fill">Descuento:</span>
+											<span class="text-nowrap" fxFlex="auto">$ {{ getTotales().descuento }}</span>
+										</div>
+
+										<div fxLayout="row" fxLayoutGap="10px grid">
+											<span class="font-weight-900" fxFlex="fill">IVA:</span>
+											<span class="text-nowrap" fxFlex="auto">$ {{ getTotales().iva }}</span>
+										</div>
+
+										<div fxLayout="row" fxLayoutGap="10px grid">
+											<span class="font-weight-900" fxFlex="fill">IEPS:</span>
+											<span class="text-nowrap" fxFlex="auto">$ {{ getTotales().ieps }}</span>
+										</div>
+
+										<div fxLayout="row" fxLayoutGap="10px grid">
+											<span class="font-weight-900" fxFlex="fill">Total:</span>
+											<span class="text-nowrap" fxFlex="auto">$ {{ getTotales().total }}</span>
+										</div>
+									</div>
+								</mat-card-content>
+							</mat-card>
+						</div> -->
+					</ng-container>
+				</div>
+			</mat-step>
+		</mat-vertical-stepper>
+	</div>
+</div>
+
+<div mat-dialog-actions>
+	<button mat-button (click)="cancelar()">Cancelar</button>
+	<button mat-button (click)="aceptar()">Agregar</button>
+</div>

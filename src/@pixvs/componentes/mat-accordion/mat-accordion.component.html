@@ -1,0 +1,75 @@
+<div style="min-height: 50px; max-height: 100px;">
+	<div class="w-100-p px-24" *ngIf="displayNames">
+		<mat-header-cell *ngFor="let header of headers" class="py-12 mat-caption" [fxFlex]="header.flex || '0 0 20%'">
+			<span>{{header.name}}</span>
+		</mat-header-cell>
+	</div>
+	<div class="w-100-p px-24" *ngIf="displayNames">
+		<mat-header-cell *ngFor="let header of headers" class="py-12 mat-caption" [fxFlex]="header.flex || '0 0 20%'">
+			<span> </span>
+			<span *ngIf="header.type === 'decimal2'">{{ ((data | SumaPipe: header.value) || 0).toFixed(2) | mask:'separator.2':',' }}</span>
+			<span *ngIf="header.type === 'money'">$ {{ ((data | SumaPipe: header.value) || 0).toFixed(2) | mask:'separator.2':',' }}</span>
+			<span *ngIf="header.type === 'number'">{{ ((data | SumaPipe: header.value) || 0) }}</span>
+		</mat-header-cell>
+	</div>
+</div>
+<div class="w-100-p" style="height: calc(100% - 100px)" fusePerfectScrollbar>
+	<mat-accordion class="w-100-p">
+		<mat-expansion-panel hideToggle *ngFor="let item of data">
+			<mat-expansion-panel-header>
+				<ng-container *ngFor="let header of headers">
+					<p #container *ngIf="header.type != 'delete'" class="px-8 text-truncate" [fxFlex]="header.flex || '0 0 20%'"
+						matTooltip="{{header.type == 'decimal2' ? (item[header.value]  | number : '1.2-2') 
+						: header.type == 'money' ? '$'+(item[header.value]  | number : '1.2-2') 
+						: header.type == 'fecha' ? (item[header.value]  | date:'dd/MM/yyyy') 
+						: header.type == 'fecha-hora' ? (item[header.value]  | date:'dd/MM/yyyy hh:mm') 
+						: header.type == 'action' ? ''
+						: item[header.value] }}"
+						[matTooltipDisabled]="container.offsetWidth >= container.scrollWidth"
+						[matTooltipPosition]="'below'">
+						<button mat-icon-button *ngIf="!!header?.icon && item[header.value]">
+							<mat-icon (click)="action($event,header,item[header.value])">{{header.icon}}</mat-icon>
+						</button>
+						{{header.type == 'decimal2' ? (item[header.value]  | number : '1.2-2') 
+						: header.type == 'money' ? '$'+(item[header.value]  | number : '1.2-2') 
+						: header.type == 'fecha' ? (item[header.value]  | date:'dd/MM/yyyy') 
+						: header.type == 'fecha-hora' ? (item[header.value]  | date:'dd/MM/yyyy hh:mm') 
+						: header.type == 'action' ? ''
+						: item[header.value] }}
+					</p>
+
+					<div *ngIf="header.type == 'delete'">
+						<button mat-icon-button matTooltip="{{ 'INTERFAZ.ELIMINAR' | translate  }}"
+							(click)="delete($event, getElemento(item, columnaId))">
+							<mat-icon >delete_outline</mat-icon>
+						</button>
+					</div>
+				</ng-container>
+			</mat-expansion-panel-header>
+			
+			<div class="my-8" *ngFor="let extra of item['extras']">
+				<span class="mat-body-2" fxFlex="calc(0 0 10% - 10px)">{{extra?.name}}</span>
+				<span class="mat-body-1" fxFlex="calc(0 0 90% - 10px)">{{extra?.value}}</span>
+			</div>
+			<table *ngIf="item[detailProperty].length > 0" class="w-100-p">
+				<tr>
+					<td class="mat-caption text-header" *ngFor="let detail of details" [fxFlex]="detail.flex || '0 0 20%'">{{detail.name}}</td>
+				</tr>
+				<tr *ngFor="let partida of item[detailProperty]">
+					<td class="text-detail" *ngFor="let detail of details" [fxFlex]="detail.flex || '0 0 20%'">
+						<button mat-icon-button *ngIf="!!detail?.icon && partida[detail.value]">
+							<mat-icon (click)="action($event,detail,partida[detail.value])">{{detail.icon}}</mat-icon>
+						</button>
+						{{detail.type == 'decimal2' ? (partida[detail.value]  | number : '1.2-2') 
+						: detail.type == 'money' ? '$'+(partida[detail.value]  | number : '1.2-2') 
+						: detail.type == 'fecha' ? (partida[detail.value]  | date:'dd/MM/yyyy') 
+						: detail.type == 'fecha-hora' ? (partida[detail.value]  | date:'dd/MM/yyyy hh:mm')
+						: detail.type == 'document' ? '' 
+						: partida[detail.value] }}
+					</td>
+				</tr>
+			</table>
+		</mat-expansion-panel>
+	</mat-accordion>
+</div>
+<!-- style="height: calc(100% - 88px); overflow-y: auto;" -->

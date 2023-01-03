@@ -1,0 +1,35 @@
+<mat-toolbar color="primary">
+	<mat-toolbar-row>
+		<span class="title dialog-title" style="width: 100%; text-align: center;">Seleccionar usuario</span>
+	</mat-toolbar-row>
+</mat-toolbar>
+<div mat-dialog-content>
+	<div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+		<div fxLayout="row wrap">
+			<pixvs-mat-select [matSelectCtrl]="usuarioControl" [datos]="usuarios"
+            [appearance]="'outline'"
+            [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+            [campoValor]="'nombreCompleto'" [label]="'Usuario'"
+            fxFlex="1 0 auto">
+            </pixvs-mat-select>
+		</div>
+		<div fxLayout="row wrap">
+			<pixvs-mat-select #sucursalSelect [matSelectCtrl]="sucursalControl" [datos]="sucursales"
+            [appearance]="'outline'"
+            [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+            [campoValor]="'nombre'" [label]="'Sucursal'"
+            fxFlex="1 0 auto">
+            </pixvs-mat-select>
+		</div>
+	</div>
+</div>
+<div mat-dialog-actions align="end">
+	<button
+		mat-button
+		(click)="cancelar()"
+	>Cerrar</button>
+	<button
+		mat-raised-button class="mat-accent mr-16"
+		(click)="aceptar()"
+	>Aceptar</button>
+</div>

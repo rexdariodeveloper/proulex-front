@@ -1,0 +1,173 @@
+<div id="ficha-CRUD" class="pixvs-theme-listado page-layout carded fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <ficha-crud *ngIf="config" [config]="config" [cargando]="_facturaService?.cargando"
+            [etiquetaBotonGuardar]="'Facturar'"[isGuardadoPersonalizado]="true" (output)="guardar()" [mostrarBorrar]="false"
+            [mostrarCancelar]="factura?.id && factura?.estatusId != 2000493" [isCancelarPersonalizado]="true" (outputCancelar)="cancelar()"
+            [mostrarEditar]="false" [titulo]="titulo" [subTituloTraduccion]="pageType" [form]="form"
+            [currentId]="currentId" [pageType]="pageType" [dataService]="_facturaService" class="header accent"
+            fxLayout="column" fxLayoutAlign="center center" fxLayout.gt-sm="row"
+            fxLayoutAlign.gt-sm="space-between center">
+        </ficha-crud>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <mat-progress-bar *ngIf="_facturaService?.cargando" [color]="'primary'" [mode]="'query'">
+            </mat-progress-bar>
+
+            <div style="height: 0px;">
+                <button debounceClick mat-mini-fab class="boton-refresh" (debounceClick)="recargar()"
+                    matTooltip="{{ 'INTERFAZ.RECARGAR' | translate  }}">
+                    <mat-icon class="s-16">refresh</mat-icon>
+                </button>
+            </div>
+
+            <!-- CONTENT -->
+            <div class="content">
+                <form name="form" id="form" [formGroup]="form" class="product w-100-p" fxLayout="column" fxFlex>
+                    <mat-tab-group>
+                        <mat-tab label="Datos Generales">
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                    <pixvs-mat-select [matSelectCtrl]="rfcClienteControl" [datos]="listRFCCliente"
+                                        [appearance]="'outline'"
+                                        [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                        [campoValor]="'valor'" [label]="'RFC Cliente'"
+                                        [required]="isRequired('rfcCliente')" fxFlex="1 0 auto">
+                                    </pixvs-mat-select>
+
+                                    <pixvs-mat-select [matSelectCtrl]="usoCFDIControl" [datos]="listUsoCFDIFiltrado"
+                                        [appearance]="'outline'"
+                                        [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                        [campoValor]="'valor'" [label]="'Uso de CFDI'"
+                                        [required]="isRequired('usoCFDI')" fxFlex="1 0 auto">
+                                    </pixvs-mat-select>
+                                </div>
+
+                                <div fxlayout="row" fxlayoutalign="start center" class="my-20" style="display: flex; border-bottom: solid 1px lightgray;">
+                                    <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font">attach_money</mat-icon>
+                                    <div class="h2 secondary-text ng-tns-c345-79">Nota de Venta</div>
+                                    <ng-container *ngIf="pageType != 'ver'">
+                                        <button mat-icon-button matTooltip="Acciones" [matMenuTriggerFor]="listadoMenu" (click)="$event.stopPropagation();" [disabled]="_facturaService.cargando">
+                                            <mat-icon>more_vert</mat-icon>
+                                        </button>
+                                        <mat-menu #listadoMenu="matMenu">
+                                            <button mat-menu-item (click)="guardar(true)">
+                                                <mat-icon>insert_drive_file</mat-icon>
+                                                <span>Previsualizar factura</span>
+                                            </button>
+                                        </mat-menu>
+                                    </ng-container>
+                                </div>
+
+                                <div fxLayout="row">
+                                    <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+                                        <button mat-mini-fab class="btn-nueva-nota-venta" *ngIf="pageType != 'ver'" (click)="agregarNotaVenta()" [disabled]="_facturaService.cargando || !rfcClienteControl.value || !usoCFDIControl.value">
+                                            <mat-icon>add</mat-icon>
+                                        </button>
+
+                                        <div fxLayout="row" fxLayoutAlign="space-between start" class="h-100-p">
+                                            <div fxFlex="100" class="h-100-p">
+                                                <pixvs-tabla-simple #tablaOrdenesVenta
+                                                    [columnaId]="'id'"
+                                                    [service]="_ordenesVentaService"
+                                                    [localeEN]="localeEN" [localeES]="localeES"
+                                                    [columnas]="columnasTabla" 
+                                                    [columnasFechas]="columnasFechas" 
+                                                    [displayedColumns]="displayedColumns" 
+                                                    [reordenamiento]="false">
+                                                </pixvs-tabla-simple>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <ng-container *ngIf="pageType === 'ver'">
+                                    <div mat-dialog-actions>
+                                        <button mat-button (click)="descargarXML()">
+                                            <mat-icon>attachment</mat-icon>XML
+                                        </button>
+
+                                        <button mat-button (click)="descargarPDF()">
+                                            <mat-icon>attachment</mat-icon>PDF
+                                        </button>
+                                    </div>
+                                </ng-container>
+
+                                <div fxLayout="row">
+                                    <mat-card class="totales">
+                                        <mat-card-content class="p-20">
+                                            <div fxLayout="column" fxLayoutGap="10px grid" class="totales">
+                                                <div fxLayout="row" fxLayoutGap="10px grid">
+                                                    <span class="font-weight-900" fxFlex="fill">Subtotal:</span>
+                                                    <span class="text-nowrap" fxFlex="auto">$ {{ getTotales().subtotal | number: '1.2-2' }}</span>
+                                                </div>
+
+                                                <div fxLayout="row" fxLayoutGap="10px grid">
+                                                    <span class="font-weight-900" fxFlex="fill">Descuento:</span>
+                                                    <span class="text-nowrap" fxFlex="auto">$ {{ getTotales().descuento | number: '1.2-2' }}</span>
+                                                </div>
+
+                                                <div fxLayout="row" fxLayoutGap="10px grid">
+                                                    <span class="font-weight-900" fxFlex="fill">Impuestos:</span>
+                                                    <span class="text-nowrap" fxFlex="auto">$ {{ getTotales().impuestos | number: '1.2-2' }}</span>
+                                                </div>
+
+                                                <div fxLayout="row" fxLayoutGap="10px grid">
+                                                    <span class="font-weight-900" fxFlex="fill">Total:</span>
+                                                    <span class="text-nowrap" fxFlex="auto">$ {{ getTotales().total | number: '1.2-2' }}</span>
+                                                </div>
+                                            </div>
+                                        </mat-card-content>
+                                    </mat-card>
+                                </div>
+                            </div>
+                        </mat-tab>
+
+                        <mat-tab label="CFDI Relacionados">
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <div fxLayout="row">
+                                    <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+                                        <div fxlayout="row" fxlayoutalign="start center" class="my-20" style="display: flex; border-bottom: solid 1px lightgray;">
+                                            <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font">attach_money</mat-icon>
+                                            <div class="h2 secondary-text ng-tns-c345-79">Facturas</div>
+                                        </div>
+
+                                        <button mat-mini-fab class="btn-nueva-relacion" *ngIf="pageType != 'ver'" (click)="agregarFacturaRelacion()" [disabled]="_facturaService.cargando">
+                                            <mat-icon>add</mat-icon>
+                                        </button>
+
+                                        <div fxLayout="row" fxLayoutAlign="space-between start" class="h-100-p">
+                                            <div fxFlex="100" class="h-100-p">
+                                                <pixvs-tabla-simple #tablaFacturasRelacionadas
+                                                    [columnaId]="'id'"
+                                                    [service]="_facturasRelacionService"
+                                                    [localeEN]="localeEN" [localeES]="localeES"
+                                                    [columnas]="columnasTablaFacturasRelacion" 
+                                                    [columnasFechas]="columnasFechasFacturasRelacion" 
+                                                    [displayedColumns]="displayedColumnsFacturasRelacion" 
+                                                    [reordenamiento]="false">
+                                                </pixvs-tabla-simple>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-tab>
+                    </mat-tab-group>
+                </form>
+            </div>
+            <!-- / CONTENT -->
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

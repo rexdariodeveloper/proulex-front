@@ -1,0 +1,108 @@
+<div id="ficha-curso" class="pixvs-theme-listado page-layout carded fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <ficha-crud *ngIf="config" [config]="config" [isGuardadoPersonalizado]="true" (output)="guardar()"
+            [mostrarBorrar]="false" [mostrarEditar]="false" [titulo]="titulo"
+            [subTituloTraduccion]="pageType" [form]="form" [currentId]="currentId" [pageType]="pageType"
+            [dataService]="_deduccionesPercepcionesService" class="header accent" fxLayout="column" fxLayoutAlign="center center"
+            fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center" (outputDesHabilitarCampos)="deshabilitarCampos()" [isDesHabilitarPersonalizado]="true">
+        </ficha-crud>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <mat-progress-bar *ngIf="_deduccionesPercepcionesService?.cargando" [color]="'primary'" [mode]="'query'">
+            </mat-progress-bar>
+
+            <div style="height: 0px;">
+                <button debounceClick mat-mini-fab class="boton-refresh" (debounceClick)="recargar()"
+                    matTooltip="{{ 'INTERFAZ.RECARGAR' | translate  }}">
+                    <mat-icon class="s-16">refresh</mat-icon>
+                </button>
+            </div>
+
+            <!-- CONTENT -->
+            <div class="content" *ngIf="form">
+
+                <form focusInvalidInput name="form" id="form" [formGroup]="form" class="product w-100-p"
+                    fxLayout="column" fxFlex>
+
+                    <mat-tab-group>
+
+                        <mat-tab label="Datos Generales">
+
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid" style="width: 100%">
+                                    <div fxlayout="row" fxlayoutalign="start center" class="my-20" style="display: flex;border-bottom: solid 3px lightgray;width: 100%">
+                                        <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font"><span class="material-icons">attach_money</span></mat-icon>
+                                        <div class="h2 secondary-text ng-tns-c345-79">Datos de la percepción o deducción</div>
+                                        <div style="width: 80%;text-align: end">
+                                            <button mat-fab color="primary" (click)="abrirModal()">
+                                              <mat-icon>add</mat-icon>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid" style="width: 100%">
+                                    <table mat-table [dataSource]="deduccionesPercepciones.value" style="width: 100%">
+                                        <ng-container matColumnDef="fecha">
+                                            <th mat-header-cell *matHeaderCellDef> Fecha </th>
+                                            <td mat-cell *matCellDef="let element"> {{element.fecha}} </td>
+                                        </ng-container>
+                                        <ng-container matColumnDef="empleado">
+                                            <th mat-header-cell *matHeaderCellDef> Empleado </th>
+                                            <td mat-cell *matCellDef="let element"> {{element.empleado.nombreCompleto}} </td>
+                                        </ng-container>
+                                        <ng-container matColumnDef="tipoMovimiento">
+                                            <th mat-header-cell *matHeaderCellDef> Tipo de movimiento </th>
+                                            <td mat-cell *matCellDef="let element"> {{element.tipoMovimiento.valor}} </td>
+                                        </ng-container>
+                                        <ng-container matColumnDef="concepto">
+                                            <th mat-header-cell *matHeaderCellDef> Concepto </th>
+                                            <td mat-cell *matCellDef="let element"> {{element.deduccionPercepcion.codigo}} </td>
+                                        </ng-container>
+                                        <ng-container matColumnDef="monto">
+                                            <th mat-header-cell *matHeaderCellDef> Monto </th>
+                                            <td mat-cell *matCellDef="let element"> {{formatDollar(element.total)}} </td>
+                                        </ng-container>
+                                        <ng-container matColumnDef="acciones">
+                                            <th mat-header-cell *matHeaderCellDef> Acciones </th>
+                                            <td mat-cell *matCellDef="let element; let i=index"> 
+                                                <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font" (click)="pdf.click(); $event.preventDefault()" style="cursor: pointer;">attach_file</mat-icon><input #pdf type="file" (change)="pdfChangeEvent($event,i)" style="display:none;" />
+                                                &nbsp;&nbsp;&nbsp;<mat-icon role="img" class="mat-icon mr-16 secondary-text" style="cursor: pointer;" (click)="borrarDeduccionPercepcion(i)">delete</mat-icon>
+                                            </td>
+                                        </ng-container>
+                                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                        </mat-tab>
+
+                        
+
+                    </mat-tab-group>
+
+                    
+
+                </form>
+
+
+            </div>
+            <!-- / CONTENT -->
+
+        </div>
+        <!-- / CONTENT CARD -->
+
+
+    </div>
+    <!-- / CENTER -->
+</div>

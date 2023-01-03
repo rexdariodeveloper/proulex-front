@@ -1,0 +1,40 @@
+<h1 mat-dialog-title>Agregar evidencia</h1>
+
+<div mat-dialog-content>
+	<form focusInvalidInput name="form" id="form" [formGroup]="form" class="product w-100-p" fxLayout="column" fxFlex>
+		<div fxLayout="column">
+			<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+				<mat-label>Etiqueta</mat-label>
+				<input matInput name="nombre" formControlName="nombre">
+				<mat-error *ngIf="(!!form.get('nombre').errors)">
+					{{_validatorService.getMessage(form.get('nombre'))}}
+				</mat-error>
+			</mat-form-field>
+		</div>
+
+		<div fxLayout="column">
+			<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+				<a (click)="fileInput.click()" mat-button color="accent" style="width: 100%;">
+					<mat-icon class="s-16">attach_file</mat-icon>
+					<span> Adjuntar </span>
+					<input #fileInput type="file" accept="image/jpg, image/jpeg, image/png" (change)="fileChangeEvent($event)" style="display:none;"/>
+				</a>
+			</div>
+
+			<div fxLayout="row wrap" fxLayoutAlign="start center"
+				fxLayoutGap="10px grid" class="h-32">
+				<a color="accent">{{ archivo?.nombreOriginal }}</a>
+			</div>
+
+			<div *ngFor="let archivoCargando of archivosCargando" fxLayout="row wrap" fxLayoutAlign="start center"
+				fxLayoutGap="10px grid" class="h-32">
+				<mat-spinner [diameter]="20"></mat-spinner>
+			</div>
+		</div>
+	</form>
+</div>
+
+<div mat-dialog-actions align="end">
+	<button mat-button (click)="cancelar()">Cancelar</button>
+	<button mat-raised-button class="mat-accent mr-16" (click)="aceptar()">Aceptar</button>
+</div>

@@ -1,0 +1,102 @@
+<mat-toolbar color="primary">
+    <mat-toolbar-row>
+        <span class="title dialog-title">Nuevo movimiento</span>
+    </mat-toolbar-row>
+</mat-toolbar>
+<div mat-dialog-content>
+	<div class="tab-content p-24" fusePerfectScrollbar>
+        <div fxLayout="row wrap" fxLayoutGap="20px grid">
+        	<form focusInvalidInput name="form" id="form" [formGroup]="form" class="product w-100-p"
+                    fxLayout="column" fxFlex>
+                <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                    <pixvs-mat-select [matSelectCtrl]="form.get('empleado')" [datos]="empleados"
+                    [appearance]="'outline'"
+                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                    [campoValor]="'nombreCompleto'" [label]="'Empleado'"
+                    fxFlex="1 0 auto">
+                    </pixvs-mat-select>
+                </div>
+        		<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 calc(16% - 10px)">
+                        <mat-label>Fecha Ajuste</mat-label>
+                        <input matInput type="date" name="fecha" formControlName="fecha" >
+                        <mat-error *ngIf="(!!form.get('fecha').errors)">
+                            {{validatorService.getMessage(form.get('fecha'))}}
+                        </mat-error>
+                    </mat-form-field>
+	                <pixvs-mat-select [matSelectCtrl]="form.get('tipoMovimiento')" [datos]="tipos"
+	                [appearance]="'outline'"
+	                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+	                [campoValor]="'valor'" [label]="'Tipo movimiento'"
+	                fxFlex="1 0 auto">
+	                </pixvs-mat-select>
+                    <pixvs-mat-select [matSelectCtrl]="form.get('sucursal')" [datos]="sucursales"
+                    [appearance]="'outline'"
+                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                    [campoValor]="'nombre'" [label]="'Sede'"
+                    fxFlex="1 0 auto">
+                    </pixvs-mat-select>
+            	</div>
+                <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                    <pixvs-mat-select #conceptoSelect [matSelectCtrl]="form.get('deduccionPercepcion')" [datos]="deduccionesPercepciones"
+                    [appearance]="'outline'"
+                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                    [campoValor]="'codigo'" [label]="'Concepto'"
+                    fxFlex="1 0 auto">
+                    </pixvs-mat-select>
+                </div>
+                <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                        <mat-label>Valor fijo</mat-label>
+                        <input type="number" matInput name="valorFijo" formControlName="valorFijo"
+                            required="{{ isRequired('valorFijo', form) }}">
+                        <mat-error *ngIf="(!!form.get('valorFijo').errors)">
+                            {{validatorService.getMessage(form.get('valorFijo'))}}
+                        </mat-error>
+                    </mat-form-field>
+                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                        <mat-label>Cantidad de horas</mat-label>
+                        <input type="number" matInput name="cantidadHoras" formControlName="cantidadHoras"
+                            required="{{ isRequired('cantidadHoras', form) }}">
+                        <mat-error *ngIf="(!!form.get('cantidadHoras').errors)">
+                            {{validatorService.getMessage(form.get('cantidadHoras'))}}
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div fxLayout="row wrap" fxLayoutAlign="end end" fxLayoutGap="10px grid">
+                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 50%">
+                        <mat-label>Total</mat-label>
+                        <input type="number" matInput name="total" formControlName="total"
+                            required="{{ isRequired('total', form) }}">
+                        <mat-error *ngIf="(!!form.get('total').errors)">
+                            {{validatorService.getMessage(form.get('total'))}}
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div fxLayout="row wrap" fxLayoutAlign="end end">
+                    <div *ngIf="archivos?.length > 0" style="width: 100%; position: relative;max-height: 100px; overflow-y: auto;">
+                        <ng-container *ngFor="let archivo of archivos; let i = index">
+                            <button mat-stroked-button color="accent" (click)="descargarPDF(archivo)" class="mb-32 text-truncate" style="width: 95%">{{archivo?.nombreOriginal}}</button><mat-icon role="img" class="mat-icon mr-16 secondary-text" style="cursor: pointer;font-size: 20px;" (click)="removeArchivo(i)">cancel</mat-icon>
+                        </ng-container>
+                    </div>
+                </div>
+
+        	</form>
+        </div>
+    </div>
+</div>
+<div style="width: 100%;">
+    <div mat-dialog-actions align="start">
+        <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font" (click)="pdf.click(); $event.preventDefault()" style="cursor: pointer;">attach_file</mat-icon><input #pdf type="file" (change)="pdfChangeEvent($event)" style="display:none;" />
+    </div>    
+    <div mat-dialog-actions align="end">
+    	<button
+    		mat-button
+    		(click)="cancelar()"
+    	>Cerrar</button>
+    	<button
+    		mat-raised-button class="mat-accent mr-16"
+    		(click)="aceptar()"
+    	>Aceptar</button>
+    </div>
+</div>

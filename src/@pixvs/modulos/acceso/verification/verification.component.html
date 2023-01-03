@@ -1,0 +1,41 @@
+<div id="verification" fxLayout="column">
+
+    <div id="verification-form-wrapper" fxLayout="column" fxLayoutAlign="center center">
+
+        <div id="verification-form" [@animate]="{value:'*',params:{duration:'300ms',y:'100px'}}">
+
+            <div class="logo">
+                <img style="height: 130px" src="app/main/img/logos/logo_back_white.png">
+            </div>
+
+            <div class="title">{{ 'VERIFICATION' | translate }}</div>
+
+            <form name="verificationForm" [formGroup]="verificationForm" novalidate>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>{{ 'CODE' | translate }}</mat-label>
+                    <input matInput formControlName="code" maxlength="6" minlength="6">
+                    <!-- <input matInput formControlName="email"> -->
+                    <mat-error *ngIf="verificationForm.get('code').hasError('required')">
+                        {{ 'CODE_REQ' | translate }}
+                    </mat-error>
+                    <mat-error *ngIf="verificationForm.get('code').hasError('email')">
+                        {{ 'CODE_VALID' | translate }}
+                    </mat-error>
+                </mat-form-field>
+
+                <button mat-raised-button class="submit-button" color="accent" aria-label="RESET MY PASSWORD"
+                    [disabled]="verificationForm.invalid" (click)="verificarCodigo()">
+                    {{ 'VALIDATE' | translate }}
+                </button>
+            </form>
+
+            <div class="login" fxLayout="row" fxLayoutAlign="center center">
+                <a class="link" [routerLink]="'/acceso/login'">{{ 'GO_BACK' | translate }}</a>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

@@ -1,0 +1,25 @@
+<div fxLayout="row" fxLayoutAlign="start center" (click)="onMostrarHijos()" [ngClass]="{'clickable': componente?.componente?.componentes?.length}" class="px-12 py-8 nodo ml-{{sangria}}">
+	<div fxFlex="fill">
+		<span>{{componente?.componente?.nombreArticulo || ''}}</span>
+	</div>
+	<div fxFlex="200px">
+		<span>{{componente?.componente?.unidadMedidaInventario?.nombre || ''}}</span>
+	</div>
+	<div fxFlex="200px">
+		<span>{{componente?.cantidad}}</span>
+	</div>
+	<div fxFlex="200px">
+		<span>{{componente?.componente?.existencia || 0}}</span>
+	</div>
+	<div fxFlex="30px">
+		<ng-container *ngIf="componente?.componente?.componentes?.length">
+			<mat-icon [ngClass]="{'icono-rotar': mostrarHijos}">chevron_right</mat-icon>
+		</ng-container>
+	</div>
+</div>
+
+<ng-container *ngIf="mostrarHijos">
+	<ng-container *ngFor="let c of componente.componente.componentes">
+		<articulo-componente-nodo [componente]="c" [sangria]="sangria + 8"></articulo-componente-nodo>
+	</ng-container>
+</ng-container>

@@ -1,0 +1,69 @@
+<mat-toolbar color="primary">
+    <mat-toolbar-row>
+        <span class="title dialog-title" style="text-align: center;width: 100%">Cambio de profesor titular</span>
+    </mat-toolbar-row>
+</mat-toolbar>
+<div mat-dialog-content>
+    <div class="tab-content p-24" fusePerfectScrollbar>
+        <div fxLayout="row wrap" fxLayoutGap="20px grid">
+            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+
+                <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid" *ngIf="fechasHabiles != null">
+                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                        <mat-label>Fecha de inicio</mat-label>
+                        <input matInput [matDatepicker]="fechaInicio" name="fechaInicio" [formControl]="fechaInicioControl" disabled [matDatepickerFilter]="fechaValida.bind(this)">
+                        <mat-datepicker-toggle matSuffix [for]="fechaInicio"></mat-datepicker-toggle>
+                        <mat-datepicker #fechaInicio disabled="false"></mat-datepicker>
+                    </mat-form-field>
+                </div>
+
+                <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                        <mat-label>Profesor titular</mat-label>
+                        <input type="text" matInput name="profesorTitular" [value]="profesorTitular?.nombreCompleto" [readonly]="true">
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                        <mat-label>Categoría</mat-label>
+                        <input type="text" matInput name="categoriaTitular" [value]="categoriaTitular" [readonly]="true">
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                        <mat-label>Sueldo</mat-label>
+                        <input type="text" matInput name="sueldoTitular" [value]="sueldoTitular" [readonly]="true">
+                    </mat-form-field>
+                </div>
+
+                <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                    <pixvs-mat-select [matSelectCtrl]="profesorNuevoControl" [datos]="profesores" [appearance]="'outline'"
+                        [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate" [campoValor]="'nombreCompleto'"
+                        [label]="'Nuevo profesor titular'" fxFlex="1 0 auto">
+                    </pixvs-mat-select>
+
+                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                        <mat-label>Categoría</mat-label>
+                        <input type="text" matInput name="categoriaNuevo" [value]="categoriaNuevo" [readonly]="true">
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                        <mat-label>Sueldo</mat-label>
+                        <input type="text" matInput name="sueldoNuevo" [(ngModel)]="sueldoNuevo" [readonly]="!permisoSueldo || !profesorNuevoControl?.value" prefix="$ " mask="separator.2" thousandSeparator=",">
+                    </mat-form-field>
+                </div>
+
+                <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                        <mat-label>Motivo</mat-label>
+                        <input type="text" matInput name="motivo" id="motivo" [(ngModel)]="motivo">
+                    </mat-form-field>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<div mat-dialog-actions align="end">
+    <button type="button" mat-button (click)="cancelar()">Cerrar</button>
+    <button type="button" mat-raised-button class="mat-accent mr-16" (click)="aceptar()">Aceptar</button>
+</div>

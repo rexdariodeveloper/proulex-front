@@ -1,0 +1,113 @@
+<div style="background-color: white;" class="h-100-p p-20">
+    <style>
+        
+    </style>
+
+    <div id="print-ticket" class="print-container">
+        <div fxFlex="0 0 30%" class="h-200">
+            <img src="app/main/img/logos/logo_reportes.png" class="logo-icon">
+        </div>
+        <div fxFlex="0 0 40%" class="h-200 pt-68">
+            <p *ngIf="data?.reimpresion" class="mat-title">REIMPRESIÓN</p>
+            <p class="mat-title">Transferencia de libros</p>
+            <p class="mat-subheading-1">Sede destino: {{data?.destinoSede?.nombre}} / {{data?.destinoAlmacen?.nombre}}</p>
+        </div>
+        <div fxFlex="0 0 30%" class="h-200">
+        </div>
+        <div fxFlex="0 0 100%" class="h-140">
+            <table class="w-100-p text-left">
+                <tbody>
+                    <tr>
+                        <td class="mat-subheading-1 w-30-p">Transferencia:</td>
+                        <td class="mat-subheading-1">{{data?.codigo}}</td>
+                    </tr>
+                    <tr>
+                        <td class="mat-subheading-1 w-30-p">Sede origen / Almacén:</td>
+                        <td class="mat-subheading-1">{{data?.cedisSede?.nombre}} / {{data?.cedisAlmacen?.nombre}}</td>
+                    </tr>
+                    <tr>
+                        <td class="mat-subheading-1 w-30-p">Fecha:</td>
+                        <td class="mat-subheading-1">{{data?.fecha}}</td>
+                    </tr>
+                    <tr>
+                        <td class="mat-subheading-1 w-30-p">Usuario:</td>
+                        <td class="mat-subheading-1">{{data?.usuario?.nombreCompleto}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div fxFlex="0 0 100%" *ngIf="data?.data">
+            <table id="print-table" mat-table [dataSource]="data.data" class="w-100-p">
+        
+                <ng-container matColumnDef="codigo">
+                    <th mat-header-cell *matHeaderCellDef class="table-data-header" style="width: 20%;"> CÓDIGO </th>
+                    <td mat-cell *matCellDef="let element" class="table-data-item text-left"> {{ element.articulo.codigoArticulo }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="descripcion">
+                    <th mat-header-cell *matHeaderCellDef class="table-data-header" style="width: 60%;"> DESCRIPCIÓN </th>
+                    <td mat-cell *matCellDef="let element" class="table-data-item text-left"> {{ element.articulo.nombreArticulo }} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="cantidad">
+                    <th mat-header-cell *matHeaderCellDef class="table-data-header" style="width: 20%;"> CANTIDAD </th>
+                    <td mat-cell *matCellDef="let element" class="table-data-item text-right"> {{ element.cantidad | number : '1.2-2' }} </td>
+                </ng-container>
+                <!--
+                <ng-container matColumnDef="costo">
+                    <th mat-header-cell *matHeaderCellDef class="table-data-header" style="width: 15%;"> COSTO </th>
+                    <td mat-cell *matCellDef="let element" class="table-data-item text-right"> ${{ element.articulo.costoUltimo | number : '1.2-2' }} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="importe">
+                    <th mat-header-cell *matHeaderCellDef class="table-data-header" style="width: 15%;"> IMPORTE </th>
+                    <td mat-cell *matCellDef="let element" class="table-data-item text-right"> ${{ (element.cantidad * element.articulo.costoUltimo) | number : '1.2-2' }} </td>
+                </ng-container>
+                -->
+                <tr mat-header-row *matHeaderRowDef="data.columns" class="h-24"></tr>
+                <tr mat-row *matRowDef="let row; columns: data.columns;" class="h-24"></tr>
+            </table>
+        </div>
+        <div fxFlex="0 0 100%">
+            <table class="w-100-p">
+                <thead>
+                    <tr>
+                        <td class="table-data-footer text-right" style="width: 80%;">No. registros: {{totalArticulos}}</td>
+                        <td class="table-data-footer text-right" style="width: 20%;">{{totalCantidad | number : '1.2-2'}}</td>
+                        <!--
+                        <td class="table-data-footer text-right" style="width: 15%;"></td>
+                        <td class="table-data-footer text-right" style="width: 15%;">${{totalImporte | number : '1.2-2'}}</td>
+                        -->
+                    </tr>
+                </thead>
+            </table>
+        </div>
+
+        <div fxFlex="0 0 100%">
+            <p class="mat-body-2 text-left">Comentarios:</p>
+            <p class="mat-body-1 text-left">{{data?.comentarios}}</p>
+        </div>
+
+        <div fxFlex="0 0 100%" class="mt-100">
+            <table class="w-100-p">
+                <tbody>
+                    <tr>
+                        <td class="w-100"></td>
+                        <td class="mat-caption w-50-p text-center"></td>
+                        <td class="w-100"></td>
+                        <td class="mat-caption w-50-p text-center">{{data?.usuario?.nombreCompleto}}</td>
+                        <td class="w-100"></td>
+                    </tr>
+                    <tr>
+                        <td class="w-100"></td>
+                        <td class="mat-subheading-1 w-50-p text-center signature">Recibe</td>
+                        <td class="w-100"></td>
+                        <td class="mat-subheading-1 w-50-p text-center signature">Envía</td>
+                        <td class="w-100"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

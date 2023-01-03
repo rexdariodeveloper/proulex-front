@@ -1,0 +1,13 @@
+<h1 mat-dialog-title>
+	Comentarios
+</h1>
+<div mat-dialog-content fusePerfectScrollbar style="max-height: 500px">
+	<div>
+		<p class="mat-body-2" *ngIf="!comentarios">Sin comentario</p>
+		<p class="mat-body-2" *ngIf="!!comentarios" [innerHTML]="comentarios" style="word-wrap: break-word"></p>
+	</div>
+	
+</div>
+<div mat-dialog-actions dir="rtl">
+	<button mat-button (click)="cancelar()">Cerrar</button>
+</div>

@@ -1,0 +1,285 @@
+<div id="pixvs-listado" class="pixvs-theme-listado page-layout carded left-sidebar fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- SIDEBAR -->
+    <fuse-sidebar *ngIf="filtros" class="sidebar" name="listado-filtro-sidebar" position="left" lockedOpen="gt-lg">
+        <listado-filtro-sidebar #filtrado [regConfig]="filtros" [titulo]="'TITULO' | translate "
+            [modulo]="'MODULO' | translate " [icon]="config.icono" [listadoMenuOpciones]="filtrosOpciones" (outputFiltro)="establecerOutputFiltro($event)">
+        </listado-filtro-sidebar>
+    </fuse-sidebar>
+    <!-- / SIDEBAR -->
+
+    <!-- CENTER -->
+    <div class="center" [ngClass]="{'layout-pad0': filtros}">
+
+        <!-- HEADER -->
+
+        <div class="header accent" fxLayout="column" fxLayoutAlign="center center" fxLayout.gt-sm="row"
+            fxLayoutAlign.gt-sm="space-between center">
+
+
+            <!-- APP TITLE -->
+            <div fxLayout="column" fxLayoutAlign="center start" fxShow fxHide.gt-lg="{{filtros?.length > 0}}">
+
+                <div fxLayout="row" fxLayoutAlign="start center" fxHide fxShow.gt-xs>
+                    <mat-icon class="secondary-text s-16">home</mat-icon>
+                    <mat-icon class="secondary-text s-12">chevron_right</mat-icon>
+                    <span class="secondary-text">{{ 'MODULO' | translate  }}</span>
+                </div>
+
+                <div class="logo mb-12 mb-md-0" fxLayout="row" fxLayoutAlign="start center">
+                    <mat-icon class="logo-icon s-24 mr-12" [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
+                        {{config.icono}}
+                    </mat-icon>
+                    <span class="logo-text h1" [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+                        {{ 'TITULO' | translate  }}
+                    </span>
+                </div>
+                <div class="subtitle secondary-text" *ngIf="!!subTitulo">
+                    <span>{{ subTitulo }}</span>
+                </div>
+
+            </div>
+            <div fxHide fxShow.gt-lg="{{filtros?.length > 0}}" style="width: 10%;"></div>
+            <!-- / APP TITLE -->
+
+            <!-- SEARCH -->
+            <div class="search-wrapper mx-32 mx-md-0">
+
+                <!-- <button *ngIf="filtros" mat-icon-button fxHide.gt-lg class="sidebar-toggle"
+                    matTooltip="{{ 'INTERFAZ.FILTROS' | translate  }}"
+                    (click)="toggleSidebar('listado-filtro-sidebar')">
+                    <mat-icon>menu</mat-icon>
+                </button> -->
+
+                <div *ngIf="!buscadorAmazonOptions?.length" class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                    <mat-icon>search</mat-icon>
+                    <input #filter placeholder="{{ 'INTERFAZ.BUSCAR' | translate  }}..." [(ngModel)]="textoBuscador">
+				</div>
+
+				<pixvs-buscador-amazon *ngIf="!!buscadorAmazonOptions?.length" [opciones]="buscadorAmazonOptions" (onBuscar)="onBuscarAmazon($event)"></pixvs-buscador-amazon>
+            </div>
+            <!-- / SEARCH -->
+
+            <!-- ADD BUTTON -->
+            <div fxLayout="row">
+
+                <button mat-raised-button [routerLink]="config.rutaDestino + (config?.nodoId ? this.config.nodoId + '/' : '') + 'nuevo'" *ngIf="rolMenu?.crear && nuevo && !config.ocultarBotonNuevo"
+                    routerLinkActive="router-link-active" class="boton-nuevo mt-12"
+                    [ngClass]="{'boton-listado-selector': config.listadoMenuOpciones.length > 0}">
+                    <span>{{ 'INTERFAZ.NUEVO' | translate  }}</span>
+                </button>
+
+                <button mat-raised-button *ngIf="config.mostrarBotonEnviar"
+                    routerLinkActive="router-link-active" class="boton-nuevo mt-12"
+                    [ngClass]="{'boton-listado-selector': config.listadoMenuOpciones.length > 0}"
+                    (click)="enviar()">
+                    <span>{{ (config.etiquetaEnviar || 'INTERFAZ.ENVIAR') | translate  }}</span>
+                </button>
+
+                <button *ngIf="config.listadoMenuOpciones.length > 0 && nuevo" mat-raised-button class="boton-nuevo mt-12"
+                    [ngClass]="rolMenu?.crear ? 'options-selector' : 'options-selector-complete' "
+                    [matMenuTriggerFor]="listadoMenu" aria-label="Select"
+                    matTooltip="{{ 'INTERFAZ.ACCIONES' | translate  }}">
+                    <mat-icon>more_vert</mat-icon>
+                </button>
+
+                <mat-menu #listadoMenu="matMenu">
+                    <button mat-menu-item *ngFor="let opcion of config.listadoMenuOpciones"
+                        (click)="selectedOpcion(opcion)">
+                        <mat-icon>{{opcion.icon}}</mat-icon>
+                        <span class="font-size-12">{{opcion.title}}</span>
+                    </button>
+                </mat-menu>
+
+
+                <!-- / ADD BUTTON -->
+            </div>
+
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <mat-progress-bar *ngIf="_FichasDataService?.cargando" [color]="'primary'" [mode]="'query'">
+            </mat-progress-bar>
+
+            <!-- BOTON FILTROS -->			
+			<button *ngIf="filtros" mat-icon-button fxHide.gt-lg class="primary sidebar-button sidebar-toggle"
+				matTooltip="{{ 'INTERFAZ.FILTROS' | translate  }}"
+				(click)="toggleSidebar('listado-filtro-sidebar')">
+				<mat-icon class="mb-4">tune</mat-icon>
+			</button>
+			<!-- BOTON FILTROS -->
+
+            <div *ngIf="!config.ocultarBotonRefrescar" style="height: 0px;">
+                <button debounceClick mat-mini-fab class="boton-refresh" (debounceClick)="recargar()"
+                    matTooltip="{{ 'INTERFAZ.RECARGAR' | translate  }}">
+                    <mat-icon class="s-14">refresh</mat-icon>
+                </button>
+            </div>
+
+            <mat-table class="ficha-table" #table [dataSource]="dataSource" matSort [@animateStagger]="{value:'50'}" cdkDropList #list1="cdkDropList" [cdkDropListData]="dataSource"
+                (cdkDropListDropped)="drop($event)" id="table1"
+                [fusePerfectScrollbar]="config.esFusePerfectScrollbar">
+
+                <!-- position Column -->
+                <ng-container *ngFor="let columna of config.columns" matColumnDef="{{getColumnName(columna.name)}}">
+
+                    <ng-container *ngIf="columna.type != 'selection' && columna.type != 'downloadFile'">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header fxShow.xs="{{columna.xs}}" fxShow.sm="{{columna.sm}}"
+                            [ngClass]="[columna.class, (columna.centrado ? 'celda-centrada' : '') ]">
+                            
+                            {{columna.title}}
+                        </mat-header-cell>
+                    </ng-container>
+                    <ng-container *ngIf="columna.type == 'selection'">
+                        <mat-header-cell *matHeaderCellDef fxShow.xs="{{columna.xs}}" fxShow.sm="{{columna.sm}}"
+                            [ngClass]="[columna.class, (columna.centrado ? 'celda-centrada' : '') ]">
+                            <mat-checkbox (change)="$event ? masterToggle() : null"
+                                        [checked]="selection.hasValue() && isAllSelected()"
+                                        [indeterminate]="selection.hasValue() && !isAllSelected()"
+                                        [aria-label]="checkboxLabel()">
+                          </mat-checkbox>
+                        </mat-header-cell>
+                    </ng-container>
+                    <ng-container *ngIf="columna.type == 'downloadFile'">
+                        <mat-header-cell *matHeaderCellDef fxShow.xs="{{columna.xs}}" fxShow.sm="{{columna.sm}}"
+                            [ngClass]="[columna.class, (columna.centrado ? 'celda-centrada' : '') ]">
+                        </mat-header-cell>
+                    </ng-container>
+                    <ng-container *ngIf="columna.type != 'selection'">
+                        <mat-cell *matCellDef="let element" fxShow.xs="{{columna.xs}}" fxShow.sm="{{columna.sm}}"
+                            [ngClass]="[columna.class, (columna.centrado ? 'celda-centrada' : '') ]">
+                            <p *ngIf="columna.type != 'estatus' && columna.type != 'boolean' && columna.type != 'imagen' && columna.type != 'cantidad' && columna.type != 'seleccion' && columna.type != 'progressBar' && columna.type != 'downloadFile'" #container
+                                class="text-truncate" matTooltip="{{getElemento(element, columna.name)}}"
+                                [ngClass]="[(columna?.dir == 'rtl'? 'w-100-p' : ''), (columna?.dir == 'rtl'? 'text-right' : 'text-center')]"
+                                [matTooltipDisabled]="container.offsetWidth >= container.scrollWidth"
+                                [matTooltipPosition]="'below'">
+                                {{(!!getElemento(element, columna.values || columna.name) ? (columna.prefijo || '') : '') + (columna.type == 'decimal2' ? ((getElemento(element, columna.name)  | number : '1.2-2') || '') 
+                                : columna.type == 'money' ? '$'+ ((getElemento(element, columna.name) || 0) | number: '1.2-2')
+                                : columna.type == 'fecha' ? (!!getElemento(element, columna.name)? (getElemento(element, columna.name)  | date:'dd/MM/yyyy') : '') 
+                                : columna.type == 'fecha-hora' ? (!!getElemento(element, columna.name)? (getElemento(element, columna.name)  | date:'dd/MM/yyyy hh:mm') : '') 
+                                : getElemento(element, columna.values || columna.name)) }}
+    						</p>
+    						
+    						<p *ngIf="columna.type == 'cantidad'" #container
+                                class="text-truncate">
+                                {{columna.type == 'decimal2' ? ((getElemento(element, columna.name)  | number : '1.2-2') || '') 
+                                : columna.type == 'fecha' ? (getElemento(element, columna.name)  | date:'dd/MM/yyyy') 
+                                : columna.type == 'fecha-hora' ? (!!getElemento(element, columna.name)? (getElemento(element, columna.name)  | date:'dd/MM/yyyy hh:mm') : '') 
+                                : getElemento(element, columna.values || columna.name) }}
+                            </p>
+
+                            <mat-progress-bar *ngIf="columna.type == 'progressBar'" matTooltip="{{getElemento(element, columna.progressValueColumn)}} / {{getElemento(element, columna.progressGoalColumn)}}" mode="determinate" value="{{getElemento(element, columna.progressValueColumn) * 100 / getElemento(element, columna.progressGoalColumn)}}"></mat-progress-bar>
+
+                            <mat-icon *ngIf="columna.type == 'boolean' && getElemento(element, columna.name) == true"
+                                class="active-icon green-600 s-14" matTooltip="{{ (columna.booleanTooltip?.true || 'INTERFAZ.ACTIVO') | translate  }}">check
+                            </mat-icon>
+                            <mat-icon *ngIf="columna.type == 'boolean' && getElemento(element, columna.name) == false"
+                                class="active-icon red-500 s-14" matTooltip="{{ (columna.booleanTooltip?.false || 'INTERFAZ.BORRADO') | translate  }}">close
+                            </mat-icon>
+
+                            <mat-icon *ngIf="columna.type == 'estatus' && getElemento(element, columna.name) == 1000001"
+                                class="active-icon green-600 s-14" matTooltip="{{ 'INTERFAZ.ACTIVO' | translate  }}">check
+                            </mat-icon>
+                            <mat-icon *ngIf="columna.type == 'estatus' && getElemento(element, columna.name) == 1000002"
+                                class="active-icon red-500 s-14" matTooltip="{{ 'INTERFAZ.INACTIVO' | translate  }}">remove
+                            </mat-icon>
+                            <mat-icon *ngIf="columna.type == 'estatus' && getElemento(element, columna.name) == 1000003"
+                                class="active-icon red-500 s-14" matTooltip="{{ 'INTERFAZ.BORRADO' | translate  }}">close
+                            </mat-icon>
+    						<!-- <mat-icon *ngIf="!product.active" class="active-icon red-500 s-16">close</mat-icon> -->
+
+    						<img
+    							*ngIf="columna.type == 'imagen'"
+    							mat-card-avatar
+    							style="border-radius: 100%; height: 35px;"
+    							src="{{!!getElemento(element, columna.name)? apiUrl + '/v1/archivo/' + (getElemento(element, columna.name) | hashId) : 'assets/images/avatars/profile.jpg' }}"
+    						/>
+
+                            <div *ngIf="columna.type == 'seleccion' && (!columna.columnaIndicadorMostrarSeleccion || element[columna.columnaIndicadorMostrarSeleccion])">
+    							<button mat-icon-button matTooltip="seleccionar" (click)="seleccionar(element,config.columnaId)">
+                                    <mat-icon *ngIf="!objetosSeleccionadosMap[element[config.columnaId]]">crop_square</mat-icon>
+                                    <mat-icon *ngIf="!!objetosSeleccionadosMap[element[config.columnaId]]" style="color: #039be5">check_box</mat-icon>
+                                </button>
+                            </div>
+
+                            <div *ngIf="columna.type == 'downloadFile'">
+    							<button mat-icon-button matTooltip="Descargar" (click)="descargarArchivo(element, config.columnaId, columna.url, columna.extension)">
+                                    <mat-icon>attachment</mat-icon>{{ columna.title }}
+                                </button>
+                            </div>
+
+                            <div *ngIf="columna.type == 'acciones'">
+    							<ng-container *ngFor="let opcion of config.listadoAcciones">
+    								<ng-container [ngSwitch]="opcion.tipo"  *ngIf="(!opcion.columnaIndicadorMostrar || element[opcion.columnaIndicadorMostrar]) && (!opcion.columnaIndicadorOcultar || !element[opcion.columnaIndicadorOcultar])">
+    									<ng-container *ngSwitchCase="'menu'">
+    										<ng-container *ngIf="element[opcion.columnaOpcionesMenu]?.length == 1">
+    											<button mat-icon-button matTooltip="{{opcion.title}}" (click)="action($event,opcion,getElemento(element,config.columnaId),element[opcion.columnaOpcionesMenu][0])">
+    												<mat-icon>{{opcion.icon}}</mat-icon>
+    											</button>
+    										</ng-container>
+
+    										<ng-container *ngIf="element[opcion.columnaOpcionesMenu]?.length > 1">
+    											<button mat-icon-button matTooltip="{{opcion.title}}" [matMenuTriggerFor]="listadoMenu" (click)="$event.stopPropagation();">
+    												<mat-icon>{{opcion.icon}}</mat-icon>
+    											</button>
+    											<mat-menu #listadoMenu="matMenu">
+    												<button *ngFor="let opcionMenu of element[opcion.columnaOpcionesMenu]" mat-menu-item (click)="action($event,opcion,getElemento(element,config.columnaId),opcionMenu,false)" matTooltip="{{opcionMenu[opcion.columnaMostrarOpcionMenu]}}">
+    													<span>{{opcionMenu[opcion.columnaMostrarOpcionMenu]}}</span>
+    												</button>
+    												<button *ngIf="!opcion.ocultarBotonTodo" mat-menu-item (click)="action($event,opcion,getElemento(element,config.columnaId),element[opcion.columnaOpcionesMenu],false)">
+    													<span>Todo</span>
+    												</button>
+    											</mat-menu>
+    										</ng-container>
+    									</ng-container>
+    									
+    									<ng-container *ngSwitchDefault>
+    										<button mat-icon-button matTooltip="{{opcion.title}}" (click)="action($event,opcion,getElemento(element,config.columnaId),element)">
+    											<mat-icon>{{opcion.icon}}</mat-icon>
+    										</button>
+    									</ng-container>
+    								</ng-container>
+    							</ng-container>
+                            </div>
+                        </mat-cell>
+                    </ng-container>
+                    <ng-container *ngIf="columna.type == 'selection'" >
+                        <mat-cell *matCellDef="let element">
+                            <mat-checkbox (click)="$event.stopPropagation()"
+                                        (change)="$event ? selection.toggle(element) : null"
+                                        [checked]="selection.isSelected(element)"
+                                        [aria-label]="checkboxLabel(element)">
+                          </mat-checkbox>
+                      </mat-cell>
+                    </ng-container>
+                </ng-container>
+                <ng-container *ngIf="config.reordenamiento">
+                    <mat-header-row *matHeaderRowDef="config.displayedColumns; sticky:true"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: config.displayedColumns;" class="element" matRipple
+                        (click)="rutaDestino('ver/' + getHashId(row[config.columnaId]))" cdkDrag></mat-row>
+                </ng-container>
+                <ng-container *ngIf="!config.reordenamiento">
+                    <mat-header-row *matHeaderRowDef="config.displayedColumns; sticky:true"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: config.displayedColumns;" class="element" matRipple
+                        (click)="rutaDestino('ver/' + getHashId(row[config.columnaId]))"></mat-row>
+                </ng-container>
+
+                <!-- [routerLink]="config.rutaDestino ? config.rutaDestino + 'ver/' + getHashId(row[config.columnaId]) : '' " -->
+
+            </mat-table>
+
+            <mat-paginator #paginator [length]="dataSource.filteredData.length" [pageIndex]="0" [pageSize]="config?.ocultarPaginador ? dataSource.filteredData.length : (config?.paginatorSize || 10)"
+                [pageSizeOptions]="[10, 25, 100]" [ngClass]="{'d-none': config?.ocultarPaginador}">
+            </mat-paginator>
+
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

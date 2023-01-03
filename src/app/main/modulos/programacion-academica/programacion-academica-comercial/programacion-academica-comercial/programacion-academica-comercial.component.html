@@ -1,0 +1,437 @@
+<div id="ficha-programacion-academica-comercial" class="pixvs-theme-listado page-layout carded fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <ficha-crud *ngIf="config" [config]="config" [isGuardadoPersonalizado]="true" (output)="guardar()"
+            [mostrarBorrar]="programacionAcademicaComercial?.activo "
+            [mostrarEditar]="programacionAcademicaComercial?.activo " [titulo]="titulo" [subTituloTraduccion]="pageType"
+            [form]="form" [currentId]="currentId" [pageType]="pageType"
+            [dataService]="_programacionAcademicaComercialService" class="header accent" fxLayout="column"
+            fxLayoutAlign="center center" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center">
+        </ficha-crud>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <mat-progress-bar *ngIf="_programacionAcademicaComercialService?.cargando" [color]="'primary'"
+                [mode]="'query'">
+            </mat-progress-bar>
+
+            <!-- CONTENT -->
+            <div class="content">
+
+                <form *ngIf="!!form" focusInvalidInput name="form" id="form" [formGroup]="form" class="product w-100-p"
+                    fxLayout="column" fxFlex>
+
+                    <mat-tab-group fxFlex="100">
+
+                        <mat-tab label="Datos Generales">
+
+                            <div class="tab-content p-24 h-100-p">
+
+                                <div class="h-100-p" fxLayout="row wrap" fxLayoutGap="20px grid">
+                                    <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="66">
+                                                <mat-label>Nombre</mat-label>
+                                                <input type="text" matInput name="nombre" formControlName="nombre"
+                                                    required="{{ isRequired('nombre') }}">
+                                                <mat-error *ngIf="(!!form.get('nombre').errors)">
+                                                    {{validatorService.getMessage(form.get('nombre'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+
+                                            <pixvs-mat-select [matSelectCtrl]="paCicloControl" [datos]="paCiclos"
+                                                [appearance]="'outline'"
+                                                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                                [campoValor]="'nombre'" [label]="'Ciclo'"
+                                                [seleccionarUnicaOpcion]="!programacionAcademicaComercial?.id"
+                                                [required]="isRequired('paCiclo')" fxFlex="1 0 auto">
+                                            </pixvs-mat-select>
+                                        </div>
+
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <pixvs-mat-chip-autocomplete [matCtrl]="idiomaControl" [datos]="idiomas"
+                                                [selectedElements]="idiomaControl?.value || []" [appearance]="'outline'"
+                                                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                                [required]="false" [campoValor]="'valor'" [label]="'Idioma'"
+                                                [manualDisable]="form?.disabled"
+                                                fxFlex="1 0 auto"></pixvs-mat-chip-autocomplete>
+
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Fecha de inicio</mat-label>
+                                                <input matInput [matDatepicker]="fechaInicio" name="fechaInicio"
+                                                    [formControl]="fechaInicioControl" disabled>
+                                                <mat-datepicker-toggle matSuffix [for]="fechaInicio">
+                                                </mat-datepicker-toggle>
+                                                <mat-datepicker #fechaInicio disabled="true"></mat-datepicker>
+                                            </mat-form-field>
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Fecha fin</mat-label>
+                                                <input matInput [matDatepicker]="fechaFin" name="fechaFin"
+                                                    [formControl]="fechaFinControl" disabled>
+                                                <mat-datepicker-toggle matSuffix [for]="fechaFin">
+                                                </mat-datepicker-toggle>
+                                                <mat-datepicker #fechaFin disabled="true"></mat-datepicker>
+                                            </mat-form-field>
+                                        </div>
+
+                                        <div class="no-scroll" fxLayout="row wrap" fxLayoutAlign="start start" fxLayoutGap="10px grid"
+                                            fxFlex="100">
+                                            <mat-tab-group #idiomasMatTabGroup fxFlex="100" class="h-100-p"
+                                                *ngIf="idiomaControl.value?.length">
+                                                <ng-container *ngFor="let idioma of idiomaControl.value">
+                                                    <mat-tab label="{{idioma.valor}}">
+                                                        <div class="tab-content p-24 h-100-p">
+                                                            <div fxLayout="row" fxFlex="100" fxLayoutGap="20px grid"
+                                                                class="h-100-p">
+                                                                <div fxFlex="50" fxLayout="row wrap"
+                                                                    fxLayoutGap="20px grid"
+                                                                    class="contenedor-tabs-idioma"
+                                                                    style="height: 600px !important; max-height: 600px !important;" fusePerfectScrollbar>
+                                                                    <mat-tab-group *ngIf="idiomaControl.value?.length"
+                                                                        fxFlex="100">
+                                                                        <mat-tab label="Resumen">
+                                                                            <div class="tab-content p-24 h-100-p">
+                                                                                <div fxLayout="column" fxFlex="100"
+                                                                                    fxFlex.gt-sm="100"
+                                                                                    fxFlex.gt-md="100">
+                                                                                    <div fxFlex="100"
+                                                                                        fxLayout="row wrap"
+                                                                                        fxLayoutAlign="start center"
+                                                                                        fxLayoutGap="10px grid">
+                                                                                        <mat-table
+                                                                                            class="ficha-table tabla-resumen h-100-p"
+                                                                                            #tableResumen
+                                                                                            [dataSource]="dataSourceResumen[idioma.id]"
+                                                                                            matSort
+                                                                                            [@animateStagger]="{value:'50'}"
+                                                                                            id="tabla-resumen">
+                                                                                            <ng-container
+                                                                                                matColumnDef="modalidad">
+                                                                                                <mat-header-cell
+                                                                                                    *matHeaderCellDef>
+                                                                                                    <span
+                                                                                                        class="text-center text-nowrap w-100-p">Modalidad</span>
+                                                                                                </mat-header-cell>
+                                                                                                <mat-cell
+                                                                                                    *matCellDef="let datosResumen">
+                                                                                                    <div class="w-100-p"
+                                                                                                        fxLayout="row"
+                                                                                                        fxLayoutAlign="center center">
+                                                                                                        {{ datosResumen.paModalidad.nombre }}
+                                                                                                    </div>
+                                                                                                </mat-cell>
+                                                                                            </ng-container>
+
+                                                                                            <ng-container
+                                                                                                matColumnDef="programas">
+                                                                                                <mat-header-cell
+                                                                                                    *matHeaderCellDef>
+                                                                                                    <span
+                                                                                                        class="text-center text-nowrap w-100-p">Programas</span>
+                                                                                                </mat-header-cell>
+                                                                                                <mat-cell
+                                                                                                    *matCellDef="let datosResumen">
+                                                                                                    <div class="w-100-p"
+                                                                                                        fxLayout="row"
+                                                                                                        fxLayoutAlign="center center">
+                                                                                                        {{ datosResumen.programasStr }}
+                                                                                                    </div>
+                                                                                                </mat-cell>
+                                                                                            </ng-container>
+
+                                                                                            <ng-container
+                                                                                                matColumnDef="numeroClases">
+                                                                                                <mat-header-cell
+                                                                                                    *matHeaderCellDef>
+                                                                                                    <span
+                                                                                                        class="text-center text-nowrap w-100-p">Número de clases</span>
+                                                                                                </mat-header-cell>
+                                                                                                <mat-cell
+                                                                                                    *matCellDef="let datosResumen">
+                                                                                                    <div class="w-100-p"
+                                                                                                        fxLayout="row"
+                                                                                                        fxLayoutAlign="center center">
+                                                                                                        {{ datosResumen.numeroClases }}
+                                                                                                    </div>
+                                                                                                </mat-cell>
+                                                                                            </ng-container>
+
+                                                                                            <ng-container
+                                                                                                matColumnDef="fechaInicio">
+                                                                                                <mat-header-cell
+                                                                                                    *matHeaderCellDef>
+                                                                                                    <span
+                                                                                                        class="text-center text-nowrap w-100-p">Fecha inicio</span>
+                                                                                                </mat-header-cell>
+                                                                                                <mat-cell
+                                                                                                    *matCellDef="let datosResumen">
+                                                                                                    <div class="w-100-p"
+                                                                                                        fxLayout="row"
+                                                                                                        fxLayoutAlign="center center">
+                                                                                                        {{ datosResumen.fechaInicio }}
+                                                                                                    </div>
+                                                                                                </mat-cell>
+                                                                                            </ng-container>
+
+                                                                                            <ng-container
+                                                                                                matColumnDef="acciones">
+                                                                                                <mat-header-cell *matHeaderCellDef>
+                                                                                                </mat-header-cell>
+                                                                                                <mat-cell *matCellDef="let datosResumen">
+                                                                                                    <div class="w-100-p"
+                                                                                                        fxLayout="row"
+                                                                                                        fxLayoutAlign="center center">
+                                                                                                        <ng-container *ngIf="form?.enabled">
+                                                                                                            <button mat-icon-button matTooltip="Eliminar" (click)="borrarProgramacion(datosResumen)">
+                                                                                                                <mat-icon>delete</mat-icon>
+                                                                                                            </button>
+                                                                                                        </ng-container>
+                                                                                                    </div>
+                                                                                                </mat-cell>
+                                                                                            </ng-container>
+
+                                                                                            <ng-container>
+                                                                                                <mat-header-row
+                                                                                                    *matHeaderRowDef="displayedColumnsResumen; sticky:true">
+                                                                                                </mat-header-row>
+                                                                                                <mat-row
+                                                                                                    *matRowDef="let row; columns: displayedColumnsResumen;"
+                                                                                                    class="element"
+                                                                                                    matRipple
+                                                                                                    (click)="onResumen(row)">
+                                                                                                </mat-row>
+                                                                                            </ng-container>
+                                                                                        </mat-table>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </mat-tab>
+                                                                        <mat-tab label="Detalle">
+                                                                            <div class="tab-content p-24 h-100-p">
+                                                                                <div fxLayout="column" fxFlex="100"
+                                                                                    fxFlex.gt-sm="100"
+                                                                                    fxFlex.gt-md="100">
+                                                                                    <div fxLayout="row wrap"
+                                                                                        fxLayoutAlign="start center"
+                                                                                        fxLayoutGap="10px grid">
+                                                                                        <pixvs-mat-select
+                                                                                            [matSelectCtrl]="paModalidadFiltrarControlMapIdioma[idioma.id]"
+                                                                                            [datos]="paModalidades"
+                                                                                            [appearance]="'outline'"
+                                                                                            [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                                                                            [campoValor]="'nombre'"
+                                                                                            [label]="'Modalidad'"
+                                                                                            [required]="false"
+                                                                                            [etiquetaVacio]="'Todo'"
+                                                                                            fxFlex="33%">
+                                                                                        </pixvs-mat-select>
+
+																						<pixvs-mat-select
+                                                                                            [matSelectCtrl]="programaFiltrarControlMapIdioma[idioma.id]"
+                                                                                            [datos]="programas"
+                                                                                            [appearance]="'outline'"
+                                                                                            [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                                                                            [campoValor]="'nombre'"
+                                                                                            [label]="'Programa'"
+                                                                                            [required]="false"
+                                                                                            [etiquetaVacio]="'Todo'"
+                                                                                            fxFlex="33%">
+                                                                                        </pixvs-mat-select>
+
+																						<mat-form-field
+																							appearance="outline"
+																							floatLabel="auto"
+																							fxFlex="33%"
+																						>
+																							<mat-label>Fecha de inicio</mat-label>
+																							<input
+																								matInput
+																								[matDatepicker]="fechaInicioFiltrar"
+																								name="fechaInicioFiltrar"
+																								[formControl]="fechaInicioFiltrarControlMapIdioma[idioma.id]"
+																								disabled
+																							>
+																							<mat-datepicker-toggle
+																								matSuffix
+																								[for]="fechaInicioFiltrar"
+																							>
+																							</mat-datepicker-toggle>
+																							<mat-datepicker
+																								#fechaInicioFiltrar
+																								disabled="false"
+																							></mat-datepicker>
+                                                                                            <mat-datepicker-toggle matSuffix (click)="limpiarFechaFiltrar(fechaInicioFiltrarControlMapIdioma[idioma.id])">
+                                                                                                <mat-icon matDatepickerToggleIcon>clear</mat-icon>
+                                                                                            </mat-datepicker-toggle>
+																						</mat-form-field>
+                                                                                    </div>
+                                                                                    <div fxFlex="fill"
+                                                                                        fxLayout="row wrap"
+                                                                                        fxLayoutAlign="start start"
+                                                                                        fxLayoutGap="10px grid">
+                                                                                        <mat-table
+                                                                                            class="ficha-table tabla-resumen h-100-p"
+                                                                                            #tableResumen
+                                                                                            [dataSource]="dataSourceDetalles[idioma.id]"
+                                                                                            matSort
+                                                                                            [@animateStagger]="{value:'50'}"
+                                                                                            id="tabla-resumen">
+                                                                                            <ng-container
+                                                                                                matColumnDef="modalidad">
+                                                                                                <mat-header-cell
+                                                                                                    *matHeaderCellDef>
+                                                                                                    <span
+                                                                                                        class="text-center text-nowrap w-100-p">Modalidad</span>
+                                                                                                </mat-header-cell>
+                                                                                                <mat-cell
+                                                                                                    *matCellDef="let detalle">
+                                                                                                    <div class="w-100-p"
+                                                                                                        fxLayout="row"
+                                                                                                        fxLayoutAlign="center center">
+                                                                                                        {{ detalle.paModalidad.nombre }}
+                                                                                                    </div>
+                                                                                                </mat-cell>
+                                                                                            </ng-container>
+
+                                                                                            <ng-container
+                                                                                                matColumnDef="programas">
+                                                                                                <mat-header-cell
+                                                                                                    *matHeaderCellDef>
+                                                                                                    <span
+                                                                                                        class="text-center text-nowrap w-100-p">Programas</span>
+                                                                                                </mat-header-cell>
+                                                                                                <mat-cell
+                                                                                                    *matCellDef="let detalle">
+                                                                                                    <div class="w-100-p"
+                                                                                                        fxLayout="row"
+                                                                                                        fxLayoutAlign="center center">
+                                                                                                        {{ detalle.programasStr }}
+                                                                                                    </div>
+                                                                                                </mat-cell>
+                                                                                            </ng-container>
+
+                                                                                            <ng-container
+                                                                                                matColumnDef="fechaInicio">
+                                                                                                <mat-header-cell
+                                                                                                    *matHeaderCellDef>
+                                                                                                    <span
+                                                                                                        class="text-center text-nowrap w-100-p">Fecha inicio</span>
+                                                                                                </mat-header-cell>
+                                                                                                <mat-cell
+                                                                                                    *matCellDef="let detalle">
+                                                                                                    <div class="w-100-p"
+                                                                                                        fxLayout="row"
+                                                                                                        fxLayoutAlign="center center">
+                                                                                                        {{ detalle.fechaInicio | date : 'MMM d, yyyy' }}
+                                                                                                    </div>
+                                                                                                </mat-cell>
+                                                                                            </ng-container>
+
+                                                                                            <ng-container
+                                                                                                matColumnDef="fechaFin">
+                                                                                                <mat-header-cell
+                                                                                                    *matHeaderCellDef>
+                                                                                                    <span
+                                                                                                        class="text-center text-nowrap w-100-p">Fecha fin</span>
+                                                                                                </mat-header-cell>
+                                                                                                <mat-cell
+                                                                                                    *matCellDef="let detalle">
+                                                                                                    <div class="w-100-p"
+                                                                                                        fxLayout="row"
+                                                                                                        fxLayoutAlign="center center">
+                                                                                                        {{ detalle.fechaFin | date : 'MMM d, yyyy' }}
+                                                                                                    </div>
+                                                                                                </mat-cell>
+                                                                                            </ng-container>
+
+                                                                                            <ng-container
+                                                                                                matColumnDef="acciones">
+                                                                                                <mat-header-cell *matHeaderCellDef>
+                                                                                                </mat-header-cell>
+                                                                                                <mat-cell *matCellDef="let detalle">
+                                                                                                    <div class="w-100-p"
+                                                                                                        fxLayout="row"
+                                                                                                        fxLayoutAlign="center center">
+                                                                                                        <ng-container *ngIf="form?.enabled && (!programacionAcademicaComercial?.id || ((detalle.fechaFin | date : 'yyyy/MM/dd') >= (fechaActual | date : 'yyyy/MM/dd')))">
+                                                                                                            <button mat-icon-button matTooltip="Eliminar" (click)="borrarDetalle(detalle)">
+                                                                                                                <mat-icon>delete</mat-icon>
+                                                                                                            </button>
+                                                                                                        </ng-container>
+                                                                                                    </div>
+                                                                                                </mat-cell>
+                                                                                            </ng-container>
+
+                                                                                            <ng-container>
+                                                                                                <mat-header-row
+                                                                                                    *matHeaderRowDef="displayedColumnsDetalles; sticky:true">
+                                                                                                </mat-header-row>
+                                                                                                <mat-row
+                                                                                                    *matRowDef="let row; columns: displayedColumnsDetalles;"
+                                                                                                    class="element"
+                                                                                                    matRipple
+                                                                                                    (click)="onDetalle(row)"></mat-row>
+                                                                                            </ng-container>
+                                                                                        </mat-table>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </mat-tab>
+                                                                    </mat-tab-group>
+                                                                    <button *ngIf="form?.enabled" mat-mini-fab class="btn-nueva-programacion"
+                                                                        (click)="nuevaProgramacion(idioma)"
+                                                                        type="button">
+                                                                        <mat-icon>add</mat-icon>
+                                                                    </button>
+                                                                </div>
+                                                                <div fxFlex="50" fxLayout="row wrap"
+                                                                    fxLayoutGap="20px grid"
+                                                                    style="height: 600px !important; max-height: 600px !important;" fusePerfectScrollbar>
+                                                                    <pixvs-year-calendar
+                                                                        [id]="idioma.id"
+                                                                        [fechaInicio]="fechaInicioCiclo"
+                                                                        [fechaFin]="fechaFinCiclo"
+                                                                        [datasource]="datasourceCalendarioMapIdioma[idioma.id]"
+                                                                        (onClickDia)="onDetalleCalendario(idioma,$event)"
+                                                                    ></pixvs-year-calendar>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </mat-tab>
+                                                </ng-container>
+                                            </mat-tab-group>
+                                        </div>
+
+                                    </div>
+
+
+                                </div>
+
+
+                            </div>
+
+                        </mat-tab>
+
+                    </mat-tab-group>
+
+                </form>
+
+
+            </div>
+            <!-- / CONTENT -->
+
+        </div>
+        <!-- / CONTENT CARD -->
+
+
+    </div>
+    <!-- / CENTER -->
+</div>

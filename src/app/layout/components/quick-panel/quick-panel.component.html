@@ -1,0 +1,79 @@
+<div fxLayout="column" fxFlex fusePerfectScrollbar>
+
+    <mat-list class="date" cdkFocusRegionStart>
+        <mat-list-item style="position: absolute;">
+            <h3 mat-line></h3>
+            <button mat-icon-button (click)="getAutorizaciones()">
+                <mat-icon class="mat-24">refresh</mat-icon>
+            </button>
+        </mat-list-item>
+
+        <div class="secondary-text mat-display-1 mb-0 p-16">
+            <div class="mb-12">
+                {{date | dateLocale:'dddd' | titlecase}}
+            </div>
+            <div fxLayout="row" fxLayoutAlign="start start">
+                <span> {{date | dateLocale:'D'}}</span>
+                <span class="mat-subheading-1">{{date | dateLocale:'o'}}&nbsp;</span>
+                <span> {{date | dateLocale:'MMMM' | titlecase}}</span>
+            </div>
+        </div>
+    </mat-list>
+
+    <mat-divider cdkFocusRegionEnd></mat-divider>
+
+    <mat-nav-list>
+        <h3 matSubheader>
+            <span>{{ 'NOTIFICACIONES' | translate }}</span>
+        </h3>
+
+        <mat-divider cdkfocusregionend="" class="mat-divider mat-divider-horizontal" role="separator"
+            aria-orientation="horizontal"></mat-divider>
+
+        <mat-list-item [ngStyle]="{'background-color': (notificacion.visto ? 'unset' : 'rgba(0, 0, 0, 0.12)') }"
+            *ngFor="let notificacion of _fuseSidebarService.getListadoNotificaciones()"
+            (click)="seleccionaNotificacion(notificacion)">
+            <h3 matLine>{{notificacion.alerta.textoRepresentativo}}</h3>
+            <p matLine class="secondary-text">{{notificacion.fechaCreacion | date: 'dd/MM/yyyy h:mm a':'UTC-6' }}
+            </p>
+			<p matLine class="secondary-text" *ngIf="notificacion?.alerta?.mostrarUsuario">
+				{{notificacion.alerta.creadoPor.nombreCompleto }}
+			</p>
+            <p matLine class="secondary-text">
+				{{notificacion.estatusDetalle.valor }}
+				<span *ngIf="notificacion?.alerta?.origen"> / {{ notificacion.alerta.origen }}</span>
+			</p>
+        </mat-list-item>
+
+    </mat-nav-list>
+
+    <mat-nav-list>
+        <h3 matSubheader>
+            <span>{{ 'AUTORIZACIONES' | translate }}</span>
+        </h3>
+
+        <mat-divider cdkfocusregionend="" class="mat-divider mat-divider-horizontal" role="separator"
+            aria-orientation="horizontal"></mat-divider>
+
+        <mat-list-item [ngStyle]="{'background-color': (autorizacion.visto ? 'unset' : 'rgba(0, 0, 0, 0.12)') }"
+            *ngFor="let autorizacion of _fuseSidebarService.getListadoAutorizaciones()"
+            (click)="seleccionaAutorizacion(autorizacion)">
+            <h3 matLine>{{autorizacion.alerta.textoRepresentativo}}</h3>
+            <p matLine class="secondary-text">{{autorizacion.fechaCreacion | date: 'dd/MM/yyyy h:mm a':'UTC-6' }}
+            </p>
+			<p matLine class="secondary-text" *ngIf="autorizacion?.alerta?.mostrarUsuario">
+				{{autorizacion.alerta.creadoPor.nombreCompleto }}
+			</p>
+			<p matLine class="secondary-text">
+				<span *ngIf="autorizacion?.alerta?.origen">{{ autorizacion.alerta.origen }}</span>
+			</p>
+        </mat-list-item>
+    </mat-nav-list>
+
+    <mat-divider></mat-divider>
+
+
+    <mat-divider></mat-divider>
+
+
+</div>

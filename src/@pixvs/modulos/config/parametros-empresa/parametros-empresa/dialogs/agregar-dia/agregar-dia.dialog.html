@@ -1,0 +1,60 @@
+<mat-toolbar color="primary">
+	<mat-toolbar-row>
+		<span class="title dialog-title">Información</span>
+	</mat-toolbar-row>
+</mat-toolbar>
+<div mat-dialog-content>
+	<form focusInvalidInput name="form" id="form" [formGroup]="form" class="product w-100-p"
+                    fxLayout="column" fxFlex>
+		<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+	        <pixvs-mat-select [matSelectCtrl]="form.get('tipoDia')" [datos]="tipoDia"
+	            [appearance]="'outline'"
+	            [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+	            [campoValor]="'label'" [label]="'Tipo de día'" [required]="isRequired('tipoDia',form)"
+	            fxFlex="1 0 auto">
+	        </pixvs-mat-select>
+	        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 calc(16% - 10px)" *ngIf="!mostrarFechaFin">
+	            <mat-label>Fecha</mat-label>
+	            <input matInput type="date" name="fecha" formControlName="fecha">
+	            <mat-error *ngIf="(!!form.get('fecha').errors)">
+	                {{validatorService.getMessage(form.get('fecha'))}}
+	            </mat-error>
+	        </mat-form-field>
+	        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 calc(16% - 10px)" *ngIf="mostrarFechaFin">
+	            <mat-label>Fecha Inicio</mat-label>
+	            <input matInput type="date" name="fechaInicio" formControlName="fecha">
+	            <mat-error *ngIf="(!!form.get('fecha').errors)">
+	                {{validatorService.getMessage(form.get('fecha'))}}
+	            </mat-error>
+	        </mat-form-field>
+	        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 calc(16% - 10px)" *ngIf="mostrarFechaFin">
+	            <mat-label>Fecha Fin</mat-label>
+	            <input matInput type="date" name="fechaFin" formControlName="fechaFin">
+	            <mat-error *ngIf="(!!form.get('fechaFin').errors)">
+	                {{validatorService.getMessage(form.get('fechaFin'))}}
+	            </mat-error>
+	        </mat-form-field>
+	    </div>
+
+	    <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+	    	<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                <mat-label>Descripción</mat-label>
+                <input type="text" matInput name="descripcion" formControlName="descripcion"
+                    required="{{ isRequired('descripcion', form) }}">
+                <mat-error *ngIf="(!!form.get('descripcion').errors)">
+                    {{validatorService.getMessage(form.get('descripcion'))}}
+                </mat-error>
+			</mat-form-field>
+	    </div>
+	</form>
+</div>
+<div mat-dialog-actions align="end">
+	<button
+		mat-button
+		(click)="cancelar()"
+	>Cerrar</button>
+	<button
+		mat-raised-button class="mat-accent mr-16"
+		(click)="aceptar()"
+	>Aceptar</button>
+</div>

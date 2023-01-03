@@ -1,0 +1,161 @@
+<div mat-dialog-content>
+	<form *ngIf="!!form"
+		focusInvalidInput
+		name="form"
+		id="form"
+		[formGroup]="form"
+		class="product w-100-p"
+		fxLayout="column"
+		fxFlex
+	>
+		<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+			<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+				<mat-label>Artículo</mat-label>
+				<input matInput name="articuloTexto" [value]="articuloControl?.value?.codigoArticulo + ' ' + articuloControl?.value?.nombreArticulo" [readonly]=true>
+			</mat-form-field>
+		</div>
+
+		<div fxLayout="row" fxLayoutAlign="center center" *ngIf="cargandoComponentes">
+			<mat-spinner [diameter]="50"></mat-spinner>
+		</div>
+		<ng-container *ngIf="articuloControl?.value?.articuloSubtipoId == ArticulosSubtipos.PAQUETE_DE_LIBROS && !!articuloArbolComponentes">
+			<div fxLayout="column" class="pb-20">
+				<div fxLayout="row" fxLayoutAlign="start center" class="px-12 componentes-encabezado pb-8">
+					<div fxFlex="fill">
+						<span>Artículo</span>
+					</div>
+					<div fxFlex="200px">
+						<span>Unidad de medida</span>
+					</div>
+					<div fxFlex="200px">
+						<span>Cantidad paquete</span>
+					</div>
+					<div fxFlex="200px">
+						<span>Existencia</span>
+					</div>
+					<div fxFlex="30px"></div>
+				</div>
+				<ng-container *ngFor="let componente of articuloArbolComponentes.componentes">
+					<articulo-componente-nodo [componente]="componente"></articulo-componente-nodo>
+				</ng-container>
+			</div>
+		</ng-container>
+
+		<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+			<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+				<mat-label>Existencia</mat-label>
+				<input matInput name="existencia" formControlName="existencia"
+					required="{{ isRequired('existencia') }}"
+					mask="separator.4" thousandSeparator=","
+					[readonly]="true">
+				<mat-error *ngIf="(!!form.get('existencia').errors)">
+					{{validatorService.getMessage(form.get('existencia'))}}
+				</mat-error>
+			</mat-form-field>
+
+			<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+				<mat-label>Cantidad enviada</mat-label>
+				<input matInput name="cantidadSurtida" formControlName="cantidadSurtida"
+					required="{{ isRequired('cantidadSurtida') }}"
+					mask="separator.4" thousandSeparator="," [readonly]="true">
+				<mat-error *ngIf="(!!form.get('cantidadSurtida').errors)">
+					{{validatorService.getMessage(form.get('cantidadSurtida'))}}
+				</mat-error>
+			</mat-form-field>
+
+			<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+				<mat-label>Cantidad a recibir</mat-label>
+				<input matInput name="cantidad" formControlName="cantidad"
+					required="{{ isRequired('cantidad') }}"
+					mask="separator.4" thousandSeparator=",">
+				<mat-error *ngIf="(!!form.get('cantidad').errors)">
+					{{validatorService.getMessage(form.get('cantidad'))}}
+				</mat-error>
+			</mat-form-field>
+
+			<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+				<mat-label>Cantidad a ajustar</mat-label>
+				<input matInput name="spill" formControlName="spill"
+					required="{{ isRequired('spill') }}"
+					mask="separator.4" thousandSeparator=",">
+				<mat-error *ngIf="(!!form.get('spill').errors)">
+					{{validatorService.getMessage(form.get('spill'))}}
+				</mat-error>
+			</mat-form-field>
+		</div>
+
+		<ng-container *ngIf="localidadesAlmacenOrigen.length > 1">
+			<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+				<mat-form-field appearance="outline" floatLabel="auto" fxFlex="25%">
+					<mat-label>Pendiente por asignar</mat-label>
+					<input matInput name="pendienteAsignar" [readonly]="true" [formControl]="cantidadPendienteAsignarControl">
+					<mat-error *ngIf="(!!cantidadPendienteAsignarControl.errors)">
+						{{validatorService.getMessage(cantidadPendienteAsignarControl)}}
+					</mat-error>
+				</mat-form-field>
+			</div>
+			
+			<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+				<table class="tabla-localidades" fxFlex="1 0 auto">
+					<thead>
+						<tr>
+							<td colspan="3" class="text-center">
+								<span class="fuse-navy-200-fg font-weight-900">Almacén {{ almacenNombre }}</span>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<span class="fuse-navy-200-fg font-weight-600">Localidad</span>
+							</td>
+							<td class="text-center">
+								<span class="fuse-navy-200-fg font-weight-600">Existencia</span>
+							</td>
+							<td>
+								<span class="fuse-navy-200-fg font-weight-600">Cantidad a asignar</span>
+							</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr *ngFor="let localidad of localidadesAlmacenOrigen">
+							<td>
+								<span>{{ localidad.nombre }}</span>
+							</td>
+							<td class="text-center">
+								<span>{{ existenciaMapLocalidades[localidad.id] || 0 }}</span>
+							</td>
+							<td>
+								<!-- <mat-form-field appearance="outline" floatLabel="auto" fxFlex="95%" *ngIf="cantidadAsignarControls[localidad.id]">
+									<mat-label>Cantidad a asignar</mat-label>
+									<input matInput name="cantidad-{{localidad.id}}" [formControl]="cantidadAsignarControls[localidad.id]" mask="separator.4" thousandSeparator=",">
+								</mat-form-field> -->
+								<div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+									<mat-form-field appearance="outline" floatLabel="auto" fxFlex="95%" *ngIf="cantidadAsignarControls[localidad.id]">
+										<mat-label>Cantidad a asignar</mat-label>
+										<input matInput name="cantidad-{{localidad.id}}" [formControl]="cantidadAsignarControls[localidad.id]" mask="separator.4" thousandSeparator=",">
+									</mat-form-field>
+								</div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</ng-container>
+		
+
+
+		<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+			<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+				<mat-label>Comentario</mat-label>
+				<input matInput name="comentario" formControlName="comentario"
+					required="{{ isRequired('comentario') }}">
+				<mat-error *ngIf="(!!form.get('comentario').errors)">
+					{{validatorService.getMessage(form.get('comentario'))}}
+				</mat-error>
+			</mat-form-field>
+		</div>
+	</form>
+</div>
+<div mat-dialog-actions dir="rtl">
+	<button mat-button (click)="cancelar()">{{ 'CANCELAR' | translate }}</button>
+	<button mat-raised-button class="mat-accent mr-16" [disabled]="(localidadesAlmacenOrigen.length > 1 && !cantidadPendienteAsignarControl?.valid) || !cantidadValida()" (click)="aceptar()">{{ 'ACEPTAR' | translate }}</button>
+</div>

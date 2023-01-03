@@ -1,0 +1,31 @@
+export const locale = {
+	lang: 'es',
+	data: {
+		'TITLE': 'CREA UNA CUENTA',
+        'NAME' : 'Nombre',
+        'ErrorNAME' : 'El nombre es requerido',
+        'FIRST' : 'Primer apellido',
+        'ErrorFirst' : 'Primer apellido es requerido',
+        'SECOND' : 'Segundo apellido',
+		'EMAIL': 'Correo electrónico',
+		'EMAIL_REQ': 'El correo electrónico es obligatorio',
+        'EMAIL_VALID': 'Favor de ingresar un correo electrónico válido',
+        'EMAIL_CONFIRM' : 'Correo electrónico (confirmación)',
+        'EMAIL_CONFIRM_REQ' : 'La confirmación de email es requerida',
+        'EMAIL_MATCH' : 'Los emails deben coincidir',
+		'PASS': 'Contraseña',
+		'PASS_REQ': 'La contraseña es requerida',
+        'PASS_CONFIRM' : 'Contraseña (confirmación)',
+        'PASS_CONFIRM_REQ' : 'La confirmación de contraseña es requerida',
+        'PASS_MATCH' : 'Las contraseñas deben coincidir',
+        'TERMINOS' : 'términos y condiciones',
+        'TERMINOS_ACEPT' : 'He leído y acepto los',
+		'REMEMBER': 'Recordarme',
+		'FORGOT': '¿Olvidaste tu contraseña?',
+		'LOGIN': 'LOGIN',
+		'NO_ACCOUNT': `¿No estás registrado?`,
+        'YES_ACCOUNT': `¿Ya te encuentras registrado?`,
+		'CREATE': 'Crear una cuenta',
+		'SHOW_HIDE_PASSWORD': 'Mostrar/Ocultar'
+	}
+};

@@ -1,0 +1,55 @@
+<h1 mat-dialog-title>
+	{{
+		esNuevo
+		? 'Agregar detalle'
+		: 'Actualizar detalle'
+	}}
+</h1>
+<div mat-dialog-content>
+	<form
+		focusInvalidInput
+		name="form"
+		id="form"
+		[formGroup]="form"
+		class="product w-100-p"
+		fxLayout="column"
+		fxFlex
+	>
+
+		<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+			<pixvs-mat-select [matSelectCtrl]="articuloControl" [datos]="articulos"
+				[appearance]="'outline'"
+				[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+				[campoValor]="'nombreArticulo'" [label]="'Artículo'" [required]="isRequired('articulo')"
+				fxFlex="1 0 auto">
+			</pixvs-mat-select>
+		</div>
+
+		<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+			<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+				<mat-label>Existencia origen</mat-label>
+				<input matInput name="existencia" [formControl]="existenciaControl">
+			</mat-form-field>
+
+			<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+				<mat-label>Cantidad</mat-label>
+				<input matInput name="cantidad" formControlName="cantidad"
+					required="{{ isRequired('cantidad') }}"
+					mask="separator.6" thousandSeparator=",">
+				<mat-error *ngIf="(!!form.get('cantidad').errors)">
+					{{validatorService.getMessage(form.get('cantidad'))}}
+				</mat-error>
+			</mat-form-field>
+		</div>
+	</form>
+</div>
+<div mat-dialog-actions align="end">
+	<button
+		mat-button
+		(click)="cancelar()"
+	>Cancelar</button>
+	<button
+		mat-raised-button class="mat-accent mr-16"
+		(click)="aceptar()"
+	>Aceptar</button>
+</div>

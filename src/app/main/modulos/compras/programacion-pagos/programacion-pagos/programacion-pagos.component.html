@@ -1,0 +1,616 @@
+<div id="ficha-programacion-pagos" class="pixvs-theme-listado page-layout carded left-sidebar fullwidth inner-scroll">
+
+	<!-- TOP BACKGROUND -->
+	<div class="top-bg accent"></div>
+	<!-- / TOP BACKGROUND -->
+
+	<!-- SIDEBAR -->
+	<fuse-sidebar *ngIf="filtros?.length" class="sidebar" name="filtros-reporte-sidebar" position="left" lockedOpen="gt-lg">
+		<filtros-reporte-sidebar #filtrado 
+			[regConfig]="filtros" 
+			[titulo]="'Programación de pagos'"
+            [modulo]="'Cuentas por pagar'"
+			[icon]="'calendar_today'" 
+			[listadoMenuOpciones]="[]"
+			[service]="_programacionPagosService">
+		</filtros-reporte-sidebar>
+	</fuse-sidebar>
+	<!-- / SIDEBAR -->
+
+	<!-- CENTER -->
+	<div class="center" [ngClass]="{'px-0': filtros}">
+
+		<!-- HEADER -->
+        <div class="header accent" fxLayout="column" fxLayoutAlign="center center" fxLayout.gt-sm="row"
+            fxLayoutAlign.gt-sm="space-between center">
+
+
+            <!-- APP TITLE -->
+            <div fxLayout="column" fxLayoutAlign="center start" fxShow fxHide.gt-lg="{{filtros?.length > 0}}">
+
+                <div fxLayout="row" fxLayoutAlign="start center" fxHide fxShow.gt-xs>
+                    <mat-icon class="secondary-text s-18">home</mat-icon>
+                    <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+                    <span class="secondary-text">Cuentas por pagar</span>
+                </div>
+
+                <div class="logo mb-12 mb-md-0" fxLayout="row" fxLayoutAlign="start center">
+                    <mat-icon class="logo-icon s-32 mr-16" [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
+                        calendar_today
+                    </mat-icon>
+                    <span class="logo-text h1" [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+                        Programación de pagos
+                    </span>
+                </div>
+
+            </div>
+            <div fxHide fxShow.gt-lg="{{filtros?.length > 0}}" style="width: 10%;"></div>
+            <!-- / APP TITLE -->
+
+            <!-- ADD BUTTON -->
+            <div fxLayout="row">
+                <div debounceClick fxLayout="column" fxLayoutAlign="start start"
+                [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+                    <button mat-raised-button type="button" form="form"
+                        class="boton-editar mt-12 ml-12" (debounceClick)="guardar()">
+                        <span>Enviar</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+		<!--<ficha-crud
+			*ngIf="config"
+			[config]="config"
+			[isGuardadoPersonalizado]="true"
+			[isEnviarPersonalizado]="true"
+			(outputEnviar)="guardar()"
+			[mostrarBorrar]="true"
+			[mostrarEditar]="false"
+			[mostrarEnviar]="true"
+			[ocultarGuardar]="true"
+			[titulo]="resposivoMostrar ? 'Cuentas por pagar' : ''"
+            [subTitulo]="resposivoMostrar ? 'Programación de pagos': ''"
+			[form]="form"
+			[currentId]="currentId"
+			[pageType]="'editar'"
+			[dataService]="_programacionPagosService"
+			class="header accent"
+			fxLayout="column"
+			fxLayoutAlign="center center"
+			fxLayout.gt-sm="row"
+			fxLayoutAlign.gt-sm="space-between center"
+		>
+		</ficha-crud>-->
+		<!-- / HEADER -->
+
+		<!-- CONTENT CARD -->
+		<div class="content-card">
+			<mat-progress-bar
+				*ngIf="_programacionPagosService?.cargando"
+				[color]="'primary'"
+				[mode]="'query'"
+			>
+			</mat-progress-bar>
+
+            <!--<div class="mx-32 mx-md-0 mt-52" style="position: absolute; color: white;" >-->
+                <button *ngIf="filtros" fxHide.gt-lg  mat-icon-button class="primary floating sidebar-button sidebar-toggle"
+                    matTooltip="{{ 'INTERFAZ.FILTROS' | translate  }}"
+                    (click)="toggleSidebar('filtros-reporte-sidebar')">
+                    <mat-icon>tune</mat-icon>
+                </button>
+            <!--</div>-->
+
+            <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                <div fxLayout="column" class="w-100-p px-40 py-20">
+                    <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+						<mat-form-field
+							appearance="outline"
+							floatLabel="auto"
+							fxFlex="1 0 auto"
+						>
+							<mat-label>Monto a pagar</mat-label>
+							<input
+								matInput
+								[value]="(facturasSeleccionadas | MontoPagarPipe : montosPagarControlMap : actualizarCont) | NumeroFormatoPipe"
+								readonly
+								prefix="$ " mask="separator.2" thousandSeparator=","
+							>
+						</mat-form-field>
+						<div fxFlex="1 0 auto" fxLayoutAlign="center center">
+							{{ proveedoresSeleccionados | ProveedoresSeleccionadosPipe : actualizarCont }} proveedores seleccionados
+							<button type="button" mat-icon-button matTooltip="Ver resumen"
+								(click)="mostrarResumen()">
+								<mat-icon>info</mat-icon>
+							</button>
+						</div>
+						<div fxFlex="1 0 auto" fxLayoutAlign="end center">
+							Saldo por Programar: {{ (proveedores | SaldoTotalPipe : actualizarCont) | NumeroFormatoPipe }}
+						</div>
+					</div>
+                </div>
+            </div>
+
+			<!-- CONTENT -->
+			<div class="content" style="overflow-y: hidden;">
+
+				<div fxLayout="column" class="w-100-p px-40 py-20 h-100-p">
+                    <div class="content-card p-0 h-100-p">
+                        <mat-tab-group #tabs class="h-100-p">
+                            <mat-tab label="Pagos Proveedores">
+                                <div fxLayout="column" style="overflow-y: auto; min-height: 100%">
+
+                                    <mat-accordion>
+                                        <ng-container *ngFor="let proveedor of proveedores | PagosRhPipe: true">
+                                            <mat-expansion-panel *ngIf="dataSourceFacturasMapProveedor[proveedor.id]?.data?.length"
+                                                                (opened)="setExpansionPanelProveedorOpened(proveedor)"
+                                                                (closed)="setExpansionPanelProveedorClosed(proveedor)">
+                                                <mat-expansion-panel-header>
+                                                    <mat-panel-title>
+                                                        <div class="w-100-p" fxLayout="row">
+                                                            <div fxFlex="fill">
+                                                                <span class="text-nowrap">{{ proveedor.nombre }}</span>
+                                                            </div>
+                                                            <div fxFlex="auto" class="px-16">
+                                                                <span class="text-nowrap">{{ proveedor?.facturasProgramacion?.length }} Facturas</span>
+                                                            </div>
+                                                            <div fxFlex="auto" class="px-16">
+                                                                <span class="text-nowrap">Saldo proveedor: {{ (proveedor | SaldoProveedorPipe : actualizarCont) | NumeroFormatoPipe }}</span>
+                                                            </div>
+                                                        </div>
+                                                    </mat-panel-title>
+                                                </mat-expansion-panel-header>
+                                                
+                                                <mat-table
+                                                *ngIf="proveedor.panelOpened"
+                                                    fxFlex="fill"
+                                                    [dataSource]="dataSourceFacturasMapProveedor[proveedor.id]"
+                                                    matSort
+                                                    [@animateStagger]="{value:'50'}"
+                                                    id="tableOC"
+                                                    fusePerfectScrollbar
+                                                >
+            
+                                                    <ng-container matColumnDef="sucursal">
+                                                        <mat-header-cell *matHeaderCellDef> Sede </mat-header-cell>
+                                                        <mat-cell *matCellDef="let factura"> {{ factura?.sucursal }} </mat-cell>
+                                                    </ng-container>
+            
+                                                    <ng-container matColumnDef="folioFactura">
+                                                        <mat-header-cell *matHeaderCellDef> Número de documento </mat-header-cell>
+                                                        <mat-cell *matCellDef="let factura"> {{ factura.codigoRegistro }} </mat-cell>
+                                                    </ng-container>
+            
+                                                    <ng-container matColumnDef="moneda">
+                                                        <mat-header-cell *matHeaderCellDef> Moneda </mat-header-cell>
+                                                        <mat-cell *matCellDef="let factura"> {{ factura.codigoMoneda }} </mat-cell>
+                                                    </ng-container>
+            
+                                                    <ng-container matColumnDef="monto">
+                                                        <mat-header-cell *matHeaderCellDef>
+                                                            <span class=" w-100-p text-right px-8">Monto</span>
+                                                        </mat-header-cell>
+                                                        <mat-cell *matCellDef="let factura">
+                                                            <span class=" w-100-p text-right px-8">{{ factura.montoRegistro | NumeroFormatoPipe }}</span>
+                                                        </mat-cell>
+                                                    </ng-container>
+            
+                                                    <ng-container matColumnDef="saldo">
+                                                        <mat-header-cell *matHeaderCellDef>
+                                                            <span class=" w-100-p text-right px-8">Saldo</span>
+                                                        </mat-header-cell>
+                                                        <mat-cell *matCellDef="let factura">
+                                                            <span class=" w-100-p text-right px-8">{{ factura.saldo | NumeroFormatoPipe }}</span>
+                                                        </mat-cell>
+                                                    </ng-container>
+            
+                                                    <ng-container matColumnDef="montoProgramado">
+                                                        <mat-header-cell *matHeaderCellDef>
+                                                            <span class="w-100-p text-right px-8">Monto programado</span>
+                                                        </mat-header-cell>
+                                                        <mat-cell *matCellDef="let factura">
+                                                            <span class="w-100-p text-right px-8">{{ factura.montoProgramado | NumeroFormatoPipe }}</span>
+                                                        </mat-cell>
+                                                    </ng-container>
+            
+                                                    <ng-container matColumnDef="fechaFactura">
+                                                        <mat-header-cell *matHeaderCellDef> Fecha de factura </mat-header-cell>
+                                                        <mat-cell *matCellDef="let factura"> {{ factura.fechaRegistro | date:'dd/MM/yyyy' }} </mat-cell>
+                                                    </ng-container>
+            
+                                                    <ng-container matColumnDef="fechaVencimiento">
+                                                        <mat-header-cell *matHeaderCellDef> Fecha de vencimiento </mat-header-cell>
+                                                        <mat-cell *matCellDef="let factura"> {{ factura.fechaVencimiento | date:'dd/MM/yyyy' }} </mat-cell>
+                                                    </ng-container>
+            
+                                                    <ng-container matColumnDef="ordenCompra">
+                                                        <mat-header-cell *matHeaderCellDef> Folio </mat-header-cell>
+                                                        <mat-cell *matCellDef="let factura" [matTooltip]="factura?.comentarios || ''"> {{ factura.folioSolicitudPagoServicio != '-' ? factura.folioSolicitudPagoServicio : factura.ordenCompraTexto }} </mat-cell>
+                                                    </ng-container>
+            
+                                                    <ng-container matColumnDef="acciones">
+                                                        <mat-header-cell *matHeaderCellDef> Acciones </mat-header-cell>
+                                                        <mat-cell *matCellDef="let factura">
+            
+                                                            <button mat-icon-button matTooltip="Acciones" [matMenuTriggerFor]="listadoMenuAcciones">
+                                                                <mat-icon>more_vert</mat-icon>
+                                                            </button>
+                                                            <mat-menu #listadoMenuAcciones="matMenu">
+                                                                <!--<button *ngIf="!factura?.cxpSolicitudesPagosServicios?.length" mat-menu-item (click)="editarFactura(factura)">
+                                                                    <mat-icon>edit</mat-icon><span> Editar factura</span>
+                                                                </button>-->
+                                                                <ng-container *ngIf="factura.evidencia?.length == 1">
+                                                                    <button mat-menu-item (click)="onMostrarEvidencia(factura.evidencia[0])">
+                                                                        <mat-icon>attachment</mat-icon>
+                                                                    </button>
+                                                                </ng-container>
+                                
+                                                                <ng-container *ngIf="factura.evidencia?.length > 1">
+                                                                    <button mat-menu-item [matMenuTriggerFor]="listadoMenu">
+                                                                        <mat-icon>attachment</mat-icon><span> Descargar evidencia</span>
+                                                                    </button>
+                                                                    <mat-menu #listadoMenu="matMenu">
+                                                                        <button *ngFor="let evidenciaArchivo of factura.evidencia" mat-menu-item (click)="onMostrarEvidencia(evidenciaArchivo)">
+                                                                            <span>{{evidenciaArchivo.nombreOriginal}}</span>
+                                                                        </button>
+                                                                        <button mat-menu-item (click)="onMostrarEvidencia(factura.evidencia,factura)">
+                                                                            <span>Todo</span>
+                                                                        </button>
+                                                                    </mat-menu>
+                                                                </ng-container>
+                                                                <!--      -->
+                                                                <ng-container *ngIf="factura.evidencia?.length == 1">
+                                                                    <button mat-menu-item (click)="onMostrarEvidencia(factura.evidencia[0])">
+                                                                        <mat-icon>attachment</mat-icon>
+                                                                    </button>
+                                                                </ng-container>
+            
+                                                                <ng-container *ngIf="factura.evidenciaDocumentosRh?.length == 1">
+                                                                    <button mat-menu-item (click)="onMostrarEvidencia(factura.evidenciaDocumentosRh[0])">
+                                                                        <mat-icon>attachment</mat-icon>Descargar archivo
+                                                                    </button>
+                                                                </ng-container>
+                                
+                                                                <ng-container *ngIf="factura.evidenciaDocumentosRh?.length > 1">
+                                                                    <button mat-menu-item [matMenuTriggerFor]="listadoMenu">
+                                                                        <mat-icon>attachment</mat-icon><span> Descargar evidencia</span>
+                                                                    </button>
+                                                                    <mat-menu #listadoMenu="matMenu">
+                                                                        <button *ngFor="let evidenciaArchivo of factura.evidenciaDocumentosRh" mat-menu-item (click)="onMostrarEvidencia(evidenciaArchivo)">
+                                                                            <span>{{evidenciaArchivo.nombreOriginal}}</span>
+                                                                        </button>
+                                                                        <button mat-menu-item (click)="onMostrarEvidencia(factura.evidenciaDocumentosRh,factura)">
+                                                                            <span>Todo</span>
+                                                                        </button>
+                                                                    </mat-menu>
+                                                                </ng-container>
+            
+                                                                <ng-container *ngIf="factura.facturas?.length == 1">
+                                                                    <button mat-menu-item (click)="onMostrarFacturas(factura.facturas[0])">
+                                                                        <mat-icon>receipt</mat-icon><span> Descargar factura</span>
+                                                                    </button>
+                                                                </ng-container>
+                                
+                                                                <ng-container *ngIf="factura.facturas?.length > 1">
+                                                                    <button mat-menu-item [matMenuTriggerFor]="listadoMenuFacturas">
+                                                                        <mat-icon>receipt</mat-icon><span> Descargar factura</span>
+                                                                    </button>
+                                                                    <mat-menu #listadoMenuFacturas="matMenu">
+                                                                        <button *ngFor="let facturaArchivo of factura.facturas" mat-menu-item (click)="onMostrarFacturas(facturaArchivo)">
+                                                                            <span>{{facturaArchivo.nombreOriginal}}</span>
+                                                                        </button>
+                                                                        <button mat-menu-item (click)="onMostrarFacturas(factura.facturas,factura)">
+                                                                            <span>Todo</span>
+                                                                        </button>
+                                                                    </mat-menu>
+                                                                </ng-container>
+            
+                                                                <button mat-menu-item
+                                                                    (click)="cancelarFactura(factura,proveedor.nombre)">
+                                                                    <mat-icon>cancel</mat-icon><span> Cancelar factura</span>
+                                                                </button>
+                                                            </mat-menu>
+                                                        </mat-cell>
+                                                    </ng-container>
+            
+                                                    <ng-container matColumnDef="programar">
+                                                        <mat-header-cell *matHeaderCellDef> Programar </mat-header-cell>
+                                                        <mat-cell *matCellDef="let factura">
+                                                            <button *ngIf="!facturasSeleccionadas[factura.id]" type="button" mat-icon-button matTooltip="Marcar completa"
+                                                                (click)="marcarFactura(factura,proveedor)">
+                                                                <mat-icon>crop_square</mat-icon>
+                                                            </button>
+                                                            <button *ngIf="!!facturasSeleccionadas[factura.id]" type="button" mat-icon-button matTooltip="Marcar completa"
+                                                                (click)="marcarFactura(factura,proveedor)">
+                                                                <mat-icon style="color: #039be5">check_box</mat-icon>
+                                                            </button>
+                                                        </mat-cell>
+                                                    </ng-container>
+            
+                                                    <ng-container matColumnDef="montoPagar">
+                                                        <mat-header-cell *matHeaderCellDef>
+                                                            <span class=" w-100-p text-right px-8">Monto a pagar</span>
+                                                        </mat-header-cell>
+                                                        <mat-cell *matCellDef="let factura">
+                                                            <ng-container *ngIf="!!facturasSeleccionadas[factura.id] && montosPagarControlMap[factura.id]">
+                                                                <!-- <span class="w-100-p text-right px-8">{{ factura.saldo | NumeroFormatoPipe }}</span> -->
+                                                                <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                                                    <mat-form-field
+                                                                        appearance="outline"
+                                                                        floatLabel="auto"
+                                                                        fxFlex="100%"
+                                                                    >
+                                                                        <mat-label>Monto a pagar</mat-label>
+                                                                        <input
+                                                                            matInput
+                                                                            [formControl]="montosPagarControlMap[factura.id]"
+                                                                            required="true"
+                                                                            prefix="$ " mask="separator.2" thousandSeparator=","
+                                                                        >
+                                                                        <mat-error *ngIf="(!!montosPagarControlMap[factura.id].errors)">
+                                                                            {{validatorService.getMessage(montosPagarControlMap[factura.id])}}
+                                                                        </mat-error>
+                                                                    </mat-form-field>
+                                                                </div>
+                                                            </ng-container>
+                                                        </mat-cell>
+                                                    </ng-container>
+            
+                                                    <mat-header-row *matHeaderRowDef="displayedColumnsFacturas; sticky:true"></mat-header-row>
+                                                    <mat-row *matRowDef="let row; columns: displayedColumnsFacturas;"></mat-row>
+                                                </mat-table>
+            
+                                            </mat-expansion-panel>
+                                        </ng-container>
+                                    </mat-accordion>
+            
+                                </div>
+                            </mat-tab>
+
+                            <mat-tab label="Pagos RH">
+
+                                <div fxLayout="column" style="overflow-y: auto; min-height: 100%;">
+
+                                    <mat-accordion>
+                                        <ng-container *ngFor="let proveedor of proveedores | PagosRhPipe: false">
+                                            <mat-expansion-panel *ngIf="dataSourceFacturasMapProveedor[proveedor.id]?.data?.length"
+                                                                (opened)="setExpansionPanelProveedorOpened(proveedor)"
+                                                                (closed)="setExpansionPanelProveedorClosed(proveedor)">
+                                                <mat-expansion-panel-header>
+                                                    <mat-panel-title>
+                                                        <div class="w-100-p" fxLayout="row">
+                                                            <div fxFlex="fill">
+                                                                <span class="text-nowrap">{{ proveedor.nombre }}</span>
+                                                            </div>
+                                                            <div fxFlex="auto" class="px-16">
+                                                                <span class="text-nowrap">{{ proveedor?.facturasProgramacion?.length }} Facturas</span>
+                                                            </div>
+                                                            <div fxFlex="auto" class="px-16">
+                                                                <span class="text-nowrap">Saldo proveedor: {{ (proveedor | SaldoProveedorPipe : actualizarCont) | NumeroFormatoPipe }}</span>
+                                                            </div>
+                                                        </div>
+                                                    </mat-panel-title>
+                                                </mat-expansion-panel-header>
+                                                
+                                                <mat-table
+                                                *ngIf="proveedor.panelOpened"
+                                                    fxFlex="fill"
+                                                    [dataSource]="dataSourceFacturasMapProveedor[proveedor.id]"
+                                                    matSort
+                                                    [@animateStagger]="{value:'50'}"
+                                                    id="tableOC"
+                                                    fusePerfectScrollbar
+                                                >
+            
+                                                    <ng-container matColumnDef="sucursal">
+                                                        <mat-header-cell *matHeaderCellDef> Sede </mat-header-cell>
+                                                        <mat-cell *matCellDef="let factura"> {{ factura?.sucursal }} </mat-cell>
+                                                    </ng-container>
+            
+                                                    <ng-container matColumnDef="folioFactura">
+                                                        <mat-header-cell *matHeaderCellDef> Beneficiario </mat-header-cell>
+                                                        <mat-cell *matCellDef="let factura"> {{ factura.beneficiario }} </mat-cell>
+                                                    </ng-container>
+            
+                                                    <ng-container matColumnDef="moneda">
+                                                        <mat-header-cell *matHeaderCellDef> Moneda </mat-header-cell>
+                                                        <mat-cell *matCellDef="let factura"> {{ factura.codigoMoneda }} </mat-cell>
+                                                    </ng-container>
+            
+                                                    <ng-container matColumnDef="monto">
+                                                        <mat-header-cell *matHeaderCellDef>
+                                                            <span class=" w-100-p text-right px-8">Monto</span>
+                                                        </mat-header-cell>
+                                                        <mat-cell *matCellDef="let factura">
+                                                            <span class=" w-100-p text-right px-8">{{ factura.montoRegistro | NumeroFormatoPipe }}</span>
+                                                        </mat-cell>
+                                                    </ng-container>
+            
+                                                    <ng-container matColumnDef="saldo">
+                                                        <mat-header-cell *matHeaderCellDef>
+                                                            <span class=" w-100-p text-right px-8">Saldo</span>
+                                                        </mat-header-cell>
+                                                        <mat-cell *matCellDef="let factura">
+                                                            <span class=" w-100-p text-right px-8">{{ factura.saldo | NumeroFormatoPipe }}</span>
+                                                        </mat-cell>
+                                                    </ng-container>
+            
+                                                    <ng-container matColumnDef="montoProgramado">
+                                                        <mat-header-cell *matHeaderCellDef>
+                                                            <span class="w-100-p text-right px-8">Monto programado</span>
+                                                        </mat-header-cell>
+                                                        <mat-cell *matCellDef="let factura">
+                                                            <span class="w-100-p text-right px-8">{{ factura.montoProgramado | NumeroFormatoPipe }}</span>
+                                                        </mat-cell>
+                                                    </ng-container>
+            
+                                                    <ng-container matColumnDef="fechaFactura">
+                                                        <mat-header-cell *matHeaderCellDef> Fecha de factura </mat-header-cell>
+                                                        <mat-cell *matCellDef="let factura"> {{ factura.fechaRegistro | date:'dd/MM/yyyy' }} </mat-cell>
+                                                    </ng-container>
+            
+                                                    <ng-container matColumnDef="fechaVencimiento">
+                                                        <mat-header-cell *matHeaderCellDef> Fecha de vencimiento </mat-header-cell>
+                                                        <mat-cell *matCellDef="let factura"> {{ factura.fechaVencimiento | date:'dd/MM/yyyy' }} </mat-cell>
+                                                    </ng-container>
+            
+                                                    <ng-container matColumnDef="ordenCompra">
+                                                        <mat-header-cell *matHeaderCellDef> Folio </mat-header-cell>
+                                                        <mat-cell *matCellDef="let factura" [matTooltip]="factura?.comentarios || ''"> {{ factura.folioSolicitudPagoServicio != '-' ? factura.folioSolicitudPagoServicio : factura.ordenCompraTexto }} </mat-cell>
+                                                    </ng-container>
+            
+                                                    <ng-container matColumnDef="acciones">
+                                                        <mat-header-cell *matHeaderCellDef> Acciones </mat-header-cell>
+                                                        <mat-cell *matCellDef="let factura">
+            
+                                                            <button mat-icon-button matTooltip="Acciones" [matMenuTriggerFor]="listadoMenuAcciones">
+                                                                <mat-icon>more_vert</mat-icon>
+                                                            </button>
+                                                            <mat-menu #listadoMenuAcciones="matMenu">
+                                                                <!--<button *ngIf="!factura?.cxpSolicitudesPagosServicios?.length" mat-menu-item (click)="editarFactura(factura)">
+                                                                    <mat-icon>edit</mat-icon><span> Editar factura</span>
+                                                                </button>-->
+                                                                <ng-container *ngIf="factura.evidencia?.length == 1">
+                                                                    <button mat-menu-item (click)="onMostrarEvidencia(factura.evidencia[0])">
+                                                                        <mat-icon>attachment</mat-icon>
+                                                                    </button>
+                                                                </ng-container>
+                                
+                                                                <ng-container *ngIf="factura.evidencia?.length > 1">
+                                                                    <button mat-menu-item [matMenuTriggerFor]="listadoMenu">
+                                                                        <mat-icon>attachment</mat-icon><span> Descargar evidencia</span>
+                                                                    </button>
+                                                                    <mat-menu #listadoMenu="matMenu">
+                                                                        <button *ngFor="let evidenciaArchivo of factura.evidencia" mat-menu-item (click)="onMostrarEvidencia(evidenciaArchivo)">
+                                                                            <span>{{evidenciaArchivo.nombreOriginal}}</span>
+                                                                        </button>
+                                                                        <button mat-menu-item (click)="onMostrarEvidencia(factura.evidencia,factura)">
+                                                                            <span>Todo</span>
+                                                                        </button>
+                                                                    </mat-menu>
+                                                                </ng-container>
+                                                                <!--      -->
+                                                                <ng-container *ngIf="factura.evidencia?.length == 1">
+                                                                    <button mat-menu-item (click)="onMostrarEvidencia(factura.evidencia[0])">
+                                                                        <mat-icon>attachment</mat-icon>
+                                                                    </button>
+                                                                </ng-container>
+            
+                                                                <ng-container *ngIf="factura.evidenciaDocumentosRh?.length == 1">
+                                                                    <button mat-menu-item (click)="onMostrarEvidencia(factura.evidenciaDocumentosRh[0])">
+                                                                        <mat-icon>attachment</mat-icon>Descargar archivo
+                                                                    </button>
+                                                                </ng-container>
+                                
+                                                                <ng-container *ngIf="factura.evidenciaDocumentosRh?.length > 1">
+                                                                    <button mat-menu-item [matMenuTriggerFor]="listadoMenu">
+                                                                        <mat-icon>attachment</mat-icon><span> Descargar evidencia</span>
+                                                                    </button>
+                                                                    <mat-menu #listadoMenu="matMenu">
+                                                                        <button *ngFor="let evidenciaArchivo of factura.evidenciaDocumentosRh" mat-menu-item (click)="onMostrarEvidencia(evidenciaArchivo)">
+                                                                            <span>{{evidenciaArchivo.nombreOriginal}}</span>
+                                                                        </button>
+                                                                        <button mat-menu-item (click)="onMostrarEvidencia(factura.evidenciaDocumentosRh,factura)">
+                                                                            <span>Todo</span>
+                                                                        </button>
+                                                                    </mat-menu>
+                                                                </ng-container>
+            
+                                                                <ng-container *ngIf="factura.facturas?.length == 1">
+                                                                    <button mat-menu-item (click)="onMostrarFacturas(factura.facturas[0])">
+                                                                        <mat-icon>receipt</mat-icon><span> Descargar factura</span>
+                                                                    </button>
+                                                                </ng-container>
+                                
+                                                                <ng-container *ngIf="factura.facturas?.length > 1">
+                                                                    <button mat-menu-item [matMenuTriggerFor]="listadoMenuFacturas">
+                                                                        <mat-icon>receipt</mat-icon><span> Descargar factura</span>
+                                                                    </button>
+                                                                    <mat-menu #listadoMenuFacturas="matMenu">
+                                                                        <button *ngFor="let facturaArchivo of factura.facturas" mat-menu-item (click)="onMostrarFacturas(facturaArchivo)">
+                                                                            <span>{{facturaArchivo.nombreOriginal}}</span>
+                                                                        </button>
+                                                                        <button mat-menu-item (click)="onMostrarFacturas(factura.facturas,factura)">
+                                                                            <span>Todo</span>
+                                                                        </button>
+                                                                    </mat-menu>
+                                                                </ng-container>
+            
+                                                                <button mat-menu-item
+                                                                    (click)="cancelarFactura(factura,proveedor.nombre)">
+                                                                    <mat-icon>cancel</mat-icon><span> Cancelar factura</span>
+                                                                </button>
+                                                            </mat-menu>
+                                                        </mat-cell>
+                                                    </ng-container>
+            
+                                                    <ng-container matColumnDef="programar">
+                                                        <mat-header-cell *matHeaderCellDef> Programar </mat-header-cell>
+                                                        <mat-cell *matCellDef="let factura">
+                                                            <button *ngIf="!facturasSeleccionadas[factura.id]" type="button" mat-icon-button matTooltip="Marcar completa"
+                                                                (click)="marcarFactura(factura,proveedor)">
+                                                                <mat-icon>crop_square</mat-icon>
+                                                            </button>
+                                                            <button *ngIf="!!facturasSeleccionadas[factura.id]" type="button" mat-icon-button matTooltip="Marcar completa"
+                                                                (click)="marcarFactura(factura,proveedor)">
+                                                                <mat-icon style="color: #039be5">check_box</mat-icon>
+                                                            </button>
+                                                        </mat-cell>
+                                                    </ng-container>
+            
+                                                    <ng-container matColumnDef="montoPagar">
+                                                        <mat-header-cell *matHeaderCellDef>
+                                                            <span class=" w-100-p text-right px-8">Monto a pagar</span>
+                                                        </mat-header-cell>
+                                                        <mat-cell *matCellDef="let factura">
+                                                            <ng-container *ngIf="!!facturasSeleccionadas[factura.id] && montosPagarControlMap[factura.id]">
+                                                                <!-- <span class="w-100-p text-right px-8">{{ factura.saldo | NumeroFormatoPipe }}</span> -->
+                                                                <div class="w-100-p" fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                                                    <mat-form-field
+                                                                        appearance="outline"
+                                                                        floatLabel="auto"
+                                                                        fxFlex="100%"
+                                                                    >
+                                                                        <mat-label>Monto a pagar</mat-label>
+                                                                        <input
+                                                                            matInput
+                                                                            [formControl]="montosPagarControlMap[factura.id]"
+                                                                            required="true"
+                                                                            prefix="$ " mask="separator.2" thousandSeparator=","
+                                                                        >
+                                                                        <mat-error *ngIf="(!!montosPagarControlMap[factura.id].errors)">
+                                                                            {{validatorService.getMessage(montosPagarControlMap[factura.id])}}
+                                                                        </mat-error>
+                                                                    </mat-form-field>
+                                                                </div>
+                                                            </ng-container>
+                                                        </mat-cell>
+                                                    </ng-container>
+            
+                                                    <mat-header-row *matHeaderRowDef="displayedColumnsFacturas; sticky:true"></mat-header-row>
+                                                    <mat-row *matRowDef="let row; columns: displayedColumnsFacturas;"></mat-row>
+                                                </mat-table>
+            
+                                            </mat-expansion-panel>
+                                        </ng-container>
+                                    </mat-accordion>
+            
+                                </div>
+
+                            </mat-tab>
+
+                        </mat-tab-group>
+                    </div>
+
+				</div>
+
+			</div>
+			<!-- / CONTENT -->
+
+		</div>
+		<!-- / CONTENT CARD -->
+
+
+	</div>
+	<!-- / CENTER -->
+</div>

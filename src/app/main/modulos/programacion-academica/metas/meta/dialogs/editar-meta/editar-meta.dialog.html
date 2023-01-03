@@ -1,0 +1,53 @@
+<div mat-dialog-content class="contenido-meta-detalle" fusePerfectScrollbar>
+	<form
+		focusInvalidInput
+		name="form"
+		id="form"
+		[formGroup]="form"
+		class="product w-100-p"
+		fxLayout="column"
+		fxFlex
+	>
+		<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+			<mat-form-field appearance="outline" floatLabel="auto" fxFlex="100">
+				<mat-label>Programación académica comercial</mat-label>
+				<input matInput name="programacionAcademicaComercial" [formControl]="programacionAcademicaComercialControl"
+					required="{{ isRequired('programacionAcademicaComercial') }}" [readonly]="true">
+				<mat-error *ngIf="(!!form.get('programacionAcademicaComercial').errors)">
+					{{validatorService.getMessage(form.get('programacionAcademicaComercial'))}}
+				</mat-error>
+			</mat-form-field>
+		</div>
+
+        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+			<mat-form-field appearance="outline" floatLabel="auto" fxFlex="50">
+				<mat-label>Modalidad</mat-label>
+				<input matInput name="paModalidad" [formControl]="paModalidadControl"
+					required="{{ isRequired('paModalidad') }}" [readonly]="true">
+				<mat-error *ngIf="(!!form.get('paModalidad').errors)">
+					{{validatorService.getMessage(form.get('paModalidad'))}}
+				</mat-error>
+			</mat-form-field>
+
+            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="50">
+				<mat-label>Meta</mat-label>
+				<input matInput name="meta" [formControl]="metaControl"
+					required="{{ isRequired('meta') }}"
+					mask="0*">
+				<mat-error *ngIf="(!!form.get('meta').errors)">
+					{{validatorService.getMessage(form.get('meta'))}}
+				</mat-error>
+			</mat-form-field>
+		</div>
+	</form>
+</div>
+<div mat-dialog-actions>
+	<button
+		mat-button
+		(click)="cancelar()"
+	>Cancelar</button>
+	<button
+		mat-button
+		(click)="aceptar()"
+	>Aceptar</button>
+</div>

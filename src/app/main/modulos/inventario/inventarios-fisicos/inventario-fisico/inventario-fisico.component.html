@@ -1,0 +1,129 @@
+<div id="ficha-CRUD" class="pixvs-theme-listado page-layout carded fullwidth inner-scroll">
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+        <!-- HEADER -->
+        <ficha-crud *ngIf="config" [config]="config" [cargando]="_inventarioFisicoService?.cargando" [isGuardadoPersonalizado]="true"
+            (output)="guardar()" [mostrarBorrar]="pageType == 'ver' && editar" [mostrarGuardar]="cambios" [mostrarAfectar]="pageType == 'ver' && !cambios && editar" [titulo]="titulo"
+            [subTituloTraduccion]="pageType == 'nuevo' ? pageType : null" [form]="form" [currentId]="currentId" [pageType]="pageType"
+            [dataService]="_inventarioFisicoService" class="header accent" fxLayout="column" fxLayoutAlign="center center"
+            fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center">
+        </ficha-crud>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <mat-progress-bar *ngIf="_inventarioFisicoService?.cargando" [color]="'primary'" [mode]="'query'">
+            </mat-progress-bar>
+            <!-- CONTENT -->
+            <div class="content">
+                <form name="form" id="form" [formGroup]="form" class="product w-100-p" fxLayout="column" fxFlex>
+                    <mat-tab-group>
+                        <mat-tab label="{{ 'DATOS' | translate }}">
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <div fxLayout="column">
+                                    <div fxLayout="row">
+                                        <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+                                            <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                                <pixvs-mat-select required
+                                                    [matSelectCtrl]="almacenControl" 
+                                                    [datos]="listadoAlmacenes" 
+                                                    [appearance]="'outline'"
+                                                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate" 
+                                                    [campoValor]="['codigoAlmacen', 'nombre']"
+                                                    [label]="'ALMACEN' | translate"
+                                                    fxFlex="3 0 auto">
+                                                </pixvs-mat-select>
+
+                                                <pixvs-mat-select *ngIf="listadoLocalidades.length > 0" required
+                                                    #localidadSelect
+                                                    [matSelectCtrl]="localidadControl" 
+                                                    [datos]="listadoLocalidades" 
+                                                    [appearance]="'outline'"
+                                                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate" 
+                                                    [campoValor]="['codigoLocalidad', 'nombre']"
+                                                    [label]="'LOCALIDAD' | translate"
+                                                    fxFlex="3 0 auto">
+                                                </pixvs-mat-select>
+
+                                                <pixvs-mat-select *ngIf="pageType != 'ver'" required
+                                                    #familiasSelect
+                                                    [matSelectCtrl]="familiasControl" 
+                                                    [datos]="listadoFamilias"
+                                                    [multiple]="true"
+                                                    [appearance]="'outline'"
+                                                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate" 
+                                                    [campoValor]="['nombre']"
+                                                    [label]="'FAMILIAS' | translate"
+                                                    fxFlex="3 0 auto">
+                                                </pixvs-mat-select>
+                                            </div>
+
+                                            <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                    <mat-label>{{ 'RESPONSABLE' | translate }}</mat-label>
+                                                    <input matInput name="responsable" formControlName="responsable">
+                                                </mat-form-field>
+
+                                                <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                        <mat-label>{{ 'FECHA' | translate }}</mat-label>
+                                                        <input matInput type="date" name="fecha" formControlName="fecha" required>
+                                                        <mat-error *ngIf="(!!form.get('fecha').errors)">
+                                                            {{validatorService.getMessage(form.get('fecha'))}}
+                                                        </mat-error>
+                                                    </mat-form-field>
+                                                </div>
+
+                                                <div *ngIf="inventario.fechaAfectacion" fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                        <mat-label>{{ 'FECHA_AFECTACION' | translate }}</mat-label>
+                                                        <input matInput type="date" name="fechaAfectacion" formControlName="fechaAfectacion" required>
+                                                    </mat-form-field>
+                                                </div>
+
+                                                <div *ngIf="pageType == 'ver'" fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                        <mat-label>{{ 'ESTATUS' | translate }}</mat-label>
+                                                        <input matInput name="estatus" formControlName="estatus">
+                                                    </mat-form-field>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div fxLayout="row">
+                                        <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+                                            <div fxLayout="row" fxLayoutAlign="space-between start" class="h-100-p">
+                                                <div fxFlex="100" class="h-100-p">
+                                                    <pixvs-tabla-simple
+                                                        *ngIf="_detallesService.datos.length > 0"
+                                                        [service]="_detallesService"
+                                                        [localeEN]="localeEN"
+                                                        [localeES]="localeES"
+                                                        [columnas]="columnasTabla"
+                                                        [columnasFechas]="columnasFechas"
+                                                        [displayedColumns]="displayedColumns"
+                                                        [reordenamiento]="false"
+                                                        [columnaId]="'id'"
+                                                        (onSeleccionarRegistro)="onEditar($event)"
+                                                    ></pixvs-tabla-simple>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-tab>
+                    </mat-tab-group>
+                </form>
+            </div>
+            <!-- / CONTENT -->
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

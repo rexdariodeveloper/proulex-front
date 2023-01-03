@@ -1,0 +1,15 @@
+<h1 mat-dialog-title>
+	Comentarios
+</h1>
+<div mat-dialog-content>
+	<h3 class="font-weight-900">Comentarios requisición</h3>
+	<span>{{comentariosRequisicion}}</span>
+	<h3 class="font-weight-900">Comentarios compras</h3>
+	<span>{{comentariosCompras}}</span>
+</div>
+<div mat-dialog-actions>
+	<button
+		mat-button
+		(click)="cancelar()"
+	>Cerrar</button>
+</div>

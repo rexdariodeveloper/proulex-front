@@ -1,0 +1,49 @@
+<h1 mat-dialog-title>
+	Aplicar descuento
+</h1>
+<div mat-dialog-content class="font-size-20 pb-12">
+    <div class="w-100-p" fxLayout="column">
+        <div fxLayout="row">
+            <mat-form-field appearance="outline" fxFlex="100">
+                <mat-label>Monto de descuento</mat-label>
+                <input matInput [formControl]="montoControl" autocomplete="off" type="text" mask="0*">
+                <mat-icon matSuffix class="secondary-text">attach_money</mat-icon>
+            </mat-form-field>
+        </div>
+
+        <div fxLayout="row">
+            <mat-form-field appearance="outline" fxFlex="100">
+                <mat-label>Correo electrónico</mat-label>
+                <input matInput [formControl]="correoElectronicoControl" autocomplete="on">
+                <mat-icon matSuffix class="secondary-text">mail</mat-icon>
+                <mat-error *ngIf="correoElectronicoControl?.hasError('email')">
+                    Formato no válido
+                </mat-error>
+            </mat-form-field>
+        </div>
+        
+        <div fxLayout="row">
+            <mat-form-field appearance="outline" fxFlex="100">
+                <mat-label>Contraseña</mat-label>
+                <input matInput [formControl]="contrasenaControl" autocomplete="off"
+                    [type]="mostrarContrasena ? 'text' : 'password'">
+                <mat-icon matTooltip="{{'Mostrar/Ocultar'}}" matSuffix style="cursor: pointer" (click)="onMostrarContrasena()">
+                    {{ mostrarContrasena ? 'visibility_off' : 'visibility' }}
+                </mat-icon>
+            </mat-form-field>
+        </div>
+    </div>
+</div>
+<div mat-dialog-actions align="end" fxLayout="row" fxLayoutAlign="space-between center">
+	<button
+		mat-button
+		(click)="cancelar()"
+	>Cancelar</button>
+	<button
+		mat-raised-button
+        class="mat-primary"
+		(click)="onAceptar()"
+	>
+        Aceptar
+    </button>
+</div>

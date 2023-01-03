@@ -1,0 +1,29 @@
+@import "@fuse/scss/fuse";
+
+programacion-academica-comercial{
+
+	.contenedor-tabs-idioma{
+		position: relative;
+		.btn-nueva-programacion{
+			padding: 0 !important;
+			z-index: 1000;
+			position: absolute;
+			right: 30px;
+		}
+	}
+
+	.mat-tab-body-wrapper{
+		height: 100%;
+	}
+
+	.no-scroll{
+		.mat-tab-body-content, .calendar{
+			overflow-y: hidden;
+		}
+	}
+
+	mat-datepicker-toggle {
+		display: inline-block;
+	}
+	
+}

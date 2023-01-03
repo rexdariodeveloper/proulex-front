@@ -1,0 +1,135 @@
+
+<mat-toolbar color="primary">
+	<mat-toolbar-row>
+		<span class="title dialog-title" style="text-align: center;width: 100%">{{'Nivel '+titulo}}</span>
+	</mat-toolbar-row>
+</mat-toolbar>
+<div mat-dialog-content>
+	<div class="tab-content p-24" fusePerfectScrollbar>
+        <div fxLayout="row wrap" fxLayoutGap="20px grid">
+        	<div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+        		<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+	        		<pixvs-mat-select [matSelectCtrl]="testControl" [datos]="test"
+	                [appearance]="'outline'"
+	                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+	                [campoValor]="'actividad'" [label]="'Tests'"
+	                fxFlex="1 0 auto">
+	                </pixvs-mat-select>
+	                <pixvs-mat-select [matSelectCtrl]="testFormatControl" [datos]="testFormat"
+	                [appearance]="'outline'"
+	                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+	                [campoValor]="'valor'" [label]="'Test Format'"
+	                fxFlex="1 0 auto">
+	                </pixvs-mat-select>
+            	</div>
+        	</div>
+            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+            	<pixvs-mat-select [matSelectCtrl]="modalidadControl" [datos]="modalidades"
+                [appearance]="'outline'"
+                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                [campoValor]="'modalidad.nombre'" [label]="'Modalidades'"
+                fxFlex="1 0 auto" [multiple]="true">
+                </pixvs-mat-select>
+            </div>
+            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+            	<mat-accordion>
+            		<mat-expansion-panel>
+	            		<mat-expansion-panel-header>
+		            		<mat-panel-title>
+		            			<span><b>Días aplica</b></span>
+		            		</mat-panel-title>
+	            		</mat-expansion-panel-header>
+	            		<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+	            			<ng-container *ngFor="let formModalidad of examenModalidadForm?.controls; let i = index;">
+	            				<form focusInvalidInput name="formModalidad{{i}}" id="formModalidad{{i}}" [formGroup]="formModalidad" class="product w-100-p" fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+	            					<div class="tab-content p-24" fusePerfectScrollbar>
+	                                    <div fxLayout="row wrap" fxLayoutGap="20px grid">
+			            					<div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50" style="display: flex; justify-content: center; align-items: center;">
+			            						<span>{{formModalidad.get('modalidad').value.nombre}}</span>
+			            					</div>
+			            					<div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+			            						<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+				                                    <mat-label>Dias</mat-label>
+				                                    <input type="text" matInput name="dias" formControlName="dias">
+				                                </mat-form-field>
+			            					</div>
+			                            </div>
+			                        </div>
+	            				</form>
+	            			</ng-container>
+	            		</div>
+            		</mat-expansion-panel>
+            	</mat-accordion>
+            </div>
+
+            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+            	<mat-accordion>
+            		<mat-expansion-panel>
+	            		<mat-expansion-panel-header>
+		            		<mat-panel-title>
+		            			<span><b>Unidades</b></span>
+		            		</mat-panel-title>
+	            		</mat-expansion-panel-header>
+	            		<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+	            			<ng-container *ngFor="let formNivel of examenUnidadForm.controls; let i=index">
+	            				<form focusInvalidInput name="formNivel" id="formNivel{{i}}" [formGroup]="formNivel" class="product w-100-p" fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+	            					<div class="tab-content p-24" fusePerfectScrollbar>
+	                                    <div fxLayout="row wrap" fxLayoutGap="20px grid">
+			            					<div fxLayout="column" fxFlex="100" fxFlex.gt-sm="33" fxFlex.gt-md="33" style="display: flex; justify-content: center; align-items: center;">
+			            						<span>{{'Nivel '+formNivel.get('nivel').value}}</span>
+			            					</div>
+			            					<div fxLayout="column" fxFlex="100" fxFlex.gt-sm="33" fxFlex.gt-md="33" style="display: flex; justify-content: center; align-items: center;">
+			            						<span>{{formNivel.get('articulo').value.nombreArticulo}}</span>
+			            					</div>
+			            					<div fxLayout="column" fxFlex="100" fxFlex.gt-sm="33" fxFlex.gt-md="33">
+			            						<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+				                                    <mat-label>Unidad</mat-label>
+				                                    <input type="text" matInput name="descripcion" formControlName="descripcion">
+				                                </mat-form-field>
+			            					</div>
+			            					
+			                            </div>
+			                        </div>
+	            				</form>
+	            			</ng-container>
+	            		</div>
+            		</mat-expansion-panel>
+            	</mat-accordion>
+            </div>
+            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+            	<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+            		<div fxLayout="column" fxFlex="100" fxFlex.gt-sm="40" fxFlex.gt-md="40">
+						<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                            <mat-label>Score</mat-label>
+                            <input type="text" matInput name="score" [(ngModel)]="score" pattern="\d*"
+                            min="1" step="1">
+                        </mat-form-field>
+					</div>
+					<div fxLayout="column" fxFlex="100" fxFlex.gt-sm="40" fxFlex.gt-md="40">
+						<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                            <mat-label>Time</mat-label>
+                            <input type="text" matInput name="time" [(ngModel)]="time" pattern="\d*"
+                            min="1" step="1" [readonly]="continuos">
+                        </mat-form-field>
+					</div>
+					<div fxLayout="column" fxFlex="100" fxFlex.gt-sm="20" fxFlex.gt-md="20">
+						<mat-checkbox color="primary" name="continuos" [(ngModel)]="continuos" (click)="time=0">
+                            Continuous
+                        </mat-checkbox>
+					</div>
+            	</div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div mat-dialog-actions align="end">
+	<button
+		mat-button
+		(click)="cancelar()"
+	>Cerrar</button>
+	<button
+		mat-raised-button class="mat-accent mr-16"
+		(click)="aceptar()"
+	>Aceptar</button>
+</div>

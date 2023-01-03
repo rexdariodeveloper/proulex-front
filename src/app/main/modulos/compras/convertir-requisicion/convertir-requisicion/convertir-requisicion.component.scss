@@ -1,0 +1,231 @@
+@import "@fuse/scss/fuse";
+
+invoice-print {
+    display: none;;
+}
+
+@media print {
+
+    #convertir-requisicion {
+        display: none;
+    }
+
+    #convertirmodal {
+        display: none;
+    }
+
+    mat-dialog-container{
+        display: none;
+    }
+
+    .cdk-overlay-pane{
+        display: none;
+    }
+
+    .cdk-overlay-container{
+        display: none;
+    }
+
+    invoice-print {
+        display: block;
+        width: 100%;
+    }
+
+}
+
+#convertir-requisicion {
+	.mat-table{
+		font-weight: bold;
+	}
+	.sidebar-button {
+		border: lightgray 1px solid;
+		border-radius: 5px;
+		position: absolute;
+		left: -31px;
+		margin-top: 100px;
+		z-index: 9999;
+	}
+
+	div.header.compacto{
+		height: 50px !important;
+		min-height: 50px !important;
+		max-height: 50px !important;
+	}
+
+	#tabla-partidas{
+		min-width: 1935px;
+
+		.mat-column-checkConvertir{
+			min-width: 85px;
+			width: 85px;
+		}
+
+		.mat-column-codigoRequisicion{
+			min-width: 110px;
+			width: 110px;
+		}
+
+		.mat-column-fechaPartida{
+			min-width: 100px;
+			width: 100px;
+		}
+
+		.mat-column-codigoArticulo{
+			min-width: 110px;
+			width: 110px;
+		}
+
+		.mat-column-nombreArticulo{
+			min-width: 200px;
+			width: 200px;
+		}
+
+		.mat-column-um{
+			//min-width: 150px;
+			//width: 150px;
+		}
+
+		.mat-column-cantidad{
+			//min-width: 150px;
+			//width: 150px;
+			text-align: center;
+		}
+
+		.mat-column-precioUnitario{
+			min-width: 150px;
+			width: 150px;
+		}
+
+		// 1055
+
+		.mat-column-ultimasCompras{
+			min-width: 60px;
+			width: 60px;
+		}
+
+		.mat-column-iva{
+			min-width: 100px;
+			width: 100px;
+		}
+
+		.mat-column-ieps{
+			min-width: 100px;
+			width: 100px;
+		}
+
+		.mat-column-total{
+			min-width: 100px;
+			width: 100px;
+		}
+
+		.mat-column-proveedor{
+			min-width: 150px;
+			width: 150px;
+		}
+
+		// 1565
+
+		.mat-column-lugarEntrega{
+			min-width: 100px;
+			width: 100px;
+		}
+
+		.mat-column-cuentaCompras{
+			min-width: 150px;
+			width: 150px;
+		}
+
+		.mat-column-rechazar{
+			min-width: 120px;
+			width: 120px;
+		}
+
+		// 1935
+
+	}
+
+	div.marco{
+		border: solid gray 1px;
+		margin: 5px;
+	}
+
+	.tabla-requis{
+		mat-row{
+			min-height: 25px !important;
+			max-height: 30px !important;
+			mat-cell{
+				font-size: 10px !important;
+			}
+			mat-icon{
+				font-size: 15px !important;
+			}
+			// .btn-chk{
+			// 	// 
+			// }
+		}
+	}
+
+}
+
+table.tabla-imprimir{
+	border-spacing: 0;;
+	thead{
+		tr{
+			th{
+				background-color: #C0C0C0;
+			}
+			&:first-child{
+				th{
+					border-top: solid black 3px;
+				}
+				th[rowspan="2"]{
+					border-top: solid black 3px;
+					border-bottom: solid black 1px;
+				}
+			}
+			&:last-child{
+				th{
+					border-bottom: solid black 1px;
+				}
+			}
+		}
+	}
+	tbody{
+		tr{
+			td:not(.no-border){
+				border-bottom: solid black 1px;
+			}
+		}
+	}
+}
+
+table.tabla-imprimir-proveedor{
+	border-spacing: 0;;
+	thead{
+		tr{
+			th{
+				padding: 10px 5px;
+				background-color: #C0C0C0;
+				border: solid black 3px;
+			}
+		}
+	}
+	tbody{
+		tr{
+			td{
+				padding: 10px;
+			}
+			td:first-child{
+				border-left: solid black 3px;
+			}
+			td:last-child{
+				border-right: solid black 3px;
+			}
+			&:last-child{
+				td{
+					border-bottom: solid black 3px;
+				}
+			}
+		}
+	}
+}

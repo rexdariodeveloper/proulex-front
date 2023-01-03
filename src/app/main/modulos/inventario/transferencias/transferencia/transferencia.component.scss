@@ -1,0 +1,42 @@
+@import "@fuse/scss/fuse";
+
+transferencia {
+	invoice-print {
+		display: none;
+	}
+	  
+	@media print {
+		invoice-print {
+			display: block;
+			width: 100%;
+		}
+	  
+		#ficha-CRUD {
+			display: none;
+		}
+	}
+}
+
+#ficha-CRUD {
+
+	>.center {
+
+		// Header
+		>.header {
+			height: 100px !important;
+			min-height: 100px !important;
+			max-height: 100px !important;
+		}
+	}
+
+	.btn-nuevo{
+		position: absolute;
+		top: 280px;
+		right: 5px;
+		z-index: 200;
+	}
+}
+
+.flex-40 {
+	flex: 0 0 40%;
+}

@@ -1,0 +1,22 @@
+<div id="tab-asistencias" class="w-100-p h-100-p" fxLayout="row">
+    <ng-container *ngIf="!!form">
+        <div style="display: block; overflow-y: auto; width: 100%">
+            <table mat-table [dataSource]="form.controls" style="overflow-x: scroll;">
+                <ng-container [matColumnDef]="col.name" *ngFor="let col of columnsSchema" [sticky]="!!col?.sticky" [stickyEnd]="!!col?.stickyEnd">
+                    <th mat-header-cell *matHeaderCellDef class="table-header accent" [ngStyle]="col?.isDate ? {'min-width': '75px', 'max-width': '75px'} : {}">{{col?.isDate? (col.label | date: 'dd MMM') : col.label}}</th>
+                    <td mat-cell *matCellDef="let element; let i = index;" [ngClass]="col?.class+' '+(col?.isDate ? tipos.get(element.get(col.name)?.value?.tipo) : '')">
+                        <span [matTooltipDisabled]="!col?.tooltip" [matTooltip]="element.get('estatus')?.value" [ngClass]="col?.tooltip ? estatus.get(element.get('estatusId')?.value) : 'w-100-p'">{{col?.isDate? element.get(col.name)?.value?.texto : element.get(col.name)?.value}}</span>
+                        <ng-container *ngFor="let accion of (col?.acciones || [])">
+                            <button [matTooltipDisabled]="!accion?.tooltip" [matTooltip]="accion?.tooltip" (debounceClick)="accion.event($event, element)"  mat-icon-button><mat-icon>{{accion.icon}}</mat-icon></button>
+                        </ng-container>
+                        <div class="absolute-tooltip" *ngIf="!!element.get(col.name)?.value?.comentario">
+                            <mat-icon #tooltip="matTooltip" [matTooltip]="element.get(col.name)?.value?.comentario" matTooltipPosition="above">arrow_right</mat-icon>
+                        </div>
+                    </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+        </div>
+    </ng-container>
+</div>

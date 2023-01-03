@@ -1,0 +1,37 @@
+
+app-reporte-alumnos-sin-grupo-listado{
+    mat-table{
+        .cdk-column-sede,
+        .cdk-column-alumnoCodigo, 
+        .cdk-column-alumnoCodigoUDG,
+        .cdk-column-estatus{
+            width: 100px !important;
+            min-width: 100px !important;
+            max-width: 100px !important;
+        }
+
+        .cdk-column-alumnoPrimerApellido,
+        .cdk-column-alumnoSegundoApellido,
+        .cdk-column-alumnoNombre,
+        .cdk-column-curso,
+        .cdk-column-montoPago,
+        .cdk-column-medioPago,
+        .cdk-column-paModalidadNombre,
+        .cdk-column-ovCodigo{
+            width: 150px !important;
+            min-width: 150px !important;
+            max-width: 150px !important;
+        }
+
+        .cdk-column-nivel{
+            width: 80px !important;
+            min-width: 80px !important;
+            max-width: 80px !important;
+        }
+
+        mat-header-row,mat-row{
+            min-width: 1680px;
+        }
+    }
+}
+

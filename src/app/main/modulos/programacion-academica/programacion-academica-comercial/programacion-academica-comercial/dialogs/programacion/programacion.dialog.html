@@ -1,0 +1,94 @@
+<div class="dialog-header-bg accent"></div>
+<h1 mat-dialog-title>
+	Agregar programación
+</h1>
+<div mat-dialog-content class="contenido-programacion" fusePerfectScrollbar>
+	<form
+		focusInvalidInput
+		name="form"
+		id="form"
+		[formGroup]="form"
+		class="product w-100-p"
+		fxLayout="column"
+		fxFlex
+	>
+		<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+			<pixvs-mat-select [matSelectCtrl]="paModalidadControl" [datos]="paModalidades"
+				[appearance]="'outline'"
+				[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+				[campoValor]="'nombre'" [label]="'Modalidad'" [required]="isRequired('paModalidad')"
+				fxFlex="1 0 auto">
+			</pixvs-mat-select>
+		</div>
+
+		<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+			<pixvs-mat-select #programasSelect [matSelectCtrl]="programaControl" [datos]="programas"
+				[appearance]="'outline'"
+				[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+				[campoValor]="['codigo','nombre']" [label]="'Programa'" [required]="isRequired('programas')"
+				[multiple]="true" [showToggleAllCheckbox]="true"
+				fxFlex="1 0 auto">
+			</pixvs-mat-select>
+		</div>
+
+		<div
+			fxLayout="row wrap"
+			fxLayoutAlign="start center"
+			fxLayoutGap="10px grid"
+		>
+			<mat-form-field appearance="outline" floatLabel="auto" fxFlex="33%">
+				<mat-label>Número de clases</mat-label>
+				<input matInput name="numeroClases" formControlName="numeroClases"
+					required="{{ isRequired('numeroClases') }}"
+					mask="0*">
+				<mat-error *ngIf="(!!form.get('numeroClases').errors)">
+					{{validatorService.getMessage(form.get('numeroClases'))}}
+				</mat-error>
+			</mat-form-field>
+
+			<mat-form-field
+				appearance="outline"
+				floatLabel="auto"
+				fxFlex="1 0 auto"
+			>
+				<mat-label>Fecha de inicio</mat-label>
+				<input
+					matInput
+					[matDatepicker]="fechaInicio"
+					name="fechaInicio"
+					formControlName="fechaInicio"
+					disabled
+				>
+				<mat-datepicker-toggle
+					matSuffix
+					[for]="fechaInicio"
+				>
+				</mat-datepicker-toggle>
+				<mat-datepicker
+					#fechaInicio
+					disabled="false"
+				></mat-datepicker>
+			</mat-form-field>
+		</div>
+
+		<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+			<mat-form-field appearance="outline" floatLabel="auto" fxFlex="100%">
+				<mat-label>Comentarios</mat-label>
+				<textarea matInput name="comentarios" formControlName="comentarios" required="{{ isRequired('comentarios') }}"></textarea>
+				<mat-error *ngIf="(!!form.get('comentarios').errors)">
+					{{validatorService.getMessage(form.get('comentarios'))}}
+				</mat-error>
+			</mat-form-field>
+		</div>
+	</form>
+</div>
+<div mat-dialog-actions>
+	<button
+		mat-button
+		(click)="cancelar()"
+	>Cancelar</button>
+	<button
+		mat-button
+		(click)="aceptar()"
+	>Aceptar</button>
+</div>

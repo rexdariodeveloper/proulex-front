@@ -1,0 +1,212 @@
+<div id="estado-cuenta-proveedor" class="pixvs-theme-listado page-layout carded left-sidebar fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- SIDEBAR -->
+    <fuse-sidebar *ngIf="filtros?.length" class="sidebar" name="filtros-sidebar" position="left" lockedOpen="gt-lg">
+        <filtros-sidebar #filtrado [regConfig]="filtros" [titulo]="'TITULO' | translate "
+			[modulo]="'MODULO' | translate " [icon]="'toc'" [listadoMenuOpciones]="filtrosOpciones"
+			[_FichasDataService]="_estadoCuentaService">
+        </filtros-sidebar>
+    </fuse-sidebar>
+    <!-- / SIDEBAR -->
+
+    <!-- CENTER -->
+    <div class="center" [ngClass]="{'layout-pad0': filtros}">
+
+        <!-- HEADER -->
+
+        <div class="header accent" fxLayout="column" fxLayoutAlign="center center" fxLayout.gt-sm="row"
+            fxLayoutAlign.gt-sm="space-between center">
+
+
+            <!-- APP TITLE -->
+            <div fxLayout="column" fxLayoutAlign="center start" fxShow fxHide.gt-lg="{{filtros?.length > 0}}">
+
+                <div fxLayout="row" fxLayoutAlign="start center" fxHide fxShow.gt-xs>
+                    <mat-icon class="secondary-text s-18">home</mat-icon>
+                    <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+                    <span class="secondary-text">{{ 'MODULO' | translate  }}</span>
+                </div>
+
+                <div class="logo mb-12 mb-md-0" fxLayout="row" fxLayoutAlign="start center">
+                    <mat-icon class="logo-icon s-32 mr-16" [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
+                        toc
+                    </mat-icon>
+                    <span class="logo-text h1" [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+                        {{ 'TITULO' | translate  }}
+                    </span>
+                </div>
+
+            </div>
+            <div fxHide fxShow.gt-lg="{{filtros?.length > 0}}" style="width: 10%;"></div>
+            <!-- / APP TITLE -->
+
+			<!-- SEARCH -->
+			<!--
+            <div class="search-wrapper mx-32 mx-md-0">
+
+                <button mat-icon-button fxHide.gt-lg class="sidebar-toggle"
+                    matTooltip="{{ 'INTERFAZ.FILTROS' | translate  }}"
+                    (click)="toggleSidebar('filtros-sidebar')">
+                    <mat-icon>menu</mat-icon>
+                </button>
+		
+                <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                    <mat-icon>search</mat-icon>
+                    <input #filter placeholder="{{ 'INTERFAZ.BUSCAR' | translate  }}...">
+				</div>
+			
+			</div>
+			-->
+            <!-- / SEARCH -->
+
+            <!-- ADD BUTTON -->
+            <div fxLayout="row">
+            </div>
+
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <mat-progress-bar *ngIf="_estadoCuentaService?.cargando" [color]="'primary'" [mode]="'query'">
+            </mat-progress-bar>
+
+			<!-- BOTON FILTROS -->			
+			<button *ngIf="filtros" mat-icon-button fxHide.gt-lg class="primary sidebar-button sidebar-toggle"
+				matTooltip="{{ 'INTERFAZ.FILTROS' | translate  }}"
+				(click)="toggleSidebar('filtros-sidebar')">
+				<mat-icon class="mb-4">tune</mat-icon>
+			</button>
+			<!-- BOTON FILTROS -->
+
+			<ng-container *ngIf="dataSource?.data?.length">
+
+				<div class="text-center pt-12 mat-title">
+					<span>{{proveedor?.codigo}} - {{proveedor?.nombre}}</span>
+				</div>
+				<mat-divider></mat-divider>
+
+				<table class="info-table">
+					<thead>
+						<th>Saldo total</th>
+						<th>Saldo actual</th>
+						<th>Saldo vencido</th>
+						<th>Facturas</th>
+					</thead>
+					<tbody>
+						<td class="text-center">${{ ((saldos.total).toFixed(2)) | mask:'separator.2':',' }}</td>
+						<td class="text-center">${{ ((saldos.actual).toFixed(2)) | mask:'separator.2':',' }}</td>
+						<td class="text-center">${{ ((saldos.vencido).toFixed(2)) | mask:'separator.2':',' }}</td>
+						<td class="text-center">{{ dataSource?.data?.length }}</td>
+					</tbody>
+				</table>
+				<mat-divider></mat-divider>
+
+				<table class="info-table">
+					<thead>
+						<th>1-15 días</th>
+						<th>16-30 días</th>
+						<th>31-45 días</th>
+						<th>Más de 46 días</th>
+					</thead>
+					<tbody>
+						<td class="text-center">${{ ((saldos.agrupador1).toFixed(2)) | mask:'separator.2':',' }}</td>
+						<td class="text-center">${{ ((saldos.agrupador2).toFixed(2)) | mask:'separator.2':',' }}</td>
+						<td class="text-center">${{ ((saldos.agrupador3).toFixed(2)) | mask:'separator.2':',' }}</td>
+						<td class="text-center">${{ ((saldos.agrupador4).toFixed(2)) | mask:'separator.2':',' }}</td>
+					</tbody>
+				</table>
+				<mat-divider></mat-divider>
+
+				<div style="padding-top: 1em;"></div>
+
+				<mat-table class="ficha-table" #tableDetalle [dataSource]="dataSource" matSort [@animateStagger]="{value:'50'}" id="table1" fusePerfectScrollbar>
+	
+					<ng-container matColumnDef="factura">
+						<mat-header-cell *matHeaderCellDef>
+							<span class="text-center text-nowrap w-100-p">Factura</span>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let reporte"> {{ reporte.factura }} </mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="fecha">
+						<mat-header-cell *matHeaderCellDef>
+							<span class="text-center text-nowrap w-100-p">Fecha</span>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let reporte">
+							<span class="text-center w-100-p px-12">{{ reporte.fecha | date:'dd/MM/yyyy' }}</span>
+						</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="termino">
+						<mat-header-cell *matHeaderCellDef>
+							<span class="text-center text-nowrap w-100-p">Termino</span>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let reporte">
+							<span class="text-center text-nowrap w-100-p">{{ reporte.termino }}</span>
+						</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="vencimiento">
+						<mat-header-cell *matHeaderCellDef>
+							<span class="text-center text-nowrap w-100-p">Vencimiento</span>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let reporte">
+							<span class="text-center w-100-p px-12">{{ reporte.vencimiento | date:'dd/MM/yyyy' }}</span>
+						</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="monto">
+						<mat-header-cell *matHeaderCellDef>
+							<div fxLayout="column" class="w-100-p">
+								<span class="text-right text-nowrap w-100-p">Monto original</span>
+							</div>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let reporte">
+							<span class="text-right w-100-p px-12">${{ ((reporte.monto).toFixed(2)) | mask:'separator.2':',' }}</span>
+						</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="restante">
+						<mat-header-cell *matHeaderCellDef>
+							<div fxLayout="column" class="w-100-p">
+								<span class="text-right text-nowrap w-100-p">Monto actual</span>
+							</div>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let reporte">
+							<span class="text-right w-100-p px-12">${{ ((reporte.restante).toFixed(2)) | mask:'separator.2':',' }}</span>
+						</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="dias">
+						<mat-header-cell *matHeaderCellDef>
+							<span class="text-center text-nowrap w-100-p">Días vencido</span>
+						</mat-header-cell>
+						<mat-cell *matCellDef="let reporte"> 
+							<span class="text-center w-100-p px-12">{{ reporte.dias }}</span>
+						</mat-cell>
+					</ng-container>
+	
+					<ng-container>
+						<mat-header-row *matHeaderRowDef="displayedColumns; sticky:true"></mat-header-row>
+						<mat-row *matRowDef="let row; columns: displayedColumns;" class="element" matRipple></mat-row>
+					</ng-container>
+	
+				</mat-table>
+			<!--
+				<mat-paginator #paginator [length]="dataSource.filteredData.length" [pageIndex]="0" [pageSize]="10"
+					[pageSizeOptions]="[10, 25, 100]">
+				</mat-paginator>
+			-->
+			</ng-container>
+			
+
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

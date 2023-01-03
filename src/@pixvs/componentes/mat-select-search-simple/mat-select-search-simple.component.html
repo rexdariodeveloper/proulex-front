@@ -1,0 +1,36 @@
+<mat-form-field class="pixvs-select" appearance="{{appearance}}" floatLabel="auto" fxFlex="1 0 auto">
+	<mat-label>{{label}}</mat-label>  
+	<mat-select #pixvsSelect
+	  [formControl]="matSelectCtrl" 
+	  placeholder="" 
+	  [multiple]="multiple"      
+	  required="{{required}}"
+	  msInfiniteScroll
+	  (infiniteScroll)="getNextBatch()">
+
+	  <mat-select-trigger *ngIf="multiple && showLabelAll && seleccionadosTodos()">{{labelAll}}</mat-select-trigger>
+	  
+	  <mat-option>
+		<ngx-mat-select-search 
+		  [formControl]="matSelectFilterCtrl" 
+		  placeholderLabel="Buscar..."
+		  noEntriesFoundLabel="No se encontraron coincidencias"
+		  [showToggleAllCheckbox]="showToggleAllCheckbox" 
+		  (toggleAll)="toggleSelectAll($event)">
+		</ngx-mat-select-search>
+	  </mat-option>
+
+        <div *ngIf="!showToolTip">
+            <mat-option *ngFor="let element of filteredData | async" [value]="element">
+                {{ campoValor ? getElemento(element, campoValor) : element }}
+            </mat-option>
+        </div>
+        <div *ngIf="showToolTip">
+            <mat-option *ngFor="let element of filteredData | async" [value]="element" matTooltip="{{ campoValor ? getElemento(element, campoValor) : element }}">
+                {{ campoValor ? getElemento(element, campoValor) : element }}
+            </mat-option>
+        </div>
+	  <mat-option *ngIf="!multiple">--</mat-option>
+	</mat-select>
+	<mat-error>{{matError}}</mat-error>
+  </mat-form-field>

@@ -1,0 +1,15 @@
+@import "@fuse/scss/fuse";
+
+#validacion-boletas{
+    .content-card {
+        .card {
+            width: 350px;
+            min-width: 350px;
+            max-width: 350px;
+            padding: 40px 60px 40px 60px;
+            //overflow: hidden;
+            background: #FFFFFF;
+            @include mat-elevation(7);
+        }
+    }
+}

@@ -1,0 +1,86 @@
+<!--<mat-toolbar color="primary">
+	<span>My Application</span>
+</mat-toolbar>
+<h1 mat-dialog-title *ngIf="codigoProveedor && nombreProveedor">
+	El RFC ya ha sido utilizado por <br><b>{{codigoProveedor}} {{nombreProveedor}}</b> 
+</h1>
+<h1 mat-dialog-title *ngIf="!codigoProveedor && !nombreProveedor">
+	El RFC ha sido utilizado por mas de un proveedor
+</h1>
+<h2>¿Deseas continuar?</h2>
+<div mat-dialog-actions>
+	<button
+		mat-button
+		(click)="cancelar()"
+	>Cerrar</button>
+	<button
+		mat-button
+		(click)="aceptar()"
+	>Aceptar</button>
+</div>-->
+<div class="add-libro">
+	<mat-toolbar color="primary">
+		<mat-toolbar-row>
+			<span class="title dialog-title">Agregar artículo</span>
+		</mat-toolbar-row>
+	</mat-toolbar>
+	<div mat-dialog-content>
+		<div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100" style="padding: 10px 10px 10px 10px;">
+			<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+				<pixvs-mat-select [matSelectCtrl]="nivelControl" [datos]="niveles"
+                    [appearance]="'outline'"
+                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                    [campoValor]="'nombre'" [label]="'Nivel'" [required]="true"
+                    fxFlex="1 0 auto">
+                </pixvs-mat-select>
+			</div>
+			<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+				<pixvs-mat-select [matSelectCtrl]="articuloControl" [datos]="articulos"
+                    [appearance]="'outline'"
+                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                    [campoValor]="'nombreArticulo'" [label]="'Articulos'" [required]="true"
+                    fxFlex="1 0 auto" [multiple]="true">
+                </pixvs-mat-select>
+			</div>
+			<div fxLayout="row wrap" fxLayoutAlign="end end" fxLayoutGap="10px grid" align="end">
+				<mat-checkbox color="primary" name="aplicaReglas" [(ngModel)]="aplicaReglas">
+                     Aplica regla de inventario
+                </mat-checkbox>
+			</div>
+			<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid" *ngIf="aplicaReglas">
+				<div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+            	<mat-accordion>
+		        		<mat-expansion-panel [expanded]="false" [@.disabled]="true">
+		            		<mat-expansion-panel-header>
+			            		<mat-panel-title>
+			            			<span><b>Libros</b></span>
+			            		</mat-panel-title>
+		            		</mat-expansion-panel-header>
+		            			<ng-container *ngFor="let formArticulo of articuloFormArray?.controls; let i = index;">
+		            				<form focusInvalidInput name="formArticulo{{i}}" id="formArticulo{{i}}" [formGroup]="formArticulo" style="display: table;">
+		            					<span style="width: 100%; display: flex; align-items: center; justify-content: center;">{{formArticulo.get('articulo').value.nombreArticulo}}</span>
+		            					<pixvs-mat-select [matSelectCtrl]="formArticulo.get('reglas')" [datos]="carreras"
+						                    [appearance]="'outline'"
+						                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+						                    [campoValor]="'referencia'" [label]="'Carreras'" [required]="true"
+						                    fxFlex="1 0 auto" [multiple]="true">
+						                </pixvs-mat-select>
+		            				</form>
+		            			</ng-container>
+		        		</mat-expansion-panel>
+		        </mat-accordion>
+		        </div>
+			</div>
+		</div>
+	</div>
+	<div mat-dialog-actions align="end">
+		<button
+			mat-button
+			(click)="cancelar()"
+		>Cerrar</button>
+		<button
+			mat-raised-button class="mat-accent mr-16"
+			(click)="aceptar()"
+		>Aceptar</button>
+	</div>
+</div>

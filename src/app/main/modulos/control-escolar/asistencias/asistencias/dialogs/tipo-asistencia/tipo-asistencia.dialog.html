@@ -1,0 +1,43 @@
+<div mat-dialog-title class="text-center">
+	<h1>{{row?.fecha | date: 'EEEE dd MMMM yyyy'}}</h1>
+	<h1>{{row?.alumno?.codigo}} - {{row?.alumno?.nombre}} {{row?.alumno?.primerApellido}} {{row?.alumno?.segundoApellido}}</h1>
+</div>
+<mat-dialog-content>
+	<div *ngIf="!!form">
+		<form focusInvalidInput
+			name="form" id="form"
+			class="w-100-p"
+			[formGroup]="form"
+			(submit)="aceptar()"
+			fxLayout="column" fxFlex
+		>
+			<div fxLayout="row" class="py-16">
+				<mat-radio-group class="w-100-p" formControlName="tipoAsistenciaId">
+					<mat-radio-button value="2000550" [checked]="form.get('tipoAsistenciaId').value == 2000550" fxFlex="0 0 25%" [disabled]="!tienePermiso">Asistencia</mat-radio-button>
+					<mat-radio-button value="2000551" [checked]="form.get('tipoAsistenciaId').value == 2000551" fxFlex="0 0 25%">Falta</mat-radio-button>
+					<mat-radio-button value="2000552" [checked]="form.get('tipoAsistenciaId').value == 2000552" fxFlex="0 0 30%">Falta justificada</mat-radio-button>
+					<mat-radio-button value="2000553" [checked]="form.get('tipoAsistenciaId').value == 2000553" fxFlex="0 0 20%" [disabled]="!tienePermiso">Retardo</mat-radio-button>
+				</mat-radio-group>
+			</div>
+			<div fxLayout="row" class="pb-16" *ngIf="form.get('tipoAsistenciaId').value == 2000553">
+				<mat-form-field appearance="outline" fxFlex="0 0 100%">
+					<mat-label>Retardo (minutos)</mat-label>
+					<input matInput type="number" formControlName="minutosRetardo" min=0>
+				</mat-form-field>
+			</div>
+			<div fxLayout="row" class="pb-16" *ngIf="form.get('tipoAsistenciaId').value == 2000552">
+				<mat-form-field appearance="outline" fxFlex="0 0 100%">
+					<mat-label>Justificación</mat-label>
+					<input matInput type="text" formControlName="motivoJustificante" maxlength="280">
+					<mat-hint align="end">{{form.get('motivoJustificante').value?.length || 0}} / 280</mat-hint>
+				</mat-form-field>
+			</div>
+		</form>
+	</div>
+</mat-dialog-content>
+<mat-dialog-actions>
+	<div fxLayoutAlign="end end" fxLayoutGap="5px">
+		<button mat-button (click)="cancelar()">Cerrar</button> 
+		<button type="submit" mat-raised-button class="mat-accent mr-16" (click)="aceptar()">Aceptar</button>
+	</div>
+</mat-dialog-actions>

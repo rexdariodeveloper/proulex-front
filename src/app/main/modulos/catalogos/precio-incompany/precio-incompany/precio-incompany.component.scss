@@ -1,0 +1,46 @@
+@import "@fuse/scss/fuse";
+
+#ficha-tabulador {
+	.btn-nuevo{
+		position: absolute;
+		top: 5px;
+		right: 5px;
+		z-index: 200;
+	}
+
+	.clickable{
+		cursor: pointer;
+		&:hover{
+			background-color: #F0F0F0;
+		}
+	}
+
+	/*th.mat-header-cell, td.mat-cell {
+        text-align: center;
+        border: 1px solid #CCC;
+        padding: 0 !important;
+        min-width: 150px;
+    }
+    
+    .group-header {
+        text-align: center !important;
+        font-weight: bold;
+        font-size: 2em;
+    }
+    
+    .table-header {
+        text-align: center !important;
+        font-weight: bold;
+        font-size: 1.5em;
+    }
+
+    .align-left{
+        text-align: left;
+        padding-right: 8px;
+        padding-left: 8px;
+    }*/
+    .table-container {
+        max-height: calc(100vh - 155px); // or height: calc(100vh - 155px); depending on your need  change
+        overflow: auto;
+      }
+}

@@ -1,0 +1,101 @@
+<mat-toolbar color="primary">
+    <mat-toolbar-row>
+        <span class="title dialog-title" style="text-align: center;width: 100%">Agregar profesor sustituto</span>
+    </mat-toolbar-row>
+</mat-toolbar>
+<div mat-dialog-content>
+	<div class="tab-content p-24" fusePerfectScrollbar>
+        <div fxLayout="row wrap" fxLayoutGap="20px grid">
+            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+
+                <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                    <pixvs-mat-select [matSelectCtrl]="tipoControl" [datos]="tipos"
+                    [appearance]="'outline'"
+                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                    [campoValor]="'nombre'" [label]="'Tipo'"
+                    fxFlex="1 0 auto">
+                    </pixvs-mat-select>
+                </div>
+
+                <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid" *ngIf="tipoControl?.value?.id == 0">
+                    <pixvs-mat-select #claseSelect [matSelectCtrl]="claseControl" [datos]="clasesInicio"
+                    [appearance]="'outline'"
+                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                    [campoValor]="'fechaClase'" [label]="'Clase'"
+                    fxFlex="1 0 auto" [ngStyle]="{'pointer-events':'none'}">
+                    </pixvs-mat-select>
+                </div>
+
+                <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid" *ngIf="tipoControl?.value?.id == 1">
+                    <pixvs-mat-select [matSelectCtrl]="claseInicioControl" [datos]="clasesInicio"
+                    [appearance]="'outline'"
+                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                    [campoValor]="'fechaClase'" [label]="'Clase Inicio'"
+                    fxFlex="1 0 auto" [ngStyle]="{'pointer-events':'none'}">
+                    </pixvs-mat-select>
+                </div>
+
+                <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid" *ngIf="tipoControl?.value?.id == 1">
+                    <pixvs-mat-select [matSelectCtrl]="claseFinControl" [datos]="clases"
+                    [appearance]="'outline'"
+                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                    [campoValor]="'fechaClase'" [label]="'Clase Fin'"
+                    fxFlex="1 0 auto">
+                    </pixvs-mat-select>
+                </div>
+
+                <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                        <mat-label>Profesor Titular</mat-label>
+                        <input type="text" matInput [(ngModel)]="nombreProfesor" [readonly]="true">
+                    </mat-form-field>
+                </div>
+
+                <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                    <pixvs-mat-select [matSelectCtrl]="profesorControl" [datos]="profesores"
+                    [appearance]="'outline'"
+                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                    [campoValor]="'nombreCompleto'" [label]="'Profesor sustituto'"
+                    fxFlex="1 0 auto">
+                    </pixvs-mat-select>
+                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                        <mat-label>Categoria</mat-label>
+                        <input type="text" matInput name="categoriaProfesor" id="categoriaProfesor" [(ngModel)]="categoriaProfesor" [disabled]="true">
+                    </mat-form-field>
+                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                        <mat-label>Sueldo</mat-label>
+                        <input type="text" matInput name="sueldo" [(ngModel)]="sueldo"  prefix="$ " mask="separator.2" thousandSeparator="," [readonly]="!sueldo">
+                    </mat-form-field>
+                </div>
+
+                <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                    <pixvs-mat-select [matSelectCtrl]="formaPagoControl" [datos]="formasPago"
+                    [appearance]="'outline'"
+                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                    [campoValor]="'valor'" [label]="'Formas de pago'"
+                    fxFlex="1 0 auto">
+                    </pixvs-mat-select>
+                </div>
+
+        		<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+					<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                        <mat-label>Motivo</mat-label>
+                        <input type="text" matInput name="motivo" id="motivo" [(ngModel)]="motivo">
+                    </mat-form-field>
+        		</div>
+
+        	</div>
+
+        </div>
+    </div>
+</div>
+<div mat-dialog-actions align="end">
+	<button
+		mat-button
+		(click)="cancelar()"
+	>Cerrar</button>
+	<button
+		mat-raised-button class="mat-accent mr-16"
+		(click)="aceptar()"
+	>Aceptar</button>
+</div>

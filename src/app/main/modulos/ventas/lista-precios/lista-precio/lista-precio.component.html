@@ -1,0 +1,380 @@
+<div id="ficha-empleado" class="pixvs-theme-listado page-layout carded fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <ficha-crud *ngIf="config" [config]="config" [isGuardadoPersonalizado]="true" (output)="revisarDatosPrecio()"
+            [mostrarBorrar]="false" [mostrarEditar]="true" [titulo]="titulo"
+            [subTituloTraduccion]="pageType" [form]="form" [currentId]="currentId" [pageType]="pageType"
+            [dataService]="_listadoPrecioService" class="header accent" fxLayout="column" fxLayoutAlign="center center"
+            fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center" (outputDesHabilitarCampos)="deshabilitarCampos()" [isDesHabilitarPersonalizado]="true">
+        </ficha-crud>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <mat-progress-bar *ngIf="_listadoPrecioService?.cargando" [color]="'primary'" [mode]="'query'">
+            </mat-progress-bar>
+
+            <div style="height: 0px;">
+                <button debounceClick mat-mini-fab class="boton-refresh" (debounceClick)="recargar()"
+                    matTooltip="{{ 'INTERFAZ.RECARGAR' | translate  }}">
+                    <mat-icon class="s-16">refresh</mat-icon>
+                </button>
+            </div>
+
+            <!-- CONTENT -->
+            <div class="content" *ngIf="form">
+
+                <form focusInvalidInput name="form" id="form" [formGroup]="form" class="product w-100-p"
+                    fxLayout="column" fxFlex>
+
+                    <mat-tab-group>
+
+                        <mat-tab label="Datos Generales">
+
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+
+                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                        <mat-label>Código</mat-label>
+                                        <input type="text" matInput name="codigo" formControlName="codigo"
+                                            required="{{ isRequired('codigo', form) }}">
+                                        <mat-error *ngIf="(!!form.get('codigo').errors)">
+                                            {{validatorService.getMessage(form.get('codigo'))}}
+                                        </mat-error>
+                                    </mat-form-field>
+                                    
+                                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                        <mat-label>Nombre</mat-label>
+                                        <input type="text" matInput name="nombre" formControlName="nombre"
+                                            required="{{ isRequired('nombre', form) }}">
+                                        <mat-error *ngIf="(!!form.get('nombre').errors)">
+                                            {{validatorService.getMessage(form.get('nombre'))}}
+                                        </mat-error>
+                                    </mat-form-field>
+
+                                    <pixvs-mat-select #selectMonedas [matSelectCtrl]="monedaControl" [datos]="monedas"
+                                        [appearance]="'outline'"
+                                        [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                        [campoValor]="'codigo'" [label]="'Moneda'"
+                                        [required]="true" fxFlex="1 0 auto">
+                                    </pixvs-mat-select>
+                                    
+                                    <div fxFlex="fill">
+                                        <button mat-icon-button [matMenuTriggerFor]="opciones">
+                                            <mat-icon>more_vert</mat-icon>
+                                        </button>
+                                        <mat-menu #opciones="matMenu">
+                                            <button mat-menu-item type="button" (click)="descargarPlantilla()">
+                                                <mat-icon>insert_drive_file</mat-icon>
+                                                <span>Descargar plantilla</span>
+                                            </button>
+                                            <button *ngIf="form?.enabled" mat-menu-item type="button" (click)="xlsxInput.click()">
+                                                <mat-icon>arrow_upward</mat-icon>
+                                                <span>Importar lista de precios</span>
+                                                <input
+                                                    #xlsxInput
+                                                    type="file"
+                                                    accept=".xlsx"
+                                                    (change)="xlsxChangeEvent($event)"
+                                                    style="display:none;"
+                                                />
+                                            </button>
+                                            <button mat-menu-item type="button" (click)="exportarExcel()" *ngIf="pageType == 'ver'">
+                                                <mat-icon>arrow_downward</mat-icon>
+                                                <span>Exportar lista de precios</span>
+                                            </button>
+                                        </mat-menu>
+                                    </div>
+                                </div>
+                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 calc(16% - 10px)">
+                                        <mat-label>Fecha Inicio</mat-label>
+                                        <input matInput type="date" name="fechaInicio" formControlName="fechaInicio" [readonly]="form.get('indeterminado').value">
+                                        <mat-error *ngIf="(!!form.get('fechaInicio').errors)">
+                                            {{validatorService.getMessage(form.get('fechaInicio'))}}
+                                        </mat-error>
+                                    </mat-form-field>
+                                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 calc(16% - 10px)">
+                                        <mat-label>Fecha Fin</mat-label>
+                                        <input matInput type="date" name="fechaFin" formControlName="fechaFin" [min]="form.get('fechaInicio').value" [readonly]="form.get('indeterminado').value">
+                                        <mat-error *ngIf="(!!form.get('fechaFin').errors)">
+                                            {{validatorService.getMessage(form.get('fechaFin'))}}
+                                        </mat-error>
+                                    </mat-form-field>
+                                    <div fxLayout="row" fxLayoutAlign="center center" class="mb-20">
+                                        <mat-checkbox color="primary" name="indeterminado" formControlName="indeterminado" (click)="form.get('fechaFin').setValue(null);form.get('fechaInicio').setValue(null)">
+                                            Indeterminado
+                                        </mat-checkbox>
+                                    </div>
+                                </div>
+
+                                <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid" style="width: 100%">
+                                    <div fxlayout="row" fxlayoutalign="start center" class="my-20" style="display: flex;border-bottom: solid 3px lightgray;width: 100%">
+                                        <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font"><span class="material-icons">attach_money</span></mat-icon>
+                                        <div class="h2 secondary-text ng-tns-c345-79">Precios</div>
+                                        <div fxLayout="row" fxLayoutAlign="end end" class="mb-20" style="width: 100%">
+                                            <mat-checkbox color="primary" name="activo" formControlName="activo" >
+                                                Activo
+                                            </mat-checkbox>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid" style="width: 100%">
+                                    <div style="width: 100%;overflow: auto;height: calc(100vh - 32px)">
+                                      <mat-form-field appearance="outline" style="float: right;">
+                                        <input matInput placeholder=""
+                                               (keyup)="applyFilter($event)">
+                                        <mat-icon matSuffix>search</mat-icon>
+                                      </mat-form-field>  
+                                      <table mat-table [dataSource]="dataSource" style="width: 100%;">
+
+                                        <!--- Note that these columns can be defined in any order.
+                                              The actual rendered columns are set as a property on the row definition" -->
+
+                                        <!-- Position Column -->
+                                        <ng-container matColumnDef="imagen">
+                                          <mat-header-cell *matHeaderCellDef>  </mat-header-cell>
+                                          <mat-cell *matCellDef="let element"> <img
+                                                *ngIf="!imageChangedEvent"
+                                                style="display: block; height: 60%;max-width: 32%; padding: 1px 1px 1px 1px;"
+                                                src="{{element?.imagenId != null ? apiUrl + '/v1/archivo/' + (element.imagenId | hashId) : 'assets/images/no-image-icon.png' }}"
+                                            /> </mat-cell>
+                                        </ng-container>
+
+                                        <!-- Name Column -->
+                                        <ng-container matColumnDef="codigo">
+                                          <mat-header-cell *matHeaderCellDef> Código  </mat-header-cell>
+                                          <mat-cell *matCellDef="let element"> {{element.codigoArticulo}} </mat-cell>
+                                        </ng-container>
+
+                                        <!-- Weight Column -->
+                                        <ng-container matColumnDef="nombre">
+                                          <mat-header-cell *matHeaderCellDef> Nombre </mat-header-cell>
+                                          <mat-cell *matCellDef="let element"> {{element.nombreArticulo}}&nbsp;<mat-icon *ngIf="element.esCurso">list</mat-icon></mat-cell>
+                                        </ng-container>
+
+                                        <!-- Weight Column -->
+                                        <ng-container matColumnDef="unidadMedida">
+                                          <mat-header-cell *matHeaderCellDef> Unidad de medida </mat-header-cell>
+                                          <mat-cell *matCellDef="let element"> {{element.unidadMedidaInventario?.nombre}} </mat-cell>
+                                        </ng-container>
+
+                                        <!-- Weight Column -->
+                                        <ng-container matColumnDef="precioUnitario">
+                                          <mat-header-cell *matHeaderCellDef> Precio unitario </mat-header-cell>
+                                          <mat-cell *matCellDef="let element"> {{redondeo2Decimales(element.precioUnitario) | currency}} </mat-cell>
+                                        </ng-container>
+
+                                        <!-- Weight Column -->
+                                        <ng-container matColumnDef="impuesto">
+                                          <mat-header-cell *matHeaderCellDef> Impuesto </mat-header-cell>
+                                          <mat-cell *matCellDef="let element"> {{redondeo2Decimales( element.importeIva+element.importeIeps ) | currency}} </mat-cell>
+                                        </ng-container>
+
+                                        <!-- Weight Column -->
+                                        <ng-container matColumnDef="precio">
+                                          <mat-header-cell *matHeaderCellDef> Precio venta </mat-header-cell>
+                                          <mat-cell *matCellDef="let element"> {{element.precio | currency}} </mat-cell>
+                                        </ng-container>
+
+                                        <ng-container matColumnDef="boton">
+                                          <mat-header-cell *matHeaderCellDef>Detalle</mat-header-cell>
+                                          <mat-cell *matCellDef="let element; let i = index"> 
+                                           <button mat-stroked-button *ngIf="selectedRow == i" style="border-radius: 27px;height: 30px;">
+                                              <mat-icon>expand_less</mat-icon>
+                                            </button>
+                                            <button mat-stroked-button *ngIf="selectedRow != i" style="border-radius: 27px;height: 30px;">
+                                              <mat-icon>expand_more</mat-icon>
+                                            </button>
+                                          </mat-cell>
+                                        </ng-container>
+
+                                        <!-- Expanded Content Column - The detail row is made up of this one column -->
+                                        <ng-container matColumnDef="expandedDetail">
+                                          <mat-cell *matCellDef="let detail"> 
+                                            El articulo {{detail.element.nombre}} vale {{detail.element.precio}}
+                                          </mat-cell>
+                                        </ng-container>
+
+                                        <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+                                            <mat-row *matRowDef="let row; columns: displayedColumns; let i = index" matRipple class="element-row" [cdkDetailRow]="row" [cdkDetailRowTpl]="tpl" (toggleChange)="onToggleChange($event,i,row)" >
+                                            </mat-row>
+                                    </table>
+                                      
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+                        </mat-tab>
+
+                    </mat-tab-group>
+
+                </form>
+
+
+            </div>
+            <!-- / CONTENT -->
+
+        </div>
+        <!-- / CONTENT CARD -->
+
+
+    </div>
+    <!-- / CENTER -->
+</div>
+
+<!-- *************************************** -->
+<!-- ***** TEMPLATE - Detalle artículo ***** -->
+<!-- *************************************** -->
+
+<ng-template #tpl let-element>
+    <div [@detailExpand] style="overflow: hidden; margin-bottom: 1%;box-shadow: rgb(0 0 0 / 20%) 0px 5px 5px -5px, rgb(0 0 0 / 14%) 0px 5px 5px -5px, rgb(0 0 0) 0px 5px 5px -3px;">
+        <ng-cpntainer *ngIf="precioBandera">
+            <!---------------Cálculo por precio venta----------------------------------->
+            <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                    <mat-label>Código</mat-label>
+                    <input type="text" matInput name="codigoArticulo" [(ngModel)]="element.codigoArticulo" [ngModelOptions]="{standalone: true}" [readonly]="true" required="true">
+                </mat-form-field>
+                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                    <mat-label>Nombre</mat-label>
+                    <input type="text" matInput name="nombreArticulo" [(ngModel)]="element.nombreArticulo" [ngModelOptions]="{standalone: true}" [readonly]="true" required="true">
+                </mat-form-field>
+                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                    <mat-label>Unidad de medida (Inventario)*</mat-label>
+                    <input type="text" matInput name="nombreArticulo" [(ngModel)]="element.unidadMedidaInventario.nombre" [ngModelOptions]="{standalone: true}" [readonly]="true">
+                </mat-form-field>
+                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                    <mat-label>Precio venta*</mat-label>
+                    <input type="text" matInput name="nombreArticulo" [(ngModel)]="element.precio" [ngModelOptions]="{standalone: true}" [readonly]="!deshabilitarBotones" prefix="$ " mask="separator.2" thousandSeparator="," required="true">
+                </mat-form-field>
+            </div>
+            <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                    <mat-label>Precio unitario*</mat-label>
+                    <input type="text" matInput name="nombreArticulo" [ngModel]="redondeo2Decimales(element.precioUnitario)" [ngModelOptions]="{standalone: true}" [readonly]="true" prefix="$ " mask="separator.2" thousandSeparator="," required="true">
+                </mat-form-field>
+                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                    <mat-label>Importe IVA*</mat-label>
+                    <input type="text" matInput name="nombreArticulo" [ngModel]="redondeo2Decimales(element.importeIva)" [ngModelOptions]="{standalone: true}" [readonly]="true" prefix="$ " mask="separator.2" thousandSeparator="," required="true">
+                </mat-form-field>
+                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                    <mat-label>Importe IEPS*</mat-label>
+                    <input type="text" matInput name="nombreArticulo" [ngModel]="redondeo2Decimales(element.importeIeps)" [ngModelOptions]="{standalone: true}" [readonly]="true" prefix="$ " mask="separator.2" thousandSeparator="," required="true">
+                </mat-form-field>
+            </div>
+        </ng-cpntainer>
+        <ng-cpntainer *ngIf="precioUnitarioBandera">
+            <!---------------Cálculo por precio unitario----------------------------------->
+            <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                    <mat-label>Código</mat-label>
+                    <input type="text" matInput name="codigoArticulo" [(ngModel)]="element.codigoArticulo" [ngModelOptions]="{standalone: true}" [readonly]="true">
+                </mat-form-field>
+                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                    <mat-label>Nombre</mat-label>
+                    <input type="text" matInput name="nombreArticulo" [(ngModel)]="element.nombreArticulo" [ngModelOptions]="{standalone: true}" [readonly]="true">
+                </mat-form-field>
+                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                    <mat-label>Unidad de medida (Inventario)*</mat-label>
+                    <input type="text" matInput name="nombreArticulo" [(ngModel)]="element.unidadMedidaInventario.nombre" [ngModelOptions]="{standalone: true}" [readonly]="true" required="true">
+                </mat-form-field>
+                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                    <mat-label>Precio unitario*</mat-label>
+                    <input type="text" matInput name="nombreArticulo" [(ngModel)]="element.precioUnitario" [ngModelOptions]="{standalone: true}" [readonly]="!deshabilitarBotones" prefix="$ " mask="separator.2" thousandSeparator=",">
+                </mat-form-field>
+            </div>
+            <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                    <mat-label>Importe IVA 16%*</mat-label>
+                    <input type="text" matInput name="nombreArticulo" [ngModel]="redondeo2Decimales(element.importeIva)" [ngModelOptions]="{standalone: true}" [readonly]="true" prefix="$ " mask="separator.2" thousandSeparator=",">
+                </mat-form-field>
+                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                    <mat-label>Importe IEPS*</mat-label>
+                    <input type="text" matInput name="nombreArticulo" [ngModel]="redondeo2Decimales(element.importeIeps)" [ngModelOptions]="{standalone: true}" [readonly]="true" prefix="$ " mask="separator.2" thousandSeparator=",">
+                </mat-form-field>
+                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                    <mat-label>Precio venta*</mat-label>
+                    <input type="text" matInput name="nombreArticulo" [ngModel]="redondeo2Decimales(element.precio)" [ngModelOptions]="{standalone: true}" [readonly]="true" prefix="$ " mask="separator.2" thousandSeparator=",">
+                </mat-form-field>
+            </div>
+        </ng-cpntainer>
+        <div fxLayout="row wrap" style="padding: 20px 20px 20px 20px; width: 100%" *ngIf="element.esCurso">
+            <table mat-table [dataSource]="materialesCurso[element.id]" style="width: 100%" class="mat-elevation-z8">
+                <ng-container matColumnDef="codigoArticulo">
+                    <mat-header-cell *matHeaderCellDef> Código </mat-header-cell>
+                    <mat-cell *matCellDef="let material"> {{material.codigoArticulo}} </mat-cell>
+                    <!--<mat-footer-cell *matFooterCellDef> <b>Total</b> </mat-footer-cell>-->
+                </ng-container>
+                <ng-container matColumnDef="nombreArticulo">
+                    <mat-header-cell *matHeaderCellDef> Nombre </mat-header-cell>
+                    <mat-cell *matCellDef="let material"> {{material.nombreArticulo}}&nbsp;<mat-icon *ngIf="material.esLibro">book</mat-icon><mat-icon *ngIf="material.esCertificacion">ballot</mat-icon> </mat-cell>
+                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                </ng-container>
+                <ng-container matColumnDef="unidadMedidaInventario.nombre">
+                    <mat-header-cell *matHeaderCellDef> UM </mat-header-cell>
+                    <mat-cell *matCellDef="let material"> {{material.unidadMedidaInventario.nombre}} </mat-cell>
+                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                </ng-container>
+                <ng-container matColumnDef="precioUnitario">
+                    <mat-header-cell *matHeaderCellDef> Precio Unitario </mat-header-cell>
+                    <mat-cell *matCellDef="let material">
+                        <ng-container *ngIf="precioBandera">
+                            {{ (material.precioUnitario || 0) | currency }}
+                        </ng-container>
+                        <ng-container *ngIf="precioUnitarioBandera">
+                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                <mat-label>Precio unitario</mat-label>
+                                <input type="text" matInput name="nombreArticulo" [(ngModel)]="material.precioEditar" [ngModelOptions]="{standalone: true}" [readonly]="!deshabilitarBotones" prefix="$ " mask="separator.2" thousandSeparator=",">
+                            </mat-form-field>
+                        </ng-container>
+                    </mat-cell>
+                    <!--<mat-footer-cell *matFooterCellDef><b>{{redondeo2Decimales(calcularPrecioUnitario(element)) | currency}}</b></mat-footer-cell>-->
+                </ng-container>
+                <ng-container matColumnDef="iva">
+                    <mat-header-cell *matHeaderCellDef> IVA </mat-header-cell>
+                    <mat-cell *matCellDef="let material"> {{redondeo2Decimales((material.precio/(1+material.iva+material.ieps))*material.iva) | currency}} </mat-cell>
+                    <!--<mat-footer-cell *matFooterCellDef><b>{{redondeo2Decimales(calcularIVA(element)) | currency}}</b></mat-footer-cell>-->
+                </ng-container>
+                <ng-container matColumnDef="ieps">
+                    <mat-header-cell *matHeaderCellDef> IEPS </mat-header-cell>
+                    <mat-cell *matCellDef="let material"> {{ redondeo2Decimales(material.precio/(1+material.iva+material.ieps)*material.ieps) | currency }} </mat-cell>
+                    <!--<mat-footer-cell *matFooterCellDef><b>{{redondeo2Decimales(calcularIEPS(element)) | currency}}</b></mat-footer-cell>-->
+                </ng-container>
+                <ng-container matColumnDef="precio">
+                    <mat-header-cell *matHeaderCellDef> Precio Venta </mat-header-cell>
+                    <mat-cell *matCellDef="let material">
+                        <ng-container *ngIf="precioBandera">
+                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                <mat-label>Precio venta</mat-label>
+                                <input type="text" matInput name="nombreArticulo" [(ngModel)]="material.precioEditar" [ngModelOptions]="{standalone: true}" [readonly]="!deshabilitarBotones" prefix="$ " mask="separator.2" thousandSeparator=",">
+                            </mat-form-field>
+                        </ng-container>
+                        <ng-container *ngIf="precioUnitarioBandera">
+                            {{(material.precioFinal || 0) | currency}}
+                        </ng-container>
+                    </mat-cell>
+                    <!--<mat-footer-cell *matFooterCellDef><b>{{redondeo2Decimales(calcularPrecioVenta(element)) | currency}}</b></mat-footer-cell>-->
+                </ng-container>
+                <mat-header-row *matHeaderRowDef="displayedHijosColumns"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedHijosColumns;"></mat-row>
+                <!-- <mat-footer-row *matFooterRowDef="displayedHijosColumns"></mat-footer-row> -->
+            </table>
+        </div>
+        <div style="display: block;border-top: solid 3px lightgray; margin-bottom: 2%;margin-right: 1%;" align="end">
+            <button mat-button color="warn" (click)="closeRow(element)" [disabled]="!deshabilitarBotones" *ngIf="precioBandera" style="margin-top: 1%">Cancelar</button>
+            <button mat-button color="warn" (click)="closeRowVenta(element)" [disabled]="!deshabilitarBotones" *ngIf="precioUnitarioBandera" style="margin-top: 1%">Cancelar</button>&nbsp;&nbsp;
+            <button mat-raised-button color="primary" (click)="actualizarDatos(element)" [disabled]="!deshabilitarBotones" *ngIf="precioBandera">Actualizar</button>
+            <button mat-raised-button color="primary" (click)="actualizarDatosVenta(element,true)" [disabled]="!deshabilitarBotones" *ngIf="precioUnitarioBandera">Actualizar</button><!--Botón para precio unitario-->
+        </div>
+    </div>
+</ng-template>

@@ -1,0 +1,101 @@
+<h1 mat-dialog-title>
+	{{ repetirNivel ? 'Repetir nivel' : 'Reinscripción' }}
+</h1>
+<div mat-dialog-content class="font-size-20 pb-12">
+    <div class="w-100-p" fxLayout="column">
+        <div fxLayout="row">
+            <mat-form-field
+                appearance="outline"
+                floatLabel="auto"
+                fxFlex="1 0 auto"
+            >
+                <mat-label>Alumno</mat-label>
+                <input
+                    type="text"
+                    matInput
+                    [value]="alumno"
+                    readonly="true"
+                >
+            </mat-form-field>
+        </div>
+        <div fxLayout="row">
+            <mat-form-field
+                appearance="outline"
+                floatLabel="auto"
+                fxFlex="80%"
+            >
+                <mat-label>Curso</mat-label>
+                <input
+                    type="text"
+                    matInput
+                    [value]="curso"
+                    readonly="true"
+                >
+            </mat-form-field>
+
+            <mat-form-field
+                appearance="outline"
+                floatLabel="auto"
+                fxFlex="20%"
+            >
+                <mat-label>Nivel</mat-label>
+                <input
+                    type="number"
+                    matInput
+                    name="nivel"
+                    [formControl]="nivelControl"
+                    required="true"
+                >
+                <mat-error *ngIf="(!!nivelControl.errors)">
+                    {{validatorService.getMessage(nivelControl)}}
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <div fxLayout="row" fxLayoutGap="10px grid">
+            <pixvs-mat-select #selectModalidades [matSelectCtrl]="modalidadControl" [datos]="modalidades"
+                [appearance]="'outline'"
+                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                [campoValor]="'nombre'" [label]="'Modalidad'"
+                [required]="true" fxFlex="1 0 auto">
+            </pixvs-mat-select>
+            <pixvs-mat-select #selectHorarios [matSelectCtrl]="horarioControl" [datos]="horarios"
+                [appearance]="'outline'"
+                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                [campoValor]="'nombre'" [label]="'Horario'"
+                [required]="true" fxFlex="1 0 auto">
+            </pixvs-mat-select>
+        </div>
+        <div fxLayout="row">
+            <mat-form-field
+                appearance="outline"
+                floatLabel="auto"
+                fxFlex="1 0 auto"
+            >
+                <mat-label>Comentarios</mat-label>
+                <textarea
+                    type="text"
+                    matInput
+                    name="comentarios"
+                    [formControl]="comentarioControl"
+                    required="false"
+                ></textarea>
+                <mat-error *ngIf="(!!comentarioControl.errors)">
+                    {{validatorService.getMessage(comentarioControl)}}
+                </mat-error>
+            </mat-form-field>
+        </div>
+    </div>
+</div>
+<div mat-dialog-actions align="end" fxLayout="row" fxLayoutAlign="space-between center">
+	<button
+		mat-button
+		(click)="cancelar()"
+	>Cancelar</button>
+	<button
+		mat-raised-button
+        class="mat-primary"
+		(click)="onAceptar()"
+	>
+        Aceptar
+    </button>
+</div>

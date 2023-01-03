@@ -1,0 +1,99 @@
+<mat-toolbar color="primary">
+    <mat-toolbar-row>
+        <span class="title dialog-title" style="text-align: center;width: 100%">Cambio de grupo</span>
+    </mat-toolbar-row>
+</mat-toolbar>
+<div mat-dialog-content>
+	<div class="tab-content p-24" fusePerfectScrollbar>
+        <div fxLayout="row wrap" fxLayoutGap="20px grid">
+            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+
+                <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                        <mat-label>Alumno</mat-label>
+                        <input type="text" matInput name="motivo" id="motivo" [(ngModel)]="alumno" [disabled]="true">
+                    </mat-form-field>
+                </div>
+
+                <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                        <mat-label>Grupo actual</mat-label>
+                        <input type="text" matInput name="grupoActual" id="grupoActual" [(ngModel)]="grupoActual">
+                    </mat-form-field>
+                </div>
+
+                <div fxlayout="row" fxlayoutalign="start center" class="my-20" style="display: flex;">
+                    <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font">query_builder</mat-icon>
+                    <div class="h2 secondary-text ng-tns-c345-79">Nuevo grupo</div>
+                </div>
+
+                <div fxLayout="row wrap" fxLayoutAlign="end end" fxLayoutGap="10px grid" align="end" *ngIf="!esJobs">
+                    <mat-checkbox color="primary" name="grupoMultisede" [(ngModel)]="grupoMultisede">
+                         Grupo Multisede
+                    </mat-checkbox>
+                </div>
+
+                <div #sucursalesSelect fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid" *ngIf="grupoMultisede">
+                    <pixvs-mat-select [matSelectCtrl]="sucursalesControl" [datos]="sucursales"
+                    [appearance]="'outline'"
+                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                    [campoValor]="'nombre'" [label]="'Sedes'"
+                    [incluirItemVacio]="false"
+                    fxFlex="1 0 auto">
+                    </pixvs-mat-select>
+                </div>
+
+                <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                    <pixvs-mat-select #tipoGrupoSelect [matSelectCtrl]="tipoGrupoControl" [datos]="tiposGrupo"
+                    [appearance]="'outline'"
+                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                    [campoValor]="'valor'" [label]="'Tipo de grupo'"
+                    [incluirItemVacio]="false"
+                    fxFlex="1 0 auto">
+                    </pixvs-mat-select>
+                </div>
+
+                <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid" *ngIf="grupoMultisede && !!tipoGrupoControl?.value?.id">
+                    <pixvs-mat-select #grupoMultisedeSelect [matSelectCtrl]="grupoMultisedeControl" [datos]="gruposMultisedeMostrar"
+                    [appearance]="'outline'"
+                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                    [campoValor]="'codigo'" [label]="'Nuevo Grupo'"
+                    [incluirItemVacio]="false"
+                    fxFlex="1 0 auto">
+                    </pixvs-mat-select>
+                </div>
+
+                <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid" *ngIf="!grupoMultisede && !!tipoGrupoControl?.value?.id">
+                    <pixvs-mat-select #grupoSelect [matSelectCtrl]="grupoControl" [datos]="grupos"
+                    [appearance]="'outline'"
+                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                    [campoValor]="'codigo'" [label]="'Nuevo Grupo'"
+                    [incluirItemVacio]="false"
+                    fxFlex="1 0 auto">
+                    </pixvs-mat-select>
+                </div>
+
+                <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                        <mat-label>Comentario</mat-label>
+                        <input type="text" matInput name="comentario" id="comentario" [(ngModel)]="comentario">
+                    </mat-form-field>
+                </div>
+
+        	</div>
+
+        </div>
+    </div>
+</div>
+<div mat-dialog-actions align="end">
+	<button
+        type="button"
+		mat-button
+		(click)="cancelar()"
+	>Cerrar</button>
+	<button
+        type="button"
+        mat-raised-button class="mat-accent mr-16"
+		(click)="aceptar()"
+	>Aceptar</button>
+</div>

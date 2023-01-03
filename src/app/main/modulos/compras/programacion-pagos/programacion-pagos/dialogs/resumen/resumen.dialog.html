@@ -1,0 +1,20 @@
+<h1 mat-dialog-title>
+	Proveedores programados
+</h1>
+<div mat-dialog-content>
+	<div class="w-100-p" fxLayout="column">
+		<div fxLayout="row" fxLayoutAlign="end center">
+			<span class="font-weight-900">Monto a pagar MXN: {{ (proveedores | MontoPagarProveedoresPipe : facturasSeleccionadas : montosPagarControlMap) | NumeroFormatoPipe }}</span>
+		</div>
+		<div *ngFor="let proveedor of proveedores" fxLayout="row" fxLayoutAlign="start center">
+			<div fxFlex="fill">{{ proveedor.nombre }}</div>
+			<div class="text-nowrap">Monto a pagar: {{ (proveedor | MontoPagarProveedorPipe : facturasSeleccionadas : montosPagarControlMap) | NumeroFormatoPipe }}</div>
+		</div>
+	</div>
+</div>
+<div mat-dialog-actions>
+	<button
+		mat-button
+		(click)="cancelar()"
+	>Cerrar</button>
+</div>

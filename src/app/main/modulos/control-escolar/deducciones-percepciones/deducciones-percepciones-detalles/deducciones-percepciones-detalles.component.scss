@@ -1,0 +1,107 @@
+// @import "@fuse/scss/fuse";
+
+#ficha-curso {
+	.btn-nuevo{
+		position: absolute;
+		top: 5px;
+		right: 5px;
+		z-index: 200;
+	}
+
+	.clickable{
+		cursor: pointer;
+		&:hover{
+			background-color: #F0F0F0;
+		}
+	}
+
+	mat-table.tabla-alumnos{
+        
+		.cdk-column-menu{
+            width: 50px;
+            min-width: 50px;
+            max-width: 50px;
+            padding: 0 0 0 10px;
+        }
+
+		.cdk-column-imagen{
+            width: 75px;
+            min-width: 75px;
+            max-width: 75px;
+            padding: 0 0 0 10px;
+        }
+
+		.cdk-column-codigo,
+		.cdk-column-codigoUDG,
+		.cdk-column-telefono{
+            width: 100px;
+            min-width: 100px;
+            max-width: 100px;
+            padding: 0 0 0 10px;
+        }
+
+		.cdk-column-primerApellido,
+		.cdk-column-segundoApellido,
+		.cdk-column-centroUniversitario,
+		.cdk-column-edad,
+		.cdk-column-inscripcion{
+            width: 150px;
+            min-width: 150px;
+            max-width: 150px;
+            padding: 0 0 0 10px;
+        }
+
+		.cdk-column-nombre{
+            width: 200px;
+            min-width: 200px;
+            max-width: 200px;
+            padding: 0 0 0 10px;
+        }
+
+		.cdk-column-preparatoria,
+		.cdk-column-correoElectronico{
+            width: 250px;
+            min-width: 250px;
+            max-width: 250px;
+            padding: 0 0 0 10px;
+        }
+
+		.cdk-column-carrera{
+            width: 350px;
+            min-width: 350px;
+            max-width: 350px;
+            padding: 0 0 0 10px;
+        }
+
+		.cdk-column-bachillerato{
+            width: 600px;
+            min-width: 600px;
+            max-width: 600px;
+            padding: 0 0 0 10px;
+        }
+
+        &.ambos{
+			mat-header-row,mat-row{
+				min-width: calc(75px + 100px + 100px + 150px + 150px + 200px + 150px + 350px + 150px + 250px + 100px + 150px + 50px);
+			}
+        }
+
+		&.jobs{
+			mat-header-row,mat-row{
+				min-width: calc(75px + 100px + 100px + 150px + 150px + 200px + 150px + 350px + 250px + 100px + 150px + 50px);
+			}
+        }
+
+		&.jobs-sems{
+			mat-header-row,mat-row{
+				min-width: calc(75px + 100px + 100px + 150px + 150px + 200px + 250px + 600px + 250px + 100px + 150px + 50px);
+			}
+        }
+
+		&.ninguno{
+			mat-header-row,mat-row{
+				min-width: calc(75px + 100px + 100px + 150px + 150px + 200px + 150px + 250px + 100px + 150px + 50px);
+			}
+        }
+    }
+}

@@ -1,0 +1,2374 @@
+<pixvs-bloqueo-pantalla *ngIf="_puntoVentaAbiertoService.cargando"></pixvs-bloqueo-pantalla>
+
+<div fxLayout="column" class="w-100-p h-100-p">
+    <mat-toolbar fxFlex="0 0 6%" color="accent" fxLayout="row" fxLayoutGap="10px grid">
+        <div fxFlex="auto">
+            <button *ngIf="!!permisosMenu?.Inscripciones" mat-button [matMenuTriggerFor]="menuInscripciones">
+                <mat-icon>apps</mat-icon> Inscripciones
+            </button>
+            <button *ngIf="!!permisosMenu?.Acciones" mat-button [matMenuTriggerFor]="menuAcciones">
+                <mat-icon>pages</mat-icon> Acciones
+            </button>
+        </div>
+        <div fxFlex="auto">
+            <button type="button" mat-button *ngIf="!!permisosMenu?.Inscripciones?.Becas?.Sindicato" (click)="onVistaBecasSindicato()" matTooltip="Becas sindicato">
+                <img src="/app/main/img/logos/logo sutudeg staudeg fondo rect icono.png" alt="">
+            </button>
+            <button type="button" mat-button *ngIf="!!permisosMenu?.Inscripciones?.Becas?.Proulex" (click)="onVistaBecasProulex()" matTooltip="Becas proulex">
+                <img src="/app/main/img/logos/logo proulex.png" alt="" style="height: 25px;">
+            </button>
+            <button type="button" mat-button *ngIf="!!permisosMenu?.Inscripciones?.Reinscripciones" (click)="onVistaReinscripciones()" matTooltip="Reinscripciones">
+                <mat-icon style="font-size: 20px;">assignment_ind</mat-icon>
+            </button>
+            <button type="button" mat-button *ngIf="!!permisosMenu?.Inscripciones?.ValesCertificacion" (click)="onVistaValesCertificacion()" matTooltip="Vales de certificacion">
+                <mat-icon style="font-size: 20px;">book</mat-icon>
+            </button>
+        </div>
+        <div fxFlex="fill"></div>
+        <span>
+            {{ nombreSucursal }}
+            <ng-container *ngIf="!!nombrePlantel">
+                {{ ' - ' + nombrePlantel }}
+            </ng-container>
+        </span>
+        <div fxFlex="auto" class="pl-16">
+            <button mat-button (click)="onCerrarTurno()" class="green-bg">
+                Cerrar turno
+            </button>
+        </div>
+    </mat-toolbar>
+    <div fxFlex="0 0 94%" fxLayout="row">
+        <div fxFlex="40" class="h-100-p resumen p-12 fuse-white-bg" fxLayout="column">
+            <div fxFlex="0 0 8%" fxLayout="row">
+                <pixvs-mat-select [matSelectCtrl]="clienteControl" [datos]="clientes"
+                    [appearance]="'outline'"
+                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                    [campoValor]="'nombre'" [label]="'Cliente'"
+                    [incluirItemVacio]="false"
+                    [required]="false" fxFlex="100">
+                </pixvs-mat-select>
+            </div>
+
+            <ng-container *ngIf="vistaResumen == 'Venta'">
+                <div fxFlex="0 0 78%" fxLayout="row">
+                    <mat-table
+                        fxFlex="100" style="max-height: 100%;"
+                        class="tabla-resumen ficha-table"
+                        #tablaResumen
+                        [dataSource]="dataSourceResumen"
+                        matSort
+                        [@animateStagger]="{value:'50'}"
+                        cdkDropList
+                        id="tablaResumen"
+                    >
+                        <ng-container matColumnDef="nombre">
+                            <mat-header-cell
+                                *matHeaderCellDef
+                                mat-sort-header
+                            >Nombre</mat-header-cell>
+                            <mat-cell
+                                *matCellDef="let detalle"
+                            >
+                                <p>
+                                    <span class="font-weight-900">{{ detalle.descripcion }}</span>
+                                    <ng-container *ngIf="!!detalle.nombreAlumno">
+                                        <br>
+                                        Alumno: {{ detalle.nombreAlumno }}
+                                    </ng-container>
+                                </p>
+                            </mat-cell>
+                        </ng-container>
+    
+                        <ng-container matColumnDef="cantidad">
+                            <mat-header-cell
+                                *matHeaderCellDef
+                                mat-sort-header
+                            >Cantidad</mat-header-cell>
+                            <mat-cell
+                                *matCellDef="let detalle"
+                            >
+                                <p class="w-100-p text-right">{{ detalle.cantidad }}</p>
+                            </mat-cell>
+                        </ng-container>
+    
+                        <ng-container matColumnDef="precio">
+                            <mat-header-cell
+                                *matHeaderCellDef
+                                mat-sort-header
+                            >Precio</mat-header-cell>
+                            <mat-cell
+                                *matCellDef="let detalle"
+                            >
+                                <p class="w-100-p text-right">{{ detalle.precioSinConvertir | NumeroFormatoPipe : 'moneda' : simboloMoneda }}</p>
+                            </mat-cell>
+                        </ng-container>
+    
+                        <ng-container matColumnDef="descuento">
+                            <mat-header-cell
+                                *matHeaderCellDef
+                                mat-sort-header
+                            >Descuento</mat-header-cell>
+                            <mat-cell
+                                *matCellDef="let detalle"
+                            >
+                                <p class="w-100-p text-right" [ngClass]="{'clickable': !detalle.becaUDGId && !detalle.noAplicaDescuentos}" (click)="onDescuentoUsuario(detalle.idTmp)">{{ detalle.descuentoSinConvertir | NumeroFormatoPipe : 'moneda' : simboloMoneda }}</p>
+                            </mat-cell>
+                        </ng-container>
+    
+                        <ng-container matColumnDef="total">
+                            <mat-header-cell
+                                *matHeaderCellDef
+                                mat-sort-header
+                            >Total</mat-header-cell>
+                            <mat-cell
+                                *matCellDef="let detalle"
+                            >
+                                <p class="w-100-p text-right">{{ detalle.total | NumeroFormatoPipe : 'moneda' : simboloMoneda }}</p>
+                            </mat-cell>
+                        </ng-container>
+    
+                        <ng-container matColumnDef="acciones">
+                            <mat-header-cell
+                                *matHeaderCellDef
+                                mat-sort-header
+                            ></mat-header-cell>
+                            <mat-cell
+                                *matCellDef="let detalle"
+                            >
+                                <div class="w-100-p" fxLayout="row" fxLayoutAlign="center center">
+                                    <button mat-icon-button color="warn" (click)="onEliminarDetalle(detalle)">
+                                        <mat-icon>delete</mat-icon>
+                                    </button>
+                                </div>
+                            </mat-cell>
+                        </ng-container>
+    
+                        <mat-header-row *matHeaderRowDef="displayedColumnsResumen; sticky:true"></mat-header-row>
+                        <mat-row
+                            *matRowDef="let row; columns: displayedColumnsResumen;"
+                            class="element"
+                        >
+                        </mat-row>
+                    </mat-table>
+                </div>
+    
+                <div fxFlex="0 0 6%" class="py-12" fxLayout="row" fxLayoutAlign="space-between center">
+                    <span class="font-weight-900">Total a pagar</span>
+                    <span class="text-nowrap font-weight-900">{{ (dataSourceResumen.data | PuntoVentaSumaTotalPipe) | NumeroFormatoPipe : 'moneda' : (prefijoMoneda + ' ' + simboloMoneda) }}</span>
+                </div>
+    
+                <div fxFlex="0 0 8%" class="py-12" fxLayout="row" fxLayoutAlign="space-between center">
+                    <button mat-raised-button type="button" color="warn" fxFlex="45" (click)="onCancelar()">
+                        Cancelar
+                    </button>
+    
+                    <button mat-raised-button type="button" fxFlex="45" class="green-bg fuse-white-fg" (click)="onPagar()">
+                        Pagar
+                    </button>
+                </div>
+            </ng-container>
+
+            <ng-container *ngIf="vistaResumen == 'Historial'">
+                <div fxFlex="0 0 8%" fxLayout="column">
+                    <div fxLayout="row" fxLayoutAlign="end center">
+                        <span class="text-nowrap font-weight-900 font-size-20">Orden de venta: {{ ordenVentaHistorial?.codigo }}</span>
+                    </div>
+                </div>
+
+                <div fxFlex="0 0 61%" fxLayout="row">
+                    <mat-table
+                        fxFlex="100" style="max-height: 100%;"
+                        class="tabla-resumen ficha-table"
+                        #tablaResumen
+                        [dataSource]="dataSourceResumenOVD"
+                        matSort
+                        [@animateStagger]="{value:'50'}"
+                        cdkDropList
+                        id="tablaResumenOVD"
+                    >
+                        <ng-container matColumnDef="nombre">
+                            <mat-header-cell
+                                *matHeaderCellDef
+                                mat-sort-header
+                            >Nombre</mat-header-cell>
+                            <mat-cell
+                                *matCellDef="let detalle"
+                            >
+                                <p>
+                                    <span class="font-weight-900">{{ detalle.conceptoLinea1 }}</span>
+                                    <br>
+                                    {{ detalle.conceptoLinea2 }}
+                                </p>
+                            </mat-cell>
+                        </ng-container>
+    
+                        <ng-container matColumnDef="cantidad">
+                            <mat-header-cell
+                                *matHeaderCellDef
+                                mat-sort-header
+                            >Cantidad</mat-header-cell>
+                            <mat-cell
+                                *matCellDef="let detalle"
+                            >
+                                <p class="w-100-p text-right">{{ detalle.cantidad }}</p>
+                            </mat-cell>
+                        </ng-container>
+    
+                        <ng-container matColumnDef="precio">
+                            <mat-header-cell
+                                *matHeaderCellDef
+                                mat-sort-header
+                            >Precio</mat-header-cell>
+                            <mat-cell
+                                *matCellDef="let detalle"
+                            >
+                                <p class="w-100-p text-right">{{ detalle.precio | NumeroFormatoPipe : 'moneda' : simboloMoneda }}</p>
+                            </mat-cell>
+                        </ng-container>
+    
+                        <ng-container matColumnDef="descuento">
+                            <mat-header-cell
+                                *matHeaderCellDef
+                                mat-sort-header
+                            >Descuento</mat-header-cell>
+                            <mat-cell
+                                *matCellDef="let detalle"
+                            >
+                                <p class="w-100-p text-right">{{ detalle.descuento | NumeroFormatoPipe : 'moneda' : simboloMoneda }}</p>
+                            </mat-cell>
+                        </ng-container>
+    
+                        <ng-container matColumnDef="total">
+                            <mat-header-cell
+                                *matHeaderCellDef
+                                mat-sort-header
+                            >Total</mat-header-cell>
+                            <mat-cell
+                                *matCellDef="let detalle"
+                            >
+                                <p class="w-100-p text-right">{{ detalle.montoTotal | NumeroFormatoPipe : 'moneda' : simboloMoneda }}</p>
+                            </mat-cell>
+                        </ng-container>
+    
+                        <mat-header-row *matHeaderRowDef="displayedColumnsResumenOVD; sticky:true"></mat-header-row>
+                        <mat-row
+                            *matRowDef="let row; columns: displayedColumnsResumenOVD;"
+                            class="element"
+                        >
+                        </mat-row>
+                    </mat-table>
+                </div>
+
+                <div fxFlex="0 0 15%" fxLayout="column">
+                    <div fxLayout="row" fxLayoutAlign="space-between center">
+                        <span class="font-weight-900">Usuario:</span>
+                        <span class="text-nowrap">{{ ordenVentaHistorial?.usuario }}</span>
+                    </div>
+                    <div fxLayout="row" fxLayoutAlign="space-between center">
+                        <span class="font-weight-900">Fecha:</span>
+                        <span class="text-nowrap">{{ ordenVentaHistorial?.fecha | date : 'dd/MM/yyyy HH:mm' }}</span>
+                    </div>
+                    <div fxLayout="row" fxLayoutAlign="space-between center">
+                        <span class="font-weight-900">Total a pagar:</span>
+                        <span class="text-nowrap">{{ ordenVentaHistorial?.montoTotal | NumeroFormatoPipe : 'moneda' : (prefijoMoneda + ' ' + simboloMoneda) }}</span>
+                    </div>
+                    <div fxLayout="row" fxLayoutAlign="space-between center">
+                        <span class="font-weight-900">Forma pago:</span>
+                        <span class="text-nowrap">{{ ordenVentaHistorial?.medioPago }}</span>
+                    </div>
+                </div>
+    
+                <div fxFlex="0 0 8%" class="py-12" fxLayout="row" fxLayoutAlign="end center">
+                    <button mat-raised-button type="button" fxFlex="45" class="blue-300-bg fuse-white-fg" (click)="onImprimirOVResumen()">
+                        Imprimir
+                    </button>
+                </div>
+            </ng-container>
+            
+        </div>
+        <div fxFlex="60" class="h-100-p py-12 px-20 blue-grey-50-bg" fxLayout="column">
+            <ng-container *ngIf="vistaNavegador == 'Idiomas'">
+                <ng-container *ngTemplateOutlet="templateIdiomas; context: this"></ng-container>
+            </ng-container>
+            <ng-container *ngIf="vistaNavegador == 'Programas'">
+                <ng-container *ngTemplateOutlet="templateProgramas; context: this"></ng-container>
+            </ng-container>
+            <ng-container *ngIf="vistaNavegador == 'Modalidades'">
+                <ng-container *ngTemplateOutlet="templateModalidades; context: this"></ng-container>
+            </ng-container>
+            <ng-container *ngIf="vistaNavegador == 'Tipos de grupo'">
+                <ng-container *ngTemplateOutlet="templateTiposGrupos; context: this"></ng-container>
+            </ng-container>
+            <ng-container *ngIf="vistaNavegador == 'Niveles'">
+                <ng-container *ngTemplateOutlet="templateNiveles; context: this"></ng-container>
+            </ng-container>
+            <ng-container *ngIf="vistaNavegador == 'Grupos'">
+                <ng-container *ngTemplateOutlet="templateGrupos; context: this"></ng-container>
+            </ng-container>
+            <ng-container *ngIf="vistaNavegador == 'Categorias'">
+                <ng-container *ngTemplateOutlet="templateCategorias; context: this"></ng-container>
+            </ng-container>
+            <ng-container *ngIf="vistaNavegador == 'Subcategorias'">
+                <ng-container *ngTemplateOutlet="templateSubcategorias; context: this"></ng-container>
+            </ng-container>
+            <ng-container *ngIf="vistaNavegador == 'Articulos'">
+                <ng-container *ngTemplateOutlet="templateArticulos; context: this"></ng-container>
+            </ng-container>
+            <ng-container *ngIf="vistaNavegador == 'Pagar'">
+                <ng-container *ngTemplateOutlet="templatePagar; context: this"></ng-container>
+            </ng-container>
+            <ng-container *ngIf="vistaNavegador == 'Reinscripciones'">
+                <ng-container *ngTemplateOutlet="templateReinscripciones; context: this"></ng-container>
+            </ng-container>
+            <ng-container *ngIf="vistaNavegador == 'Grupos reinscripcion reprobado'">
+                <ng-container *ngTemplateOutlet="templateGruposReinscripcionReprobado; context: this"></ng-container>
+            </ng-container>
+            <ng-container *ngIf="vistaNavegador == 'Alumnos sin grupo'">
+                <ng-container *ngTemplateOutlet="templateAlumnosSinGrupo; context: this"></ng-container>
+            </ng-container>
+            <ng-container *ngIf="vistaNavegador == 'Entrega de libros'">
+                <ng-container *ngTemplateOutlet="templateEntregaLibros; context: this"></ng-container>
+            </ng-container>
+            <ng-container *ngIf="vistaNavegador == 'JOBS'">
+                <ng-container *ngTemplateOutlet="templateJOBS; context: this"></ng-container>
+            </ng-container>
+            <ng-container *ngIf="vistaNavegador == 'JOBS SEMS'">
+                <ng-container *ngTemplateOutlet="templateJOBSSEMS; context: this"></ng-container>
+            </ng-container>
+            <ng-container *ngIf="vistaNavegador == 'Becas sindicato'">
+                <ng-container *ngTemplateOutlet="templateBecasSindicato; context: this"></ng-container>
+            </ng-container>
+            <ng-container *ngIf="vistaNavegador == 'Becas sindicato grupos' || vistaNavegador == 'Becas proulex grupos'">
+                <ng-container *ngTemplateOutlet="templateBecasGrupos; context: this"></ng-container>
+            </ng-container>
+            <ng-container *ngIf="vistaNavegador == 'Becas proulex'">
+                <punto-venta-becas-proulex [componentePV]="this"></punto-venta-becas-proulex>
+            </ng-container>
+            <ng-container *ngIf="vistaNavegador == 'Historial'">
+                <ng-container *ngTemplateOutlet="templateHistorial; context: this"></ng-container>
+            </ng-container>
+            <ng-container *ngIf="vistaNavegador == 'PCP'">
+                <punto-venta-pcp [componentePV]="this"></punto-venta-pcp>
+            </ng-container>
+            <ng-container *ngIf="vistaNavegador == 'Clientes In Company'">
+                <punto-venta-in-company-clientes [componentePV]="this"></punto-venta-in-company-clientes>
+            </ng-container>
+            <ng-container *ngIf="vistaNavegador == 'Grupos In Company'">
+                <punto-venta-in-company-grupos [componentePV]="this"></punto-venta-in-company-grupos>
+            </ng-container>
+            <ng-container *ngIf="vistaNavegador == 'Vales de certificacion'">
+                <punto-venta-vales-certificacion [componentePV]="this"></punto-venta-vales-certificacion>
+            </ng-container>
+            <ng-container *ngIf="vistaNavegador == 'Academy'">
+                <punto-venta-academy-grupos [componentePV]="this"></punto-venta-academy-grupos>
+            </ng-container>
+        </div>
+    </div>
+</div>
+
+<!-- ****************************** -->
+<!-- ***** Menú inscripciones ***** -->
+<!-- ****************************** -->
+
+<mat-menu #menuInscripciones="matMenu" class="accent white-fg">
+    <button *ngIf="!!permisosMenu?.Inscripciones?.Becas" mat-menu-item [matMenuTriggerFor]="menuBecas">
+        <mat-icon>school</mat-icon> Becas
+    </button>
+    <button *ngIf="!!permisosMenu?.Inscripciones?.Reinscripciones" mat-menu-item (click)="onVistaReinscripciones()">
+        <mat-icon>assignment_ind</mat-icon> Re-inscripción
+    </button>
+    <button *ngIf="!!permisosMenu?.Inscripciones?.JOBS" mat-menu-item [matMenuTriggerFor]="menuJOBS">
+        <mat-icon>assignment_ind</mat-icon> JOBS
+    </button>
+    <button *ngIf="!!permisosMenu?.Inscripciones?.CursosPCP" mat-menu-item (click)="onVistaPCP()">
+        <mat-icon>account_balance</mat-icon> Cursos PCP
+    </button>
+    <button *ngIf="!!permisosMenu?.Inscripciones?.Historial" mat-menu-item (click)="onVistaHistorial()">
+        <mat-icon>history</mat-icon> Historial
+    </button>
+    <button *ngIf="!!permisosMenu?.Inscripciones?.Descuentos" mat-menu-item (click)="onDescuentoUsuario()">
+        <mat-icon>money_off</mat-icon> Descuentos
+    </button>
+    <button *ngIf="!!permisosMenu?.Inscripciones?.AlumnosSinGrupo" mat-menu-item (click)="onVistaAlumnosSinGrupo()">
+        <mat-icon>person_add</mat-icon> Alumnos sin grupo
+    </button>
+    <button *ngIf="!!permisosMenu?.Inscripciones?.ValesCertificacion" mat-menu-item (click)="onVistaValesCertificacion()">
+        <mat-icon>book</mat-icon> Vales de certificación
+    </button>
+</mat-menu>
+
+<!-- ************************* -->
+<!-- ***** Menú acciones ***** -->
+<!-- ************************* -->
+
+<mat-menu #menuAcciones="matMenu" class="accent white-fg">
+    <button *ngIf="!!permisosMenu?.Acciones?.EntregaLibros" mat-menu-item (click)="onVistaEntregaLibros()">
+        <mat-icon>import_contacts</mat-icon> Entrega de libros
+    </button>
+    <button *ngIf="!!permisosMenu?.Acciones?.CancelarInscripcion" mat-menu-item>
+        <mat-icon>person_add_disabled</mat-icon> Cancelar inscripción
+    </button>
+</mat-menu>
+
+<!-- ********************** -->
+<!-- ***** Menú becas ***** -->
+<!-- ********************** -->
+
+<mat-menu #menuBecas="matMenu" class="accent white-fg">
+    <button *ngIf="!!permisosMenu?.Inscripciones?.Becas?.Sindicato" mat-menu-item (click)="onVistaBecasSindicato()">Sindicato</button>
+    <button *ngIf="!!permisosMenu?.Inscripciones?.Becas?.Proulex" mat-menu-item (click)="onVistaBecasProulex()">Proulex</button>
+</mat-menu>
+
+<!-- ********************* -->
+<!-- ***** Menú JOBS ***** -->
+<!-- ********************* -->
+
+<mat-menu #menuJOBS="matMenu" class="accent white-fg">
+    <button *ngIf="!!permisosMenu?.Inscripciones?.JOBS?.JOBS" mat-menu-item (click)="onVistaJOBS()">JOBS</button>
+    <button *ngIf="!!permisosMenu?.Inscripciones?.JOBS?.JOBSSEMS" mat-menu-item (click)="onVistaJOBSSEMES()">JOBS SEMS</button>
+</mat-menu>
+
+<!-- ************************************ -->
+<!-- ***** Template - Vista idiomas ***** -->
+<!-- ************************************ -->
+
+<ng-template #templateIdiomas>
+    <div fxFlex="0 0 8%" fxLayout="row" fxLayoutAlign="space-between start">
+        <span class="titulo-navegador accent-fg">Inicio</span>
+        <div class="search-wrapper mx-32 mx-md-0">
+            <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                <mat-icon>search</mat-icon>
+                <input placeholder="{{ 'INTERFAZ.BUSCAR' | translate  }}..." [formControl]="filtroControl" [readonly]="_puntoVentaAbiertoService.cargando">
+            </div>
+        </div>
+    </div>
+
+    <div fxFlex="0 0 92%" fxLayout="row wrap" fxLayoutAlign="space-between start" fusePerfectScrollbar>
+        <ng-container *ngFor="let elemento of (idiomas | PVInicioPipe : familias : cardsExtraInicio : filtroControl?.value)">
+            <ng-container *ngIf="!elemento?.esExtra && !!elemento?.valor">
+                <mat-card fxFlex="24" class="mb-28 clickable card-230h" matRipple (click)="onIdioma(elemento)">
+                    <img mat-card-image class="img-card" src="{{elemento.imagenId != null ? apiUrl + '/v1/archivo/' + (elemento.imagenId | hashId) : 'assets/images/no-image-icon.png' }}">
+                    
+                    <mat-card-header>
+                        <mat-card-title>{{elemento.valor}}</mat-card-title>
+                    </mat-card-header>
+                </mat-card>
+            </ng-container>
+            <ng-container *ngIf="!elemento?.esExtra && !!elemento?.nombre">
+                <mat-card fxFlex="24" class="mb-28 clickable card-230h" matRipple (click)="onFamilia(elemento)">
+                    <img mat-card-image class="img-card" src="{{elemento.imagenId != null ? apiUrl + '/v1/archivo/' + (elemento.imagenId | hashId) : 'assets/images/no-image-icon.png' }}">
+                    
+                    <mat-card-header>
+                        <mat-card-title>{{elemento.nombre}}</mat-card-title>
+                    </mat-card-header>
+                </mat-card>
+            </ng-container>
+            <ng-container *ngIf="!!elemento?.esExtra">
+                <mat-card fxFlex="24" class="mb-28 clickable card-230h" matRipple (click)="onCardExtraInicio(elemento)">
+                    <img mat-card-image class="img-card" src="assets/images/no-image-icon.png">
+                    
+                    <mat-card-header>
+                        <mat-card-title>{{elemento.nombre}}</mat-card-title>
+                    </mat-card-header>
+                </mat-card>
+            </ng-container>
+            <div *ngIf="!elemento" fxFlex="24"></div>
+        </ng-container>
+        
+    </div>
+</ng-template>
+
+<!-- ************************************** -->
+<!-- ***** Template - Vista programas ***** -->
+<!-- ************************************** -->
+
+<ng-template #templateProgramas>
+    <div fxFlex="0 0 8%" fxLayout="row" fxLayoutAlign="space-between start">
+        <span class="titulo-navegador accent-fg">
+            <mat-icon class="clickable mr-12" (click)="onVistaAtras()">arrow_back</mat-icon> Inicio / {{ idiomaSeleccionado?.valor }}
+        </span>
+        <div class="search-wrapper mx-32 mx-md-0">
+            <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                <mat-icon>search</mat-icon>
+                <input placeholder="{{ 'INTERFAZ.BUSCAR' | translate  }}..." [formControl]="filtroControl" [readonly]="_puntoVentaAbiertoService.cargando">
+            </div>
+        </div>
+    </div>
+
+    <div fxFlex="0 0 92%" fxLayout="row wrap" fxLayoutAlign="space-between start" fusePerfectScrollbar>
+        <ng-container *ngFor="let programa of (programas | PVProgramasPipe : filtroControl?.value)">
+            <mat-card *ngIf="!!programa" fxFlex="24" class="mb-28 clickable card-230h" matRipple (click)="onPrograma(programa)">
+                <img mat-card-image class="img-card" src="{{programa.imagenId != null ? apiUrl + '/v1/archivo/' + (programa.imagenId | hashId) : 'assets/images/no-image-icon.png' }}">
+                
+                <mat-card-header>
+                    <mat-card-title>{{programa.nombre}}</mat-card-title>
+                </mat-card-header>
+            </mat-card>
+            <div *ngIf="!programa" fxFlex="24"></div>
+        </ng-container>
+        <div *ngIf="!(programas | PVProgramasPipe : filtroControl?.value)?.length" fxFlex="100" class="mt-28">
+            <span>No se encontraron programas activos para el idioma {{ idiomaSeleccionado?.valor }}</span>
+        </div>
+    </div>
+</ng-template>
+
+<!-- **************************************** -->
+<!-- ***** Template - Vista modalidades ***** -->
+<!-- **************************************** -->
+
+<ng-template #templateModalidades>
+    <div fxFlex="0 0 8%" fxLayout="row" fxLayoutAlign="space-between start">
+        <span class="titulo-navegador accent-fg">
+            <mat-icon class="clickable mr-12" (click)="onVistaAtras()">arrow_back</mat-icon> Inicio / {{ idiomaSeleccionado?.valor }} / {{ programaSeleccionado?.codigo }}
+        </span>
+        <div class="search-wrapper mx-32 mx-md-0">
+            <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                <mat-icon>search</mat-icon>
+                <input placeholder="{{ 'INTERFAZ.BUSCAR' | translate  }}..." [formControl]="filtroControl" [readonly]="_puntoVentaAbiertoService.cargando">
+            </div>
+        </div>
+    </div>
+
+    <div fxFlex="0 0 92%" fxLayout="row wrap" fxLayoutAlign="space-between start" fusePerfectScrollbar>
+        <ng-container *ngFor="let paModalidad of (paModalidades | PVModalidadesPipe : filtroControl?.value)">
+            <mat-card *ngIf="!!paModalidad" fxFlex="24" class="mb-28 clickable card-230h" matRipple (click)="onModalidad(paModalidad)">
+                <img mat-card-image class="img-card" src="{{paModalidad.imagenId != null ? apiUrl + '/v1/archivo/' + (paModalidad.imagenId | hashId) : 'assets/images/no-image-icon.png' }}">
+                
+                <mat-card-header>
+                    <mat-card-title>{{paModalidad.nombre}}</mat-card-title>
+                </mat-card-header>
+            </mat-card>
+            <div *ngIf="!paModalidad" fxFlex="24"></div>
+        </ng-container>
+        <div *ngIf="!paModalidades?.length" fxFlex="100" class="mt-28">
+            <span>No se encontraron modalidades activas para el programa {{ programaSeleccionado?.nombre }}</span>
+        </div>
+    </div>
+</ng-template>
+
+<!-- ******************************************* -->
+<!-- ***** Template - Vista tipos de grupo ***** -->
+<!-- ******************************************* -->
+
+<ng-template #templateTiposGrupos>
+    <div fxFlex="0 0 8%" fxLayout="row" fxLayoutAlign="space-between start">
+        <span class="titulo-navegador accent-fg">
+            <mat-icon class="clickable mr-12" (click)="onVistaAtras()">arrow_back</mat-icon> Inicio / {{ idiomaSeleccionado?.valor }} / {{ programaSeleccionado?.codigo }} / {{ paModalidadSeleccionado?.nombre }}
+        </span>
+        <div class="search-wrapper mx-32 mx-md-0">
+            <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                <mat-icon>search</mat-icon>
+                <input placeholder="{{ 'INTERFAZ.BUSCAR' | translate  }}..." [formControl]="filtroControl" [readonly]="_puntoVentaAbiertoService.cargando">
+            </div>
+        </div>
+    </div>
+
+    <div fxFlex="0 0 92%" fxLayout="row wrap" fxLayoutAlign="space-between start" fusePerfectScrollbar>
+        <ng-container *ngFor="let elemento of (tiposGrupos | PVTiposGruposPipe : filtroControl?.value)">
+            <ng-container *ngIf="!!elemento?.valor">
+                <mat-card fxFlex="24" class="mb-28 clickable card-230h" matRipple (click)="onTipoGrupo(elemento)">
+                    <img mat-card-image class="img-card" src="{{elemento.imagenId != null ? apiUrl + '/v1/archivo/' + (elemento.imagenId | hashId) : 'assets/images/no-image-icon.png' }}">
+                    
+                    <mat-card-header>
+                        <mat-card-title>{{elemento.valor}}</mat-card-title>
+                    </mat-card-header>
+                </mat-card>
+            </ng-container>
+            <div *ngIf="!elemento" fxFlex="24"></div>
+        </ng-container>
+    </div>
+</ng-template>
+
+<!-- ************************************ -->
+<!-- ***** Template - Vista niveles ***** -->
+<!-- ************************************ -->
+
+<ng-template #templateNiveles>
+    <div fxFlex="0 0 8%" fxLayout="row" fxLayoutAlign="space-between start">
+        <span class="titulo-navegador accent-fg">
+            <mat-icon class="clickable mr-12" (click)="onVistaAtras()">arrow_back</mat-icon> Inicio / {{ idiomaSeleccionado?.valor }} / {{ programaSeleccionado?.codigo }} / {{ paModalidadSeleccionado?.nombre }} / {{ tipoGrupoSeleccionado?.valor }}
+        </span>
+        <div class="search-wrapper mx-32 mx-md-0">
+            <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                <mat-icon>search</mat-icon>
+                <input placeholder="{{ 'INTERFAZ.BUSCAR' | translate  }}..." [formControl]="filtroControl" [readonly]="_puntoVentaAbiertoService.cargando">
+            </div>
+        </div>
+    </div>
+
+    <div fxFlex="0 0 92%" fxLayout="row wrap" fxLayoutAlign="space-between start" fusePerfectScrollbar>
+        <ng-container *ngFor="let elemento of (niveles | PVNivelesPipe : filtroControl?.value)">
+            <ng-container *ngIf="!!elemento">
+                <mat-card fxFlex="24" class="mb-28 clickable card-230h" matRipple (click)="onNivel(elemento)">
+                    <div class="card-fondo" [ngStyle]="{'background-color': colorModalidad}"></div>
+                    
+                    <mat-card-header>
+                        <mat-card-title>Nivel {{elemento}}</mat-card-title>
+                    </mat-card-header>
+                </mat-card>
+            </ng-container>
+            <div *ngIf="!elemento" fxFlex="24"></div>
+        </ng-container>
+    </div>
+</ng-template>
+
+<!-- *********************************** -->
+<!-- ***** Template - Vista grupos ***** -->
+<!-- *********************************** -->
+
+<ng-template #templateGrupos>
+    <div fxFlex="0 0 8%" fxLayout="row" fxLayoutAlign="space-between start">
+        <span class="titulo-navegador accent-fg">
+            <mat-icon class="clickable mr-12" (click)="onVistaAtras()">arrow_back</mat-icon> Inicio / {{ idiomaSeleccionado?.valor }} / {{ programaSeleccionado?.codigo }} / {{ paModalidadSeleccionado?.nombre }} / {{ tipoGrupoSeleccionado?.valor }} / {{ nivelSeleccionado }}
+        </span>
+        <div class="search-wrapper mx-32 mx-md-0">
+            <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                <mat-icon>search</mat-icon>
+                <input placeholder="{{ 'INTERFAZ.BUSCAR' | translate  }}..." [formControl]="filtroControl" [readonly]="_puntoVentaAbiertoService.cargando">
+            </div>
+        </div>
+    </div>
+
+    <div fxFlex="0 0 92%" fxLayout="row wrap" fxLayoutAlign="space-between start" fusePerfectScrollbar>
+        <ng-container *ngFor="let grupoCabecera of (programasGrupos | PVGruposPipe : (!!listaPreciosSinDescuentoCliente ? listaPreciosSinDescuentoCliente : listaPreciosSinDescuentoSucursal) : filtroControl?.value : true)">
+            <mat-card *ngIf="!!grupoCabecera" [ngClass]="{'clickable': grupoCabecera.esSinRelacionar}" (click)="grupoCabecera.esSinRelacionar ? onGrupo(null,grupoCabecera.articuloId) : null" fxFlex="24" class="mb-28">
+                <div class="card-fondo" [ngStyle]="{'background-color': grupoCabecera.color}"></div>
+                
+                <mat-card-header>
+                    <mat-card-title>
+                        {{grupoCabecera.nombre}}
+                    </mat-card-title>
+                    <mat-card-subtitle *ngIf="!grupoCabecera.esSinRelacionar">{{ grupoCabecera.fechaInicio | date : 'dd/MM/yyyy' }} - {{ grupoCabecera.fechaFin | date : 'dd/MM/yyyy' }}</mat-card-subtitle>
+                    <mat-card-subtitle *ngIf="(((!!listaPreciosSinDescuentoCliente ? listaPreciosSinDescuentoCliente[grupoCabecera.articuloId] : listaPreciosSinDescuentoSucursal[grupoCabecera.articuloId]) || 0) | NumeroFormatoPipe : 'moneda' : simboloMoneda) != (((!!listaPreciosCliente ? listaPreciosCliente[grupoCabecera.articuloId] : listaPreciosSucursal[grupoCabecera.articuloId]) || 0) | NumeroFormatoPipe : 'moneda' : simboloMoneda)"><s>{{ ((!!listaPreciosSinDescuentoCliente ? listaPreciosSinDescuentoCliente[grupoCabecera.articuloId] : listaPreciosSinDescuentoSucursal[grupoCabecera.articuloId]) || 0) | NumeroFormatoPipe : 'moneda' : simboloMoneda }}</s></mat-card-subtitle>
+                    <mat-card-subtitle class="blue-fg">{{ ((!!listaPreciosCliente ? listaPreciosCliente[grupoCabecera.articuloId] : listaPreciosSucursal[grupoCabecera.articuloId]) || 0) | NumeroFormatoPipe : 'moneda' : simboloMoneda }}</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <div fxLayout="row wrap">
+                        <ng-container *ngFor="let grupo of grupoCabecera.grupos">
+                            <div class="grupo-horario clickable" [ngClass]="{'cupo-lleno': !grupo.permiteInscripcion}" matRipple (click)="onGrupo(grupo)">{{ grupo.numeroGrupo }} {{ grupo.horario }}</div><div [matBadge]="grupo.cupoDisponible" [matBadgeOverlap]="true" matBadgePosition="before below" style="height: 10px;"></div>
+                        </ng-container>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+            <div fxFlex="24" *ngIf="!grupoCabecera"></div>
+        </ng-container>
+
+        <hr fxFlex="100" class="multisede-separador" *ngIf="(programasGrupos | PVGruposPipe : (!!listaPreciosSinDescuentoCliente ? listaPreciosSinDescuentoCliente : listaPreciosSinDescuentoSucursal) : filtroControl?.value)?.length && (programasGruposMultisede | PVGruposPipe : (!!listaPreciosSinDescuentoCliente ? listaPreciosSinDescuentoCliente : listaPreciosSinDescuentoSucursal) : filtroControl?.value)?.length">
+
+        <ng-container *ngFor="let grupoCabecera of (programasGruposMultisede | PVGruposPipe : (!!listaPreciosSinDescuentoCliente ? listaPreciosSinDescuentoCliente : listaPreciosSinDescuentoSucursal) : filtroControl?.value)">
+            <mat-card *ngIf="!!grupoCabecera" fxFlex="24" class="mb-28">
+                <div class="card-fondo" [ngStyle]="{'background-color': grupoCabecera.color}"></div>
+                
+                <mat-card-header>
+                    <mat-card-title>
+                        GRUPO MULTISEDE {{grupoCabecera.sucursal}} <br>
+                        {{grupoCabecera.nombre}}
+                    </mat-card-title>
+                    <mat-card-subtitle>{{ grupoCabecera.fechaInicio | date : 'dd/MM/yyyy' }} - {{ grupoCabecera.fechaFin | date : 'dd/MM/yyyy' }}</mat-card-subtitle>
+                    <mat-card-subtitle *ngIf="(((!!listaPreciosSinDescuentoCliente ? listaPreciosSinDescuentoCliente[grupoCabecera.articuloId] : listaPreciosSinDescuentoSucursal[grupoCabecera.articuloId]) || 0) | NumeroFormatoPipe : 'moneda' : simboloMoneda) != (((!!listaPreciosCliente ? listaPreciosCliente[grupoCabecera.articuloId] : listaPreciosSucursal[grupoCabecera.articuloId]) || 0) | NumeroFormatoPipe : 'moneda' : simboloMoneda)"><s>{{ ((!!listaPreciosSinDescuentoCliente ? listaPreciosSinDescuentoCliente[grupoCabecera.articuloId] : listaPreciosSinDescuentoSucursal[grupoCabecera.articuloId]) || 0) | NumeroFormatoPipe : 'moneda' : simboloMoneda }}</s></mat-card-subtitle>
+                    <mat-card-subtitle class="blue-fg">{{ ((!!listaPreciosCliente ? listaPreciosCliente[grupoCabecera.articuloId] : listaPreciosSucursal[grupoCabecera.articuloId]) || 0) | NumeroFormatoPipe : 'moneda' : simboloMoneda }}</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <div fxLayout="row wrap">
+                        <ng-container *ngFor="let grupo of grupoCabecera.grupos">
+                            <div class="grupo-horario clickable" [ngClass]="{'cupo-lleno': !grupo.permiteInscripcion}" matRipple (click)="onGrupo(grupo)">{{ grupo.numeroGrupo }} {{ grupo.horario }}</div><div [matBadge]="grupo.cupoDisponible" [matBadgeOverlap]="true" matBadgePosition="before below" style="height: 10px;"></div>
+                        </ng-container>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+            <div fxFlex="24" *ngIf="!grupoCabecera"></div>
+        </ng-container>
+        <div *ngIf="!(programasGrupos | PVGruposPipe : (!!listaPreciosSinDescuentoCliente ? listaPreciosSinDescuentoCliente : listaPreciosSinDescuentoSucursal))?.length" fxFlex="100" class="mt-28">
+            <span>No se encontraron grupos activas para la modalidad {{ paModalidadSeleccionado?.nombre }}</span>
+        </div>
+    </div>
+</ng-template>
+
+<!-- *************************************** -->
+<!-- ***** Template - Vista categorias ***** -->
+<!-- *************************************** -->
+
+<ng-template #templateCategorias>
+    <div fxFlex="0 0 8%" fxLayout="row" fxLayoutAlign="space-between start">
+        <span class="titulo-navegador accent-fg">
+            <mat-icon class="clickable mr-12" (click)="onVistaAtras()">arrow_back</mat-icon> Inicio / {{ familiaSeleccionado?.nombre }}
+        </span>
+        <div class="search-wrapper mx-32 mx-md-0">
+            <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                <mat-icon>search</mat-icon>
+                <input placeholder="{{ 'INTERFAZ.BUSCAR' | translate  }}..." [formControl]="filtroControl" [readonly]="_puntoVentaAbiertoService.cargando">
+            </div>
+        </div>
+    </div>
+
+    <div fxFlex="0 0 92%" fxLayout="row wrap" fxLayoutAlign="space-between start" fusePerfectScrollbar>
+        <ng-container *ngFor="let categoria of (categorias | PVCategoriasPipe : filtroControl?.value)">
+            <mat-card *ngIf="!!categoria" fxFlex="24" class="mb-28 clickable card-230h" matRipple (click)="onCategoria(categoria)">
+                <img mat-card-image class="img-card" src="{{categoria.imagenId != null ? apiUrl + '/v1/archivo/' + (categoria.imagenId | hashId) : 'assets/images/no-image-icon.png' }}">
+                
+                <mat-card-header>
+                    <mat-card-title>{{categoria.nombre}}</mat-card-title>
+                </mat-card-header>
+            </mat-card>
+            <div *ngIf="!categoria" fxFlex="24"></div>
+        </ng-container>
+        <div *ngIf="!categorias?.length" fxFlex="100" class="mt-28">
+            <span>No se encontraron categorías activos para venta de artículos en la familia {{ familiaSeleccionado?.nombre }}</span>
+        </div>
+    </div>
+</ng-template>
+
+<!-- ****************************************** -->
+<!-- ***** Template - Vista subcategorias ***** -->
+<!-- ****************************************** -->
+
+<ng-template #templateSubcategorias>
+    <div fxFlex="0 0 8%" fxLayout="row" fxLayoutAlign="space-between start">
+        <span class="titulo-navegador accent-fg">
+            <mat-icon class="clickable mr-12" (click)="onVistaAtras()">arrow_back</mat-icon> Inicio / {{ familiaSeleccionado?.nombre }} / {{ categoriaSeleccionado?.nombre }}
+        </span>
+        <div class="search-wrapper mx-32 mx-md-0">
+            <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                <mat-icon>search</mat-icon>
+                <input placeholder="{{ 'INTERFAZ.BUSCAR' | translate  }}..." [formControl]="filtroControl" [readonly]="_puntoVentaAbiertoService.cargando">
+            </div>
+        </div>
+    </div>
+
+    <div fxFlex="0 0 92%" fxLayout="row wrap" fxLayoutAlign="space-between start" fusePerfectScrollbar>
+        <ng-container *ngFor="let subcategoria of (subcategorias | PVSubcategoriasPipe : filtroControl?.value)">
+            <mat-card *ngIf="!!subcategoria" fxFlex="24" class="mb-28 clickable card-230h" matRipple (click)="onSubcategoria(subcategoria)">
+                <img mat-card-image class="img-card" src="{{subcategoria.imagenId != null ? apiUrl + '/v1/archivo/' + (subcategoria.imagenId | hashId) : 'assets/images/no-image-icon.png' }}">
+                
+                <mat-card-header>
+                    <mat-card-title>{{subcategoria.nombre}}</mat-card-title>
+                </mat-card-header>
+            </mat-card>
+            <div *ngIf="!subcategoria" fxFlex="24"></div>
+        </ng-container>
+    </div>
+</ng-template>
+
+<!-- ************************************** -->
+<!-- ***** Template - Vista articulos ***** -->
+<!-- ************************************** -->
+
+<ng-template #templateArticulos>
+    <div fxFlex="0 0 8%" fxLayout="row" fxLayoutAlign="space-between start">
+        <span class="titulo-navegador accent-fg">
+            <mat-icon class="clickable mr-12" (click)="onVistaAtras()">arrow_back</mat-icon> Inicio / {{ familiaSeleccionado?.nombre }} / {{ categoriaSeleccionado?.nombre }} {{ !!subcategoriaSeleccionado ? ('/ ' + subcategoriaSeleccionado?.nombre) : '' }}
+        </span>
+        <div class="search-wrapper mx-32 mx-md-0">
+            <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                <mat-icon>search</mat-icon>
+                <input placeholder="{{ 'INTERFAZ.BUSCAR' | translate  }}..." [formControl]="filtroControl" [readonly]="_puntoVentaAbiertoService.cargando">
+            </div>
+        </div>
+    </div>
+
+    <div fxFlex="0 0 92%" fxLayout="column" fusePerfectScrollbar>
+        <ng-container *ngFor="let articulosAgrupados of (articulos | PVArticulosPipe : (!!listaPreciosSinDescuentoCliente ? listaPreciosSinDescuentoCliente : listaPreciosSinDescuentoSucursal) : filtroControl?.value)">
+            <div fxFlex="0 0 auto" fxLayout="row wrap" fxLayoutAlign="space-between stretch" fusePerfectScrollbar>
+                <ng-container *ngFor="let articulo of articulosAgrupados">
+                    <mat-card *ngIf="!!articulo" fxFlex="24" class="mb-28 clickable" matRipple (click)="onArticulo(articulo)">
+                        <img mat-card-image class="img-card" src="{{articulo.imagenId != null ? apiUrl + '/v1/archivo/' + (articulo.imagenId | hashId) : 'assets/images/no-image-icon.png' }}">
+                        
+                        <mat-card-header>
+                            <mat-card-title>{{articulo.nombre}}</mat-card-title>
+                            <mat-card-subtitle *ngIf="(((!!listaPreciosSinDescuentoCliente ? listaPreciosSinDescuentoCliente[articulo.id] : listaPreciosSinDescuentoSucursal[articulo.id]) || 0) | NumeroFormatoPipe : 'moneda' : simboloMoneda) != (((!!listaPreciosCliente ? listaPreciosCliente[articulo.id] : listaPreciosSucursal[articulo.id]) || 0) | NumeroFormatoPipe : 'moneda' : simboloMoneda)"><s>{{ ((!!listaPreciosSinDescuentoCliente ? listaPreciosSinDescuentoCliente[articulo.id] : listaPreciosSinDescuentoSucursal[articulo.id]) || 0) | NumeroFormatoPipe : 'moneda' : simboloMoneda }}</s></mat-card-subtitle>
+                            <mat-card-subtitle class="blue-fg">{{ ((!!listaPreciosCliente ? listaPreciosCliente[articulo.id] : listaPreciosSucursal[articulo.id]) || 0) | NumeroFormatoPipe : 'moneda' : simboloMoneda }}</mat-card-subtitle>
+                        </mat-card-header>
+                    </mat-card>
+                    <div fxFlex="24" *ngIf="!articulo"></div>
+                </ng-container>
+            </div>
+        </ng-container>
+        <div *ngIf="!(articulos | PVArticulosPipe : (!!listaPreciosSinDescuentoCliente ? listaPreciosSinDescuentoCliente : listaPreciosSinDescuentoSucursal))?.length" fxFlex="100" class="mt-28">
+            <span *ngIf="!subcategoriaSeleccionado">No se encontraron artartículos activos para venta en la categoría {{ categoriaSeleccionado?.nombre }}</span>
+            <span *ngIf="!!subcategoriaSeleccionado">No se encontraron artartículos activos para venta en la subcategoría {{ subcategoriaSeleccionado?.nombre }}</span>
+        </div>
+    </div>
+</ng-template>
+
+<!-- ********************************** -->
+<!-- ***** Template - Vista pagar ***** -->
+<!-- ********************************** -->
+
+<ng-template #templatePagar>
+    <div fxFlex="0 0 5%" fxLayout="row" fxLayoutAlign="space-between start">
+        <span class="titulo-navegador warn-fg">
+            <mat-icon class="clickable mr-12" (click)="onVistaAtras()">arrow_back</mat-icon> Cancelar
+        </span>
+    </div>
+
+    <div fxFlex="0 0 18%" fxLayout="row wrap" fxLayoutAlign="start start">
+        <mat-card fxFlex="100">
+            <mat-card-content>
+                <div fxLayout="column" class="w-100-p">
+                    <div fxLayout="row wrap" fxLayoutAlign="start start">
+                        <div fxFlex="50" fxLayout="column">
+                            <div fxLayout="row wrap" fxLayoutAlign="space-between start">
+                                <span>Subtotal:</span>
+                                <span>{{ (dataSourceResumen.data | PuntoVentaSumaSubtotalPipe) | NumeroFormatoPipe : 'moneda' : simboloMoneda }}</span>
+                            </div>
+                            <div fxLayout="row wrap" fxLayoutAlign="space-between start">
+                                <span>Descuento:</span>
+                                <span>{{ (dataSourceResumen.data | PuntoVentaSumaDescuentoPipe) | NumeroFormatoPipe : 'moneda' : simboloMoneda }}</span>
+                            </div>
+                            <div fxLayout="row wrap" fxLayoutAlign="space-between start">
+                                <span>IVA:</span>
+                                <span>{{ (dataSourceResumen.data | PuntoVentaSumaIVAPipe) | NumeroFormatoPipe : 'moneda' : simboloMoneda }}</span>
+                            </div>
+                            <div fxLayout="row wrap" fxLayoutAlign="space-between start">
+                                <span>IEPS:</span>
+                                <span>{{ (dataSourceResumen.data | PuntoVentaSumaIEPSPipe) | NumeroFormatoPipe : 'moneda' : simboloMoneda }}</span>
+                            </div>
+                            <div fxLayout="row wrap" fxLayoutAlign="space-between start">
+                                <span class="font-weight-900">Total a pagar:</span>
+                                <span class="font-weight-900">{{ (dataSourceResumen.data | PuntoVentaSumaTotalPipe) | NumeroFormatoPipe : 'moneda' : (prefijoMoneda + ' ' + simboloMoneda) }}</span>
+                            </div>
+                        </div>
+                        <div fxFlex="50" fxLayout="column">
+                            <div fxLayout="row wrap" fxLayoutAlign="end start">
+                                <mat-checkbox [labelPosition]="'before'">Enviar ticket por correo</mat-checkbox>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </mat-card-content>
+        </mat-card>
+    </div>
+    
+    <div fxFlex="0 0 5%" fxLayout="row wrap" fxLayoutAlign="start start" class="py-12">
+        <span class="font-weight-900"> Forma de pago</span>
+    </div>
+
+    <div fxFlex="0 0 72%" fxLayout="row wrap" fxLayoutAlign="start start">
+        <mat-card fxFlex="100" class="h-100-p card-forma-pago">
+            <mat-card-content class="w-100-p">
+                <div fxLayout="column" class="w-100-p h-100-p">
+                    <div fxFlex="0 0 100%" fxLayout="row wrap" fxLayoutAlign="start start">
+                        <div fxFlex="50" fxLayout="column" class="h-100-p">
+                            <div fxFlex="0 0 85%" fusePerfectScrollbar>
+                                <ng-container *ngFor="let medioPago of mediosPagoPV">
+                                    <div fxLayout="column" class="w-100-p" class="tipo-pago clickable" matRipple [ngClass]="{'activo': medioPagoSeleccionado?.id == medioPago.id, 'doble': medioPagoSeleccionado?.id == medioPago.id && [MediosPagoPV.TRANSFERENCIA_BANCARIA,MediosPagoPV.TARJETA_DE_CREDITO,MediosPagoPV.TARJETA_DE_DEBITO,MediosPagoPV.CENTRO_DE_PAGOS,MediosPagoPV.ORDEN_DE_PAGO,MediosPagoPV.PAGO_EN_VENTANILLA].includes(medioPago.id)}" (click)="onSeleccionarTipoPago(medioPago)">
+                                        <div fxLayout="row wrap" fxLayoutAlign="space-between start">
+                                            <div><mat-icon color="accent">attach_money</mat-icon> {{ medioPago.nombre }}</div>
+                                            <span *ngIf="medioPagoSeleccionado?.id == medioPago.id">{{ (dataSourceResumen.data | PuntoVentaSumaTotalPipe : (tipoCambioPagoControl?.value || 1)) | NumeroFormatoPipe : 'moneda' : 'MXN $' }}</span>
+                                            <span *ngIf="medioPagoSeleccionado?.id != medioPago.id">MXN $ 0.00</span>
+                                        </div>
+                                        <ng-container *ngIf="medioPagoSeleccionado?.id == medioPago.id && [MediosPagoPV.TRANSFERENCIA_BANCARIA,MediosPagoPV.TARJETA_DE_CREDITO,MediosPagoPV.TARJETA_DE_DEBITO,MediosPagoPV.ORDEN_DE_PAGO,MediosPagoPV.PAGO_EN_VENTANILLA].includes(medioPago.id)">
+                                            <div fxLayout="row wrap" fxLayoutAlign="space-between start" class="w-100-p" fxLayoutGap="10px grid">
+                                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="auto">
+                                                    <mat-label>Moneda</mat-label>
+                                                    <input #inputMonedaPago matInput
+                                                        (click)="$event.stopPropagation()"
+                                                        name="monedaPago"
+                                                        [value]="'Peso'"
+                                                        required="{{ false }}">
+                                                </mat-form-field>
+                                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="auto">
+                                                    <mat-label>Tipo de cambio</mat-label>
+                                                    <input #inputTipoCambioPago matInput
+                                                        (click)="$event.stopPropagation()"
+                                                        name="tipoCambioPago"
+                                                        [formControl]="tipoCambioPagoControl"
+                                                        required="{{ true }}"
+                                                        mask="separator.4"
+                                                        thousandSeparator=",">
+                                                    <mat-error *ngIf="(!!tipoCambioPagoControl.errors)">
+                                                        {{validatorService.getMessage(tipoCambioPagoControl)}}
+                                                    </mat-error>
+                                                </mat-form-field>
+                                            </div>
+                                            <div fxLayout="row wrap" fxLayoutAlign="space-between start" class="w-100-p" fxLayoutGap="10px grid">
+                                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="auto">
+                                                    <mat-label>{{ (medioPago.id == MediosPagoPV.TRANSFERENCIA_BANCARIA ? 'Número de transferencia' : (medioPago.id == MediosPagoPV.TRANSFERENCIA_BANCARIA ? 'Número de aprobación' : 'Referencia de pago')) }}</mat-label>
+                                                    <input #inputReferenciaPago matInput
+                                                        (click)="$event.stopPropagation()"
+                                                        name="referenciaPago"
+                                                        [formControl]="referenciaPagoControl"
+                                                        required="{{ true }}">
+                                                    <mat-error *ngIf="(!!referenciaPagoControl.errors)">
+                                                        {{validatorService.getMessage(referenciaPagoControl)}}
+                                                    </mat-error>
+                                                </mat-form-field>
+                                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="auto" *ngIf="medioPago.id != MediosPagoPV.CENTRO_DE_PAGOS" (click)="$event.stopPropagation()">
+                                                    <input
+                                                        matInput
+                                                        [matDatepicker]="fechaPago"
+                                                        name="fechaPago"
+                                                        [formControl]="fechaPagoControl"
+                                                        disabled
+                                                    >
+                                                    <mat-datepicker-toggle
+                                                        matSuffix
+                                                        [for]="fechaPago"
+                                                    >
+                                                        <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+                                                    </mat-datepicker-toggle>
+                                                    <mat-datepicker
+                                                        #fechaPago
+                                                        disabled="false"
+                                                    ></mat-datepicker>
+                                                </mat-form-field>
+                                            </div>
+                                        </ng-container>
+                                        <ng-container *ngIf="medioPagoSeleccionado?.id == medioPago.id && [MediosPagoPV.CENTRO_DE_PAGOS].includes(medioPago.id)">
+                                            <div fxLayout="row wrap" fxLayoutAlign="space-between start" class="w-100-p">
+                                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="100">
+                                                    <mat-label>Correo electrónico</mat-label>
+                                                    <input #inputCorreoElectronico matInput name="referenciaPago" [formControl]="correoElectronicoControl"
+                                                        required="{{ true }}">
+                                                    <mat-error *ngIf="(!!correoElectronicoControl.errors)">
+                                                        {{validatorService.getMessage(correoElectronicoControl)}}
+                                                    </mat-error>
+                                                </mat-form-field>
+                                            </div>
+                                        </ng-container>
+                                    </div>
+                                </ng-container>
+                            </div>
+                            <div fxFlex="0 0 3%"></div>
+                            <div fxFlex="0 0 5%" fxLayout="row wrap" fxLayoutAlign="end start">
+                                <span>Cambio MXN $ 0.00</span>
+                            </div>
+                            <div fxFlex="0 0 7%" fxLayout="row wrap" fxLayoutAlign="space-between start">
+                                <button mat-stroked-button type="button" color="warn" fxFlex="45" [disabled]="true">
+                                    Inscribir sin cobrar
+                                </button>
+                
+                                <button mat-raised-button type="button" fxFlex="45" class="green-bg fuse-white-fg" (click)="onCobrar()">
+                                    Cobrar
+                                </button>
+                            </div>
+                        </div>
+                        <div fxFlex="50" fxLayout="column" class="h-100-p">
+                            <div fxLayout="row wrap" fxLayoutAlign="start start" class="h-100-p p-12">
+                                <pixvs-calculadora></pixvs-calculadora>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </mat-card-content>
+        </mat-card>
+    </div>
+</ng-template>
+
+<!-- ******************************************** -->
+<!-- ***** Template - Vista reinscripciones ***** -->
+<!-- ******************************************** -->
+
+<ng-template #templateReinscripciones>
+    <div fxFlex="0 0 7%" fxLayout="row" fxLayoutAlign="space-between start">
+        <span class="titulo-navegador accent-fg">
+            <mat-icon class="clickable mr-12" (click)="onVistaAtras()">arrow_back</mat-icon> Re-inscripciones
+        </span>
+        <div class="search-wrapper mx-32 mx-md-0">
+            <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                <mat-icon>search</mat-icon>
+                <input placeholder="{{ 'INTERFAZ.BUSCAR' | translate  }}..." [formControl]="filtroControl" [readonly]="_puntoVentaAbiertoService.cargando">
+            </div>
+        </div>
+    </div>
+
+    <div fxFlex="0 0 93%" fxLayout="column" class="fuse-white-bg">
+        <div fxFlex="0 0 90%" fxLayout="row">
+            <mat-table
+                fxFlex="100" style="max-height: 100%;"
+                class="tabla-reinscripciones ficha-table h-100-p"
+                #tablaReinscripciones
+                [dataSource]="dataSourceReinscripciones"
+                matSort
+                [@animateStagger]="{value:'50'}"
+                cdkDropList
+                id="tablaReinscripciones"
+                cdkVirtualFor
+                (scroll)="onScrollDownReinscripciones($event)"
+            >
+                <ng-container matColumnDef="estatus">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Estatus</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let reinscripcion"
+                    >
+                        <p>{{ reinscripcion.aprobado ? 'Aprobado' : 'Reprobado' }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="codigo">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Código Proulex</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let reinscripcion"
+                    >
+                        <p>{{ reinscripcion.codigo }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="becaCodigo">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Código beca</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let reinscripcion"
+                    >
+                        <p>{{ reinscripcion.becaCodigo }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="codigoUDG">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Código UDG</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let reinscripcion"
+                    >
+                        <p>{{ reinscripcion.codigoUDG }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="primerApellido">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Primer apellido</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let reinscripcion"
+                    >
+                        <p>{{ reinscripcion.primerApellido }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="segundoApellido">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Segundo apellido</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let reinscripcion"
+                    >
+                        <p>{{ reinscripcion.segundoApellido }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="nombre">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Nombre</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let reinscripcion"
+                    >
+                        <p>{{ reinscripcion.nombre }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="curso">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Curso</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let reinscripcion"
+                    >
+                        <p>{{ reinscripcion.curso }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="modalidad">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Modalidad</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let reinscripcion"
+                    >
+                        <p>{{ !!reinscripcion.aprobado ? (reinscripcion.jsonEdicionInscripcion?.modalidad || reinscripcion.modalidad) : reinscripcion.modalidad }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="horario">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                        fxLayout="row" fxLayoutAlign="center center" class="text-center"
+                    >Horario</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let reinscripcion"
+                        fxLayout="row" fxLayoutAlign="center center" class="text-center"
+                    >
+                        <p>{{ !!reinscripcion.aprobado ? (reinscripcion.jsonEdicionInscripcion?.horario || reinscripcion.horario) : reinscripcion.horario }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="nivelReinscripcion">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                        fxLayout="row" fxLayoutAlign="center center" class="text-center"
+                    >Pasa a nivel</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let reinscripcion"
+                        fxLayout="row" fxLayoutAlign="center center" class="text-center"
+                    >
+                        <p>{{ (!!reinscripcion.aprobado ? reinscripcion.jsonEdicionInscripcion?.nivel : reinscripcion.nivelReasignado) || reinscripcion.nivelReinscripcion }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="calificacion">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                        fxLayout="row" fxLayoutAlign="center center" class="text-center"
+                    >Calificación</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let reinscripcion"
+                        fxLayout="row" fxLayoutAlign="center center" class="text-center"
+                    >
+                        <p>{{ reinscripcion.calificacion }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="grupoReinscripcionCodigo">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                        fxLayout="row" fxLayoutAlign="center center" class="text-center"
+                    >Grupo</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let reinscripcion"
+                        fxLayout="row" fxLayoutAlign="center center" class="text-center"
+                    >
+                        <p>{{ !!reinscripcion?.jsonEdicionInscripcion ? '-' : (reinscripcion.grupoReinscripcionCodigo || '-') }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="acciones" stickyEnd>
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                        fxLayout="row" fxLayoutAlign="end center" class="text-center"
+                    >
+                    </mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let reinscripcion"
+                        fxLayout="row" fxLayoutAlign="center center" class="text-center"
+                    >
+                        <button mat-icon-button type="button" (click)="onEditarReinscripcion(reinscripcion)" *ngIf="!!reinscripcion?.aprobado">
+                            <mat-icon>import_export</mat-icon>
+                        </button>
+                        <button mat-icon-button type="button" (click)="onEditarReinscripcion(reinscripcion)" *ngIf="!reinscripcion?.aprobado">
+                            <mat-icon>edit</mat-icon>
+                        </button>
+                        <button mat-icon-button type="button" (click)="onAgregarReinscripcion(reinscripcion)">
+                            <mat-icon>add</mat-icon>
+                        </button>
+                    </mat-cell>
+                </ng-container>
+
+                <mat-header-row *matHeaderRowDef="displayedColumnsReinscripciones; sticky:true"></mat-header-row>
+                <mat-row
+                    *matRowDef="let row; columns: displayedColumnsReinscripciones;"
+                    class="element"
+                >
+                </mat-row>
+            </mat-table>
+        </div>
+    </div>
+</ng-template>
+
+<!-- ********************************************** -->
+<!-- ***** Template - Vista alumnos sin grupo ***** -->
+<!-- ********************************************** -->
+
+<ng-template #templateAlumnosSinGrupo>
+    <div fxFlex="0 0 7%" fxLayout="row" fxLayoutAlign="space-between start">
+        <span class="titulo-navegador accent-fg">
+            <mat-icon class="clickable mr-12" (click)="onVistaAtras()">arrow_back</mat-icon> Alumnos sin grupo
+        </span>
+        <div class="search-wrapper mx-32 mx-md-0">
+            <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                <mat-icon>search</mat-icon>
+                <input placeholder="{{ 'INTERFAZ.BUSCAR' | translate  }}..." [formControl]="filtroControl" [readonly]="_puntoVentaAbiertoService.cargando">
+            </div>
+        </div>
+    </div>
+
+    <div fxFlex="0 0 93%" fxLayout="column" class="fuse-white-bg">
+        <div fxFlex="0 0 10%" fxLayout="row" fxLayoutAlign="space-between center" class="py-8 px-16">
+            <span class="font-weight-600 font-size-20">Alumnos sin grupo</span>
+            <span class="tag blue-bg">{{ dataSourceAlumnosSinGrupo?.filteredData?.length }} alumno(s)</span>
+        </div>
+        <div fxFlex="0 0 90%" fxLayout="row">
+            <mat-table
+                fxFlex="100" style="max-height: 100%;"
+                class="tabla-alumnos-sin-grupo ficha-table h-100-p"
+                #tablaAlumnosSinGrupo
+                [dataSource]="dataSourceAlumnosSinGrupo"
+                matSort
+                [@animateStagger]="{value:'50'}"
+                cdkDropList
+                id="tablaAlumnosSinGrupo"
+                cdkVirtualFor
+                (scroll)="onScrollDownAlumnosSinGrupo($event)"
+            >
+                <ng-container matColumnDef="codigo">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Código Alumno</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let inscripcionSinGrupo"
+                    >
+                        <p>{{ inscripcionSinGrupo.alumnoCodigo }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="codigoUDG">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Código UDG</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let inscripcionSinGrupo"
+                    >
+                        <p>{{ inscripcionSinGrupo.alumnoCodigoUDG }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="primerApellido">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Primer apellido</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let inscripcionSinGrupo"
+                    >
+                        <p>{{ inscripcionSinGrupo.alumnoPrimerApellido }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="segundoApellido">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Segundo apellido</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let inscripcionSinGrupo"
+                    >
+                        <p>{{ inscripcionSinGrupo.alumnoSegundoApellido }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="nombre">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Nombre</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let inscripcionSinGrupo"
+                    >
+                        <p>{{ inscripcionSinGrupo.alumnoNombre }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="curso">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Curso</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let inscripcionSinGrupo"
+                    >
+                        <p>{{ inscripcionSinGrupo.curso }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="nivel">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Nivel</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let inscripcionSinGrupo"
+                    >
+                        <p>{{ inscripcionSinGrupo.nivel }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="modalidad">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Modalidad</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let inscripcionSinGrupo"
+                    >
+                        <p>{{ inscripcionSinGrupo.paModalidadNombre }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="montoPago">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Monto pago</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let inscripcionSinGrupo"
+                    >
+                        <p>{{ inscripcionSinGrupo.montoPago | NumeroFormatoPipe : 'moneda' : simboloMoneda }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="medioPago">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Medio de pago</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let inscripcionSinGrupo"
+                    >
+                        <p>{{ inscripcionSinGrupo.medioPago }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="ovCodigo">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Nota de venta</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let inscripcionSinGrupo"
+                    >
+                        <p>{{ inscripcionSinGrupo.ovCodigo }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="estatus">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Estatus</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let inscripcionSinGrupo"
+                    >
+                        <p>{{ inscripcionSinGrupo.estatus }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="acciones" stickyEnd>
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                        fxLayout="row" fxLayoutAlign="center center" class="text-center"
+                    >
+                        Acciones
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let inscripcionSinGrupo" fxLayout="row" fxLayoutAlign="center center" class="text-center">
+                        <button *ngIf="inscripcionSinGrupo.estatusId == CMM_INSSG_Estatus.PAGADA" mat-icon-button type="button" matTooltip="Relacionar" (click)="onRelacionarAlumnoSinGrupo(inscripcionSinGrupo)">
+                            <mat-icon>group_add</mat-icon>
+                        </button>
+                    </mat-cell>
+                </ng-container>
+
+                <mat-header-row *matHeaderRowDef="displayedColumnsAlumnosSinGrupo; sticky:true"></mat-header-row>
+                <mat-row
+                    *matRowDef="let row; columns: displayedColumnsAlumnosSinGrupo;"
+                    class="element"
+                >
+                </mat-row>
+            </mat-table>
+        </div>
+    </div>
+</ng-template>
+
+<!-- ********************************************** -->
+<!-- ***** Template - Vista entrega de libros ***** -->
+<!-- ********************************************** -->
+
+<ng-template #templateEntregaLibros>
+    <div fxFlex="0 0 7%" fxLayout="row" fxLayoutAlign="space-between start">
+        <span class="titulo-navegador accent-fg">
+            <mat-icon class="clickable mr-12" (click)="onVistaAtras()">arrow_back</mat-icon> Cancelar
+        </span>
+        <div class="search-wrapper mx-32 mx-md-0">
+            <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                <mat-icon>search</mat-icon>
+                <input placeholder="{{ 'INTERFAZ.BUSCAR' | translate  }}..." [formControl]="filtroControl" [readonly]="_puntoVentaAbiertoService.cargando">
+            </div>
+        </div>
+    </div>
+
+    <div fxFlex="0 0 93%" fxLayout="column" class="fuse-white-bg">
+        <div fxFlex="0 0 10%" fxLayout="row" fxLayoutAlign="space-between center" class="py-8 px-16">
+            <span class="font-weight-600 font-size-20">Entrega de libros</span>
+            <span class="tag blue-bg">{{ dataSourceEntregaLibros?.filteredData?.length }} alumno(s)</span>
+        </div>
+        <div fxFlex="0 0 90%" fxLayout="row">
+            <mat-table
+                fxFlex="100" style="max-height: 100%;"
+                class="tabla-alumnos-entrega-libros ficha-table h-100-p"
+                #tablaEntregaLibros
+                [dataSource]="dataSourceEntregaLibros"
+                matSort
+                [@animateStagger]="{value:'50'}"
+                cdkDropList
+                id="tablaEntregaLibros"
+                cdkVirtualFor
+                (scroll)="onScrollDownEntregaLibros($event)"
+            >
+                <ng-container matColumnDef="imagen">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    ></mat-header-cell>
+                    <mat-cell *matCellDef="let alumno" fxLayout="row" fxLayoutAlign="center center" class="text-center">
+                        <img
+							mat-card-avatar
+							style="border-radius: 100%; height: 35px;"
+							src="{{!!alumno.fotoId ? apiUrl + '/v1/archivo/' + (alumno.fotoId | hashId) : 'assets/images/avatars/profile.jpg' }}"
+						/>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="codigo">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Código alumno</mat-header-cell>
+                    <mat-cell *matCellDef="let alumno" >
+                        <p>{{ alumno.codigo }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="codigoUDG">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Código UDG</mat-header-cell>
+                    <mat-cell *matCellDef="let alumno" >
+                        <p>{{ alumno.codigoUDG }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="primerApellido">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Primer apellido</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let alumno"
+                    >
+                        <p>{{ alumno.primerApellido }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="segundoApellido">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Segundo apellido</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let alumno"
+                    >
+                        <p>{{ alumno.segundoApellido }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="nombre">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Nombre</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let alumno"
+                    >
+                        <p>{{ alumno.nombre }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="grupo">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Grupo</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let alumno"
+                    >
+                        <p>{{ alumno.grupo }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="libros">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Libros</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let alumno"
+                        fxFlex="1 1 100%"
+                    >
+                        <p class="text-truncate" matTooltip="{{ alumno.libros }}">{{ alumno.libros }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="inscripcion">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Inscripción</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let alumno"
+                    >
+                        <p>{{ alumno.inscripcion }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="notaVenta">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Nota de venta</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let alumno"
+                    >
+                        <p>{{ alumno.ordenVentaCodigo }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="check" stickyEnd>
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                        fxLayout="row" fxLayoutAlign="end center" class="text-center"
+                    >
+                        <mat-checkbox
+                            [checked]="entregaLibrosSeleccionadasTodas"
+                            [indeterminate]="!entregaLibrosSeleccionadasTodas && entregaLibrosSeleccionadasCont > 0"
+                            (change)="setEntregaLibrosEstatus($event.checked)"
+                        >
+                        </mat-checkbox>
+                    </mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let alumno"
+                        fxLayout="row" fxLayoutAlign="center center" class="text-center"
+                    >
+                        <mat-checkbox *ngIf="alumno.inscripcionEstatusId == CMM_INS_Estatus.PAGADA || alumno.inscripcionEstatusId == CMM_INSSG_Estatus.PAGADA" id="{{ alumno.id }}-{{ alumno.grupoId }}" [(ngModel)]="entregaLibrosSeleccionadas[alumno.id][!!alumno.inscripcionId][alumno.inscripcionId || alumno.inscripcionSinGrupoId]" (ngModelChange)="actualizarEntregaLibrosEstatus()"></mat-checkbox>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="agregar" stickyEnd>
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                        fxLayout="row" fxLayoutAlign="center center" class="text-center"
+                    >
+                        <button *ngIf="entregaLibrosSeleccionadasCont > 0" mat-icon-button type="button" (click)="onAceptarEntregaLibros()">
+                            <mat-icon>add</mat-icon>
+                        </button>
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let alumno"></mat-cell>
+                </ng-container>
+
+                <mat-header-row *matHeaderRowDef="displayedColumnsEntregaLibros; sticky:true"></mat-header-row>
+                <mat-row
+                    *matRowDef="let row; columns: displayedColumnsEntregaLibros;"
+                    class="element"
+                >
+                </mat-row>
+            </mat-table>
+        </div>
+    </div>
+</ng-template>
+
+<!-- ********************************* -->
+<!-- ***** Template - Vista JOBS ***** -->
+<!-- ********************************* -->
+
+<ng-template #templateJOBS>
+    <div fxFlex="0 0 7%" fxLayout="row" fxLayoutAlign="space-between start">
+        <span class="titulo-navegador accent-fg">
+            <mat-icon class="clickable mr-12" (click)="onVistaAtras()">arrow_back</mat-icon> Cancelar
+        </span>
+        <div class="search-wrapper mx-32 mx-md-0">
+            <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                <mat-icon>search</mat-icon>
+                <input placeholder="{{ 'INTERFAZ.BUSCAR' | translate  }}..." [formControl]="filtroControl" [readonly]="_puntoVentaAbiertoService.cargando">
+            </div>
+        </div>
+    </div>
+
+    <div fxFlex="0 0 93%" fxLayout="column" class="fuse-white-bg">
+        <div fxFlex="0 0 10%" fxLayout="row" fxLayoutAlign="space-between center" class="py-8 px-16">
+            <span class="font-weight-600 font-size-20">JOBS</span>
+            <span class="tag blue-bg">{{ dataSourceJOBS?.filteredData?.length }} alumno(s)</span>
+        </div>
+        <div fxFlex="0 0 90%" fxLayout="row">
+            <mat-table
+                fxFlex="100" style="max-height: 100%;"
+                class="tabla-alumnos-jobs ficha-table h-100-p"
+                #tablaJOBS
+                [dataSource]="dataSourceJOBS"
+                matSort
+                [@animateStagger]="{value:'50'}"
+                cdkDropList
+                id="tablaJOBS"
+                cdkVirtualFor
+                (scroll)="onScrollDownAlumnosJOBS($event)"
+            >
+                <ng-container matColumnDef="codigo">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Código alumno</mat-header-cell>
+                    <mat-cell *matCellDef="let alumno" >
+                        <p>{{ alumno.codigo }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="codigoUDG">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Código UDG</mat-header-cell>
+                    <mat-cell *matCellDef="let alumno" >
+                        <p>{{ alumno.codigoAlumnoUDG }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="primerApellido">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Primer apellido</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let alumno"
+                    >
+                        <p>{{ alumno.primerApellido }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="segundoApellido">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Segundo apellido</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let alumno"
+                    >
+                        <p>{{ alumno.segundoApellido }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="nombre">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Nombre</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let alumno"
+                    >
+                        <p>{{ alumno.nombre }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="centroUniversitario">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Centro universitario</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let alumno"
+                        fxFlex="1 1 100%"
+                    >
+                        <p>{{ alumno.centroUniversitario }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="carrera">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Carrera</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let alumno"
+                    >
+                        <p>{{ alumno.carrera }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="grupo">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Grupo</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let alumno"
+                    >
+                        <p>{{ alumno.grupo }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="check" stickyEnd>
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                        fxLayout="row" fxLayoutAlign="end center" class="text-center"
+                    >
+                        <mat-checkbox
+                            [checked]="jobsSeleccionadasTodas"
+                            [indeterminate]="!jobsSeleccionadasTodas && jobsSeleccionadasCont > 0"
+                            (change)="setAlumnosJOBSEstatus($event.checked)"
+                        >
+                        </mat-checkbox>
+                    </mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let alumno"
+                        fxLayout="row" fxLayoutAlign="center center" class="text-center"
+                    >
+                        <mat-checkbox id="{{ alumno.id }}-{{ alumno.grupoId }}" [(ngModel)]="jobsSeleccionadas[alumno.id][alumno.grupoId]" (ngModelChange)="actualizarAlumnoJOBSEstatus()"></mat-checkbox>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="agregar" stickyEnd>
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                        fxLayout="row" fxLayoutAlign="center center" class="text-center"
+                    >
+                        <button *ngIf="jobsSeleccionadasCont > 0" mat-icon-button type="button" (click)="onAgregarAlumnosJOBS()">
+                            <mat-icon>add</mat-icon>
+                        </button>
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let alumno"></mat-cell>
+                </ng-container>
+
+                <mat-header-row *matHeaderRowDef="displayedColumnsJOBS; sticky:true"></mat-header-row>
+                <mat-row
+                    *matRowDef="let row; columns: displayedColumnsJOBS;"
+                    class="element"
+                >
+                </mat-row>
+            </mat-table>
+        </div>
+    </div>
+</ng-template>
+
+<!-- ************************************** -->
+<!-- ***** Template - Vista JOBS SEMS ***** -->
+<!-- ************************************** -->
+
+<ng-template #templateJOBSSEMS>
+    <div fxFlex="0 0 7%" fxLayout="row" fxLayoutAlign="space-between start">
+        <span class="titulo-navegador accent-fg">
+            <mat-icon class="clickable mr-12" (click)="onVistaAtras()">arrow_back</mat-icon> Cancelar
+        </span>
+        <div class="search-wrapper mx-32 mx-md-0">
+            <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                <mat-icon>search</mat-icon>
+                <input placeholder="{{ 'INTERFAZ.BUSCAR' | translate  }}..." [formControl]="filtroControl" [readonly]="_puntoVentaAbiertoService.cargando">
+            </div>
+        </div>
+    </div>
+
+    <div fxFlex="0 0 93%" fxLayout="column" class="fuse-white-bg">
+        <div fxFlex="0 0 10%" fxLayout="row" fxLayoutAlign="space-between center" class="py-8 px-16">
+            <span class="font-weight-600 font-size-20">JOBS SEMS</span>
+            <span class="tag blue-bg">{{ dataSourceJOBSSEMS?.filteredData?.length }} alumno(s)</span>
+        </div>
+        <div fxFlex="0 0 90%" fxLayout="row">
+            <mat-table
+                fxFlex="100" style="max-height: 100%;"
+                class="tabla-alumnos-jobs-sems ficha-table h-100-p"
+                #tablaJOBSSEMS
+                [dataSource]="dataSourceJOBSSEMS"
+                matSort
+                [@animateStagger]="{value:'50'}"
+                cdkDropList
+                id="tablaJOBSSEMS"
+                cdkVirtualFor
+                (scroll)="onScrollDownAlumnosJOBSSEMS($event)"
+            >
+                <ng-container matColumnDef="codigo">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Código alumno</mat-header-cell>
+                    <mat-cell *matCellDef="let alumno" >
+                        <p>{{ alumno.codigo }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="codigoUDG">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Código UDG</mat-header-cell>
+                    <mat-cell *matCellDef="let alumno" >
+                        <p>{{ alumno.codigoAlumnoUDG }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="primerApellido">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Primer apellido</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let alumno"
+                    >
+                        <p>{{ alumno.primerApellido }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="segundoApellido">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Segundo apellido</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let alumno"
+                    >
+                        <p>{{ alumno.segundoApellido }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="nombre">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Nombre</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let alumno"
+                    >
+                        <p>{{ alumno.nombre }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="preparatoria">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Preparatoria</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let alumno"
+                        fxFlex="1 1 100%"
+                    >
+                        <p>{{ alumno.preparatoria }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="bachilleratoTecnologico">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Bachillerato tecnológico</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let alumno"
+                    >
+                        <p>{{ alumno.bachilleratoTecnologico }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="grupo">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Grupo</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let alumno"
+                    >
+                        <p>{{ alumno.grupo }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="check" stickyEnd>
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                        fxLayout="row" fxLayoutAlign="end center" class="text-center"
+                    >
+                        <mat-checkbox
+                            [checked]="jobsSemsSeleccionadasTodas"
+                            [indeterminate]="!jobsSemsSeleccionadasTodas && jobsSemsSeleccionadasCont > 0"
+                            (change)="setAlumnosJOBSSEMSEstatus($event.checked)"
+                        >
+                        </mat-checkbox>
+                    </mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let alumno"
+                        fxLayout="row" fxLayoutAlign="center center" class="text-center"
+                    >
+                        <mat-checkbox *ngIf="!alumno.esCandidato" id="{{ alumno.id }}-{{ alumno.grupoId }}" [(ngModel)]="jobsSemsSeleccionadas[alumno.id][alumno.grupoId]" (ngModelChange)="actualizarAlumnoJOBSSEMSEstatus()"></mat-checkbox>
+                        <button *ngIf="alumno.esCandidato" mat-icon-button type="button" matTooltip="Terminar formulario" (click)="onEditarAlumnoCandidato(alumno)">
+                            <mat-icon>edit</mat-icon>
+                        </button>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="agregar" stickyEnd>
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                        fxLayout="row" fxLayoutAlign="center center" class="text-center"
+                    >
+                        <button *ngIf="jobsSemsSeleccionadasCont > 0" mat-icon-button type="button" (click)="onCartaCompromisoJOBSSEMS()">
+                            <mat-icon>add</mat-icon>
+                        </button>
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let alumno"></mat-cell>
+                </ng-container>
+
+                <mat-header-row *matHeaderRowDef="displayedColumnsJOBSSEMS; sticky:true"></mat-header-row>
+                <mat-row
+                    *matRowDef="let row; columns: displayedColumnsJOBSSEMS;"
+                    class="element"
+                >
+                </mat-row>
+            </mat-table>
+        </div>
+    </div>
+</ng-template>
+
+<!-- ******************************************** -->
+<!-- ***** Template - Vista becas sindicato ***** -->
+<!-- ******************************************** -->
+
+<ng-template #templateBecasSindicato>
+    <div fxFlex="0 0 7%" fxLayout="row" fxLayoutAlign="space-between start">
+        <span class="titulo-navegador accent-fg">
+            <mat-icon class="clickable mr-12" (click)="onVistaAtras()">arrow_back</mat-icon> Becas sindicato
+        </span>
+        <div class="search-wrapper mx-32 mx-md-0">
+            <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                <mat-icon>search</mat-icon>
+                <input placeholder="{{ 'INTERFAZ.BUSCAR' | translate  }}..." [formControl]="filtroControl" [readonly]="_puntoVentaAbiertoService.cargando">
+            </div>
+        </div>
+    </div>
+
+    <div fxFlex="0 0 93%" fxLayout="column" class="fuse-white-bg">
+        <div fxFlex="0 0 10%" fxLayout="row" fxLayoutAlign="end center" class="py-8 px-16">
+            <span class="tag blue-bg">{{ dataSourceBecasSindicato?.filteredData?.length }} beca(s)</span>
+        </div>
+        <div fxFlex="0 0 90%" fxLayout="row">
+            <mat-table
+                fxFlex="100" style="max-height: 100%;"
+                class="tabla-becas-sindicato ficha-table h-100-p"
+                #tablaBecasSindicato
+                [dataSource]="dataSourceBecasSindicato"
+                matSort
+                [@animateStagger]="{value:'50'}"
+                cdkDropList
+                id="tablaBecasSindicato"
+                cdkVirtualFor
+                (scroll)="onScrollDownBecasSindicato($event)"
+            >
+                <ng-container matColumnDef="codigoProulex">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Código proulex</mat-header-cell>
+                    <mat-cell *matCellDef="let beca" >
+                        <p>{{ beca.codigoProulex }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="codigoBeca">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Código beca</mat-header-cell>
+                    <mat-cell *matCellDef="let beca" >
+                        <p>{{ beca.codigoBeca }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="codigoUDG">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Código UDG</mat-header-cell>
+                    <mat-cell *matCellDef="let beca" >
+                        <p>{{ beca.codigoEmpleado }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="primerApellido">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Primer apellido</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let beca"
+                    >
+                        <p>{{ beca.primerApellido }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="segundoApellido">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Segundo apellido</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let beca"
+                    >
+                        <p>{{ beca.segundoApellido }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="nombre">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Nombre</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let beca"
+                    >
+                        <p>{{ beca.nombre }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="descuento">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Descuento %</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let beca"
+                    >
+                        <p>{{ (beca.descuento * 100) }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="curso">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Curso</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let beca"
+                        fxFlex="1 1 100%"
+                    >
+                        <p>{{ beca.curso }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="nivel">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Nivel</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let beca"
+                    >
+                        <p>{{ beca.nivel }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="modalidad">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Modalidad</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let beca"
+                    >
+                        <p>{{ beca.modalidad }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="acciones" stickyEnd>
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                        fxLayout="row" fxLayoutAlign="center center" class="text-center"
+                    >
+                        Acciones
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let beca" fxLayout="row" fxLayoutAlign="center center" class="text-center">
+                        <button mat-icon-button type="button" matTooltip="Aplicar" (click)="onAplicarBecaSindicato(beca)">
+                            <mat-icon>group_add</mat-icon>
+                        </button>
+                    </mat-cell>
+                </ng-container>
+
+                <mat-header-row *matHeaderRowDef="displayedColumnsBecasSindicato; sticky:true"></mat-header-row>
+                <mat-row
+                    *matRowDef="let row; columns: displayedColumnsBecasSindicato;"
+                    class="element"
+                >
+                </mat-row>
+            </mat-table>
+        </div>
+    </div>
+</ng-template>
+
+<!-- *************************************************** -->
+<!-- ***** Template - Vista becas sindicato grupos ***** -->
+<!-- *************************************************** -->
+
+<ng-template #templateBecasGrupos>
+    <div fxFlex="0 0 8%" fxLayout="row" fxLayoutAlign="space-between start">
+        <span class="titulo-navegador accent-fg">
+            <mat-icon class="clickable mr-12" (click)="onVistaAtras()">arrow_back</mat-icon> {{ tituloBecasSindicatoGrupos }}
+        </span>
+    </div>
+
+    <div fxFlex="0 0 92%" fxLayout="row wrap" fxLayoutAlign="space-between start" fusePerfectScrollbar>
+        <ng-container *ngFor="let grupoCabecera of (gruposBecaSindicatoGrupos | PVGruposPipe : (!!listaPreciosSinDescuentoCliente ? listaPreciosSinDescuentoCliente : listaPreciosSinDescuentoSucursal) : '')">
+            <mat-card *ngIf="!!grupoCabecera" fxFlex="24" class="mb-28" [ngClass]="{'clickable': grupoCabecera.esSinRelacionar}" (click)="grupoCabecera.esSinRelacionar ? onGrupoBecaSindicato(null,grupoCabecera.tipoGrupoId) : null">
+                <div class="card-fondo" [ngStyle]="{'background-color': grupoCabecera.color}"></div>
+                
+                <mat-card-header>
+                    <mat-card-title>
+                        {{grupoCabecera.nombre}}
+                    </mat-card-title>
+                    <mat-card-subtitle *ngIf="!!grupoCabecera.tipoGrupo">{{ grupoCabecera.tipoGrupo }}</mat-card-subtitle>
+                    <mat-card-subtitle *ngIf="!grupoCabecera.esSinRelacionar">{{ grupoCabecera.fechaInicio | date : 'dd/MM/yyyy' }} - {{ grupoCabecera.fechaFin | date : 'dd/MM/yyyy' }}</mat-card-subtitle>
+                    <mat-card-subtitle *ngIf="(((!!listaPreciosSinDescuentoCliente ? listaPreciosSinDescuentoCliente[grupoCabecera.articuloId] : listaPreciosSinDescuentoSucursal[grupoCabecera.articuloId]) || 0) | NumeroFormatoPipe : 'moneda' : simboloMoneda) != (((!!listaPreciosCliente ? listaPreciosCliente[grupoCabecera.articuloId] : listaPreciosSucursal[grupoCabecera.articuloId]) || 0) | NumeroFormatoPipe : 'moneda' : simboloMoneda)"><s>{{ ((!!listaPreciosSinDescuentoCliente ? listaPreciosSinDescuentoCliente[grupoCabecera.articuloId] : listaPreciosSinDescuentoSucursal[grupoCabecera.articuloId]) || 0) | NumeroFormatoPipe : 'moneda' : simboloMoneda }}</s></mat-card-subtitle>
+                    <mat-card-subtitle class="blue-fg">{{ ((!!listaPreciosCliente ? listaPreciosCliente[grupoCabecera.articuloId] : listaPreciosSucursal[grupoCabecera.articuloId]) || 0) | NumeroFormatoPipe : 'moneda' : simboloMoneda }}</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <div fxLayout="row wrap">
+                        <ng-container *ngFor="let grupo of grupoCabecera.grupos">
+                            <div class="grupo-horario clickable" [ngClass]="{'cupo-lleno': !grupo.permiteInscripcion}" matRipple (click)="onGrupoBecaSindicato(grupo)">{{ grupo.numeroGrupo }} {{ grupo.horario }}</div><div [matBadge]="grupo.cupoDisponible" [matBadgeOverlap]="true" matBadgePosition="before below" style="height: 10px;"></div>
+                        </ng-container>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+            <div fxFlex="24" *ngIf="!grupoCabecera"></div>
+        </ng-container>
+
+        <hr fxFlex="100" class="multisede-separador" *ngIf="(gruposBecaSindicatoGrupos | PVGruposPipe : (!!listaPreciosSinDescuentoCliente ? listaPreciosSinDescuentoCliente : listaPreciosSinDescuentoSucursal) : '')?.length && (gruposMultisedeBecaSindicatoGrupos | PVGruposPipe : (!!listaPreciosSinDescuentoCliente ? listaPreciosSinDescuentoCliente : listaPreciosSinDescuentoSucursal) : '')?.length">
+
+        <ng-container *ngFor="let grupoCabecera of (gruposMultisedeBecaSindicatoGrupos | PVGruposPipe : (!!listaPreciosSinDescuentoCliente ? listaPreciosSinDescuentoCliente : listaPreciosSinDescuentoSucursal) : '')">
+            <mat-card *ngIf="!!grupoCabecera" fxFlex="24" class="mb-28" [ngClass]="{'clickable': grupoCabecera.esSinRelacionar}" (click)="grupoCabecera.esSinRelacionar ? onGrupoBecaSindicato(null,grupoCabecera.tipoGrupoId) : null">
+                <div class="card-fondo" [ngStyle]="{'background-color': grupoCabecera.color}"></div>
+                
+                <mat-card-header>
+                    <mat-card-title>
+                        GRUPO MULTISEDE {{grupoCabecera.sucursal}} <br>
+                        {{grupoCabecera.nombre}}
+                    </mat-card-title>
+                    <mat-card-subtitle *ngIf="!!grupoCabecera.tipoGrupo">{{ grupoCabecera.tipoGrupo }}</mat-card-subtitle>
+                    <mat-card-subtitle *ngIf="!grupoCabecera.esSinRelacionar">{{ grupoCabecera.fechaInicio | date : 'dd/MM/yyyy' }} - {{ grupoCabecera.fechaFin | date : 'dd/MM/yyyy' }}</mat-card-subtitle>
+                    <mat-card-subtitle *ngIf="(((!!listaPreciosSinDescuentoCliente ? listaPreciosSinDescuentoCliente[grupoCabecera.articuloId] : listaPreciosSinDescuentoSucursal[grupoCabecera.articuloId]) || 0) | NumeroFormatoPipe : 'moneda' : simboloMoneda) != (((!!listaPreciosCliente ? listaPreciosCliente[grupoCabecera.articuloId] : listaPreciosSucursal[grupoCabecera.articuloId]) || 0) | NumeroFormatoPipe : 'moneda' : simboloMoneda)"><s>{{ ((!!listaPreciosSinDescuentoCliente ? listaPreciosSinDescuentoCliente[grupoCabecera.articuloId] : listaPreciosSinDescuentoSucursal[grupoCabecera.articuloId]) || 0) | NumeroFormatoPipe : 'moneda' : simboloMoneda }}</s></mat-card-subtitle>
+                    <mat-card-subtitle class="blue-fg">{{ ((!!listaPreciosCliente ? listaPreciosCliente[grupoCabecera.articuloId] : listaPreciosSucursal[grupoCabecera.articuloId]) || 0) | NumeroFormatoPipe : 'moneda' : simboloMoneda }}</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <div fxLayout="row wrap">
+                        <ng-container *ngFor="let grupo of grupoCabecera.grupos">
+                            <div class="grupo-horario clickable" [ngClass]="{'cupo-lleno': !grupo.permiteInscripcion}" matRipple (click)="onGrupoBecaSindicato(grupo)">{{ grupo.numeroGrupo }} {{ grupo.horario }}</div><div [matBadge]="grupo.cupoDisponible" [matBadgeOverlap]="true" matBadgePosition="before below" style="height: 10px;"></div>
+                        </ng-container>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+            <div fxFlex="24" *ngIf="!grupoCabecera"></div>
+        </ng-container>
+
+        <div *ngIf="!(gruposBecaSindicatoGrupos | PVGruposPipe : (!!listaPreciosSinDescuentoCliente ? listaPreciosSinDescuentoCliente : listaPreciosSinDescuentoSucursal))?.length" fxFlex="100" class="mt-28">
+            <span>No se encontraron grupos activas para la modalidad {{ paModalidadSeleccionado?.nombre }}</span>
+        </div>
+    </div>
+</ng-template>
+
+<!-- ************************************** -->
+<!-- ***** Template - Vista historial ***** -->
+<!-- ************************************** -->
+
+<ng-template #templateHistorial>
+    <div fxFlex="0 0 7%" fxLayout="row" fxLayoutAlign="space-between start">
+        <span class="titulo-navegador accent-fg">
+            <mat-icon class="clickable mr-12" (click)="onVistaAtras()">arrow_back</mat-icon> Cancelar
+        </span>
+        <div class="search-wrapper mx-32 mx-md-0">
+            <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                <mat-icon>search</mat-icon>
+                <input placeholder="{{ 'INTERFAZ.BUSCAR' | translate  }}..." [formControl]="filtroControl" [readonly]="_puntoVentaAbiertoService.cargando">
+            </div>
+        </div>
+    </div>
+
+    <div fxFlex="0 0 93%" fxLayout="column" class="fuse-white-bg">
+        <div fxFlex="0 0 10%" fxLayout="row" fxLayoutAlign="space-between center" class="py-8 px-16">
+            <span class="font-weight-600 font-size-20 text-nowrap">HISTORIAL DE VENTA</span>
+            <div fxFlex="fill"></div>
+            <span class="tag blue-bg text-nowrap mb-12">{{ dataSourceHistorial?.filteredData?.length }} registro(s)</span>
+            <div fxFlex="10px"></div>
+            <mat-form-field appearance="outline" floatLabel="auto">
+                <input
+                    matInput
+                    [matDatepicker]="fechaHistorial"
+                    name="fechaHistorial"
+                    [formControl]="fechaHistorialControl"
+                    disabled
+                    style="display: none;"
+                >
+                <input
+                    matInput
+                    name="fechaHistorialValue"
+                    [value]="fechaHistorialControl.value | FechaHistorialPipe"
+                    disabled
+                >
+                <mat-datepicker-toggle
+                    matSuffix
+                    [for]="fechaHistorial"
+                >
+                    <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+                </mat-datepicker-toggle>
+                <mat-datepicker
+                    #fechaHistorial
+                    disabled="false"
+                ></mat-datepicker>
+            </mat-form-field>
+        </div>
+        <div fxFlex="0 0 90%" fxLayout="row">
+            <mat-table
+                fxFlex="100" style="max-height: 100%;"
+                class="tabla-historial ficha-table h-100-p"
+                #tablaHistorial
+                [dataSource]="dataSourceHistorial"
+                [@animateStagger]="{value:'50'}"
+                cdkDropList
+                id="tablaHistorial"
+                cdkVirtualFor
+                (scroll)="onScrollDownHistorial($event)"
+            >
+                <ng-container matColumnDef="fecha">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                    >Fecha y hora</mat-header-cell>
+                    <mat-cell *matCellDef="let ordenVenta" >
+                        <p>{{ ordenVenta.fecha | date : 'dd/MM/yyyy HH:mm' }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="codigo">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                    >Orden de venta</mat-header-cell>
+                    <mat-cell *matCellDef="let ordenVenta" >
+                        <p>{{ ordenVenta.codigo }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="monto">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                    >Monto</mat-header-cell>
+                    <mat-cell *matCellDef="let ordenVenta" >
+                        <p>{{ ordenVenta.monto | NumeroFormatoPipe : 'moneda' : '$' }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="estatus">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                    >Estatus</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let ordenVenta"
+                    >
+                        <p>{{ ordenVenta.estatus }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="acciones">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        fxLayout="row" fxLayoutAlign="center center" class="text-center"
+                    >
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let ordenVenta" fxLayout="row" fxLayoutAlign="center center" class="text-center">
+                        <button mat-icon-button type="button" matTooltip="Ver" (click)="onVerOrdenVentaHistorial(ordenVenta)">
+                            <mat-icon>remove_red_eye</mat-icon>
+                        </button>
+                    </mat-cell>
+                </ng-container>
+
+                <mat-header-row *matHeaderRowDef="displayedColumnsHistorial; sticky:true"></mat-header-row>
+                <mat-row
+                    *matRowDef="let row; columns: displayedColumnsHistorial;"
+                    class="element"
+                >
+                </mat-row>
+            </mat-table>
+        </div>
+    </div>
+</ng-template>
+
+<!-- *********************************** -->
+<!-- ***** Template - Vista grupos ***** -->
+<!-- *********************************** -->
+
+<ng-template #templateGruposReinscripcionReprobado>
+    <div fxFlex="0 0 8%" fxLayout="row" fxLayoutAlign="space-between start">
+        <span class="titulo-navegador accent-fg">
+            <mat-icon class="clickable mr-12" (click)="onVistaAtras()">arrow_back</mat-icon> Re-inscripciones
+        </span>
+    </div>
+
+    <div fxFlex="0 0 92%" fxLayout="row wrap" fxLayoutAlign="space-between start" fusePerfectScrollbar>
+        <ng-container *ngFor="let grupoCabecera of (programasGrupos | PVGruposPipe : (!!listaPreciosSinDescuentoCliente ? listaPreciosSinDescuentoCliente : listaPreciosSinDescuentoSucursal) : filtroControl?.value : true)">
+            <mat-card *ngIf="!!grupoCabecera" [ngClass]="{'clickable': grupoCabecera.esSinRelacionar}" (click)="grupoCabecera.esSinRelacionar ? onGrupoReinscripcion(null,grupoCabecera.articuloId,grupoCabecera.tipoGrupoId) : null" fxFlex="24" class="mb-28">
+                <div class="card-fondo" [ngStyle]="{'background-color': grupoCabecera.color}"></div>
+                
+                <mat-card-header>
+                    <mat-card-title>
+                        {{grupoCabecera.nombre}}
+                    </mat-card-title>
+                    <mat-card-subtitle *ngIf="!!grupoCabecera.tipoGrupo">{{ grupoCabecera.tipoGrupo }}</mat-card-subtitle>
+                    <mat-card-subtitle *ngIf="!grupoCabecera.esSinRelacionar">{{ grupoCabecera.fechaInicio | date : 'dd/MM/yyyy' }} - {{ grupoCabecera.fechaFin | date : 'dd/MM/yyyy' }}</mat-card-subtitle>
+                    <mat-card-subtitle *ngIf="(((!!listaPreciosSinDescuentoCliente ? listaPreciosSinDescuentoCliente[grupoCabecera.articuloId] : listaPreciosSinDescuentoSucursal[grupoCabecera.articuloId]) || 0) | NumeroFormatoPipe : 'moneda' : simboloMoneda) != (((!!listaPreciosCliente ? listaPreciosCliente[grupoCabecera.articuloId] : listaPreciosSucursal[grupoCabecera.articuloId]) || 0) | NumeroFormatoPipe : 'moneda' : simboloMoneda)"><s>{{ ((!!listaPreciosSinDescuentoCliente ? listaPreciosSinDescuentoCliente[grupoCabecera.articuloId] : listaPreciosSinDescuentoSucursal[grupoCabecera.articuloId]) || 0) | NumeroFormatoPipe : 'moneda' : simboloMoneda }}</s></mat-card-subtitle>
+                    <mat-card-subtitle class="blue-fg">{{ ((!!listaPreciosCliente ? listaPreciosCliente[grupoCabecera.articuloId] : listaPreciosSucursal[grupoCabecera.articuloId]) || 0) | NumeroFormatoPipe : 'moneda' : simboloMoneda }}</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <div fxLayout="row wrap">
+                        <ng-container *ngFor="let grupo of grupoCabecera.grupos">
+                            <div class="grupo-horario clickable" [ngClass]="{'cupo-lleno': !grupo.permiteInscripcion}" matRipple (click)="onGrupoReinscripcion(grupo)">{{ grupo.numeroGrupo }} {{ grupo.horario }}</div><div [matBadge]="grupo.cupoDisponible" [matBadgeOverlap]="true" matBadgePosition="before below" style="height: 10px;"></div>
+                        </ng-container>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+            <div fxFlex="24" *ngIf="!grupoCabecera"></div>
+        </ng-container>
+
+        <hr fxFlex="100" class="multisede-separador" *ngIf="(programasGrupos | PVGruposPipe : (!!listaPreciosSinDescuentoCliente ? listaPreciosSinDescuentoCliente : listaPreciosSinDescuentoSucursal) : filtroControl?.value)?.length && (programasGruposMultisede | PVGruposPipe : (!!listaPreciosSinDescuentoCliente ? listaPreciosSinDescuentoCliente : listaPreciosSinDescuentoSucursal) : filtroControl?.value)?.length">
+
+        <ng-container *ngFor="let grupoCabecera of (programasGruposMultisede | PVGruposPipe : (!!listaPreciosSinDescuentoCliente ? listaPreciosSinDescuentoCliente : listaPreciosSinDescuentoSucursal) : filtroControl?.value)">
+            <mat-card *ngIf="!!grupoCabecera" fxFlex="24" class="mb-28">
+                <div class="card-fondo" [ngStyle]="{'background-color': grupoCabecera.color}"></div>
+                
+                <mat-card-header>
+                    <mat-card-title>
+                        GRUPO MULTISEDE {{grupoCabecera.sucursal}} <br>
+                        {{grupoCabecera.nombre}}
+                    </mat-card-title>
+                    <mat-card-subtitle *ngIf="!!grupoCabecera.tipoGrupo">{{ grupoCabecera.tipoGrupo }}</mat-card-subtitle>
+                    <mat-card-subtitle>{{ grupoCabecera.fechaInicio | date : 'dd/MM/yyyy' }} - {{ grupoCabecera.fechaFin | date : 'dd/MM/yyyy' }}</mat-card-subtitle>
+                    <mat-card-subtitle *ngIf="(((!!listaPreciosSinDescuentoCliente ? listaPreciosSinDescuentoCliente[grupoCabecera.articuloId] : listaPreciosSinDescuentoSucursal[grupoCabecera.articuloId]) || 0) | NumeroFormatoPipe : 'moneda' : simboloMoneda) != (((!!listaPreciosCliente ? listaPreciosCliente[grupoCabecera.articuloId] : listaPreciosSucursal[grupoCabecera.articuloId]) || 0) | NumeroFormatoPipe : 'moneda' : simboloMoneda)"><s>{{ ((!!listaPreciosSinDescuentoCliente ? listaPreciosSinDescuentoCliente[grupoCabecera.articuloId] : listaPreciosSinDescuentoSucursal[grupoCabecera.articuloId]) || 0) | NumeroFormatoPipe : 'moneda' : simboloMoneda }}</s></mat-card-subtitle>
+                    <mat-card-subtitle class="blue-fg">{{ ((!!listaPreciosCliente ? listaPreciosCliente[grupoCabecera.articuloId] : listaPreciosSucursal[grupoCabecera.articuloId]) || 0) | NumeroFormatoPipe : 'moneda' : simboloMoneda }}</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <div fxLayout="row wrap">
+                        <ng-container *ngFor="let grupo of grupoCabecera.grupos">
+                            <div class="grupo-horario clickable" [ngClass]="{'cupo-lleno': !grupo.permiteInscripcion}" matRipple (click)="onGrupoReinscripcion(grupo)">{{ grupo.numeroGrupo }} {{ grupo.horario }}</div><div [matBadge]="grupo.cupoDisponible" [matBadgeOverlap]="true" matBadgePosition="before below" style="height: 10px;"></div>
+                        </ng-container>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+            <div fxFlex="24" *ngIf="!grupoCabecera"></div>
+        </ng-container>
+        <div *ngIf="!(programasGrupos | PVGruposPipe : (!!listaPreciosSinDescuentoCliente ? listaPreciosSinDescuentoCliente : listaPreciosSinDescuentoSucursal))?.length" fxFlex="100" class="mt-28">
+            <span>No se encontraron grupos</span>
+        </div>
+    </div>
+</ng-template>

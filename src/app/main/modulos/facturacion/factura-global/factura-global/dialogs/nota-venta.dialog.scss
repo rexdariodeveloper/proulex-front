@@ -1,0 +1,37 @@
+nota-venta-dialog{
+
+    max-height: calc(100vh - 52px - 37px);
+
+    div.resumen{
+        border-right: solid 2px #e6e6e6;
+    }
+
+    mat-table.tabla-resumen{
+        .mat-header-cell{
+            font-weight: 900;
+            &:not(:first-child){
+                flex-flow: row-reverse;
+            }
+        }
+
+        .cdk-column-cantidad{
+            width: 100px;
+            max-width: 100px;
+        }
+
+        .cdk-column-precio{
+            width: 100px;
+            max-width: 100px;
+        }
+
+        .cdk-column-descuento{
+            width: 100px;
+            max-width: 100px;
+        }
+
+        .cdk-column-total{
+            width: 100px;
+            max-width: 100px;
+        }
+    }
+}

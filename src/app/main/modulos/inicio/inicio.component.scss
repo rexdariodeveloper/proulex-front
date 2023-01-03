@@ -1,0 +1,83 @@
+@import "@fuse/scss/fuse";
+
+#home {
+  /* Position text in the middle */
+  .middle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+
+    /* Add a white text color to all elements inside the .bgimg container */
+    color: white;
+    /* Add a font */
+    font-family: "Courier New", Courier, monospace;
+    /* Set the font-size to 25 pixels */
+    font-size: 25px;
+  }
+
+  /* Style the <hr> element */
+  hr {
+    margin: auto;
+    width: 40%;
+  }
+
+  .div_logo {
+    position: unset;
+    height: 100%;
+    width: 100%;
+  }
+
+  .logo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+  }
+
+  .header {
+    position: relative;
+    flex: 1 0 auto;
+    //height: 280px;
+    //max-height: 280px;
+    text-align: center;
+    overflow: hidden;
+    background: url(/app/main/img/backgrounds/fondo01.jpg) 0 45% / cover no-repeat;
+    background-color: none;
+
+    @include media-breakpoint("xs") {
+      height: 240px;
+      padding: 16px;
+    }
+
+    .hero-text {
+      h2 {
+        color: white;
+        background-color: rgba(0, 0, 0, 0.4);
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: -17px;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        padding-top: 200px;
+      }
+
+      h3 {
+        max-width: 480px;
+        text-align: center;
+        font-weight: 300;
+        letter-spacing: 0.03em;
+        margin: 0;
+
+        @include media-breakpoint("xs") {
+          font-size: 14px;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,27 @@
+export const locale = {
+    lang: 'en',
+    data: {
+        'TITULO': 'Inventory Adjustment',
+        'MODULO': 'Inventory',
+        'DATOS': 'General Data',
+        'REFERENCIA': 'Reference',
+        'ALMACEN/LOCALIDAD': 'Warehouse / Location',
+        'CODIGO': 'Code',
+        'ARTICULO': 'Product',
+        'ALMACEN': 'Warehouse',
+        'LOCALIDAD': 'Location',
+        'MOTIVO': 'Adjustment reason',
+        'OPERACION': 'Operation type',
+        'CANTIDAD': 'Amount',
+        'COMENTARIO': 'Comment',
+        'FECHA': 'Adjustment date',
+        'DESDE': 'From',
+        'HASTA': 'To',
+        'UM': 'Measurement unit',
+        'COSTO_ULTIMO': 'Last cost',
+        'COSTO_MOVIMIENTO': 'Unit cost',
+        'EXISTENCIA': 'Stock',
+        'EXISTENCIA_FINAL': 'Final stock',
+        'CANTIDAD_CERO': 'Amount amount must be greater than 0',
+    }
+};

@@ -1,0 +1,744 @@
+<div id="ficha-curso" class="pixvs-theme-listado page-layout carded fullwidth inner-scroll">
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+        <!-- HEADER -->
+        <ficha-crud *ngIf="config" [config]="config" [isGuardadoPersonalizado]="true" (output)="guardar()"
+            [mostrarBorrar]="grupo?.estatus?.valor =='Activo'" [mostrarEditar]="true" [titulo]="titulo"
+            [subTituloTraduccion]="pageType" [form]="form" [currentId]="currentId" [pageType]="pageType"
+            [dataService]="_grupoService" class="header accent" fxLayout="column" fxLayoutAlign="center center" [etiquetaBotonEliminar]="'Cancelar'"
+            fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center" (outputDesHabilitarCampos)="deshabilitarCampos()" [isDesHabilitarPersonalizado]="true"
+            [isBorrarPersonalizado]="true" (outputBorrar)="onBorrarPersonalizado()" [cargando]="_grupoService?.cargando">
+        </ficha-crud>
+        <!-- / HEADER -->
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <mat-progress-bar *ngIf="_grupoService?.cargando" [color]="'primary'" [mode]="'query'">
+            </mat-progress-bar>
+            <div style="height: 0px;">
+                <button type="button" debounceClick mat-mini-fab class="boton-refresh" (debounceClick)="recargar()"
+                    matTooltip="{{ 'INTERFAZ.RECARGAR' | translate  }}">
+                    <mat-icon class="s-16">refresh</mat-icon>
+                </button>
+            </div>
+            <!-- CONTENT -->
+            <div class="content h-100-p" *ngIf="form">
+                <form focusInvalidInput name="form" id="form" [formGroup]="form" class="product w-100-p h-100-p"
+                    fxLayout="column" fxFlex>
+
+                    <mat-tab-group class="h-100-p" (selectedIndexChange)="tabIndex = $event" (selectedTabChange)="onSelectedTabChange($event)">
+                        <mat-tab label="Datos Generales">
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                    <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="70" fxFlex.gt-md="70">
+
+                                        <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+
+                                                <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                                    <pixvs-mat-select [matSelectCtrl]="form.get('sucursal')" [datos]="sucursales"
+                                                        [appearance]="'outline'"
+                                                        [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                                        [campoValor]="'nombre'" [label]="'Sedes'" [required]="isRequired('sucursal',form)"
+                                                        [seleccionarUnicaOpcion]="false"
+                                                        fxFlex="1 0 auto" [ngStyle]="{'pointer-events': 'none'}">
+                                                    </pixvs-mat-select>
+
+                                                    <pixvs-mat-select [matSelectCtrl]="form.get('programaIdioma')" [datos]="cursos"
+                                                        [appearance]="'outline'"
+                                                        [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                                        [campoValor]="'nombre'" [label]="'Cursos'" [required]="isRequired('programaIdioma',form)"
+                                                        [seleccionarUnicaOpcion]="false"
+                                                        fxFlex="1 0 auto" [ngStyle]="{'pointer-events': 'none'}">
+                                                    </pixvs-mat-select>
+                                                </div>
+                                            </div>
+
+                                            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+
+                                                <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                                    <pixvs-mat-select #modalidadSelect [matSelectCtrl]="form.get('paModalidad')" [datos]="modalidades"
+                                                        [appearance]="'outline'"
+                                                        [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                                        [campoValor]="'nombre'" [label]="'Modalidades'" [required]="isRequired('paModalidad',form)"
+                                                        [seleccionarUnicaOpcion]="false"
+                                                        fxFlex="1 0 auto" [ngStyle]="{'pointer-events': 'none'}">
+                                                    </pixvs-mat-select>
+
+                                                    <pixvs-mat-select #programacionSelect [matSelectCtrl]="form.get('programacionAcademicaComercial')" [datos]="programaciones"
+                                                        [appearance]="'outline'"
+                                                        [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                                        [campoValor]="'nombre'" [label]="'Programación comercial'" [required]="isRequired('programacionAcademicaComercial',form)"
+                                                        fxFlex="1 0 auto" [ngStyle]="{'pointer-events': 'none'}" *ngIf="!esJobs && !esJobsSems">
+                                                    </pixvs-mat-select>
+                                                    <pixvs-mat-select #cicloSelect [matSelectCtrl]="form.get('paCiclo')" [datos]="ciclos"
+                                                        [appearance]="'outline'"
+                                                        [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                                        [campoValor]="'nombre'" [label]="'Ciclo escolar'" [required]="isRequired('paCiclo',form)"
+                                                        fxFlex="1 0 auto" [ngStyle]="{'pointer-events': 'none'}" *ngIf="esJobs || esJobsSems">
+                                                    </pixvs-mat-select>
+                                                </div>
+                                            </div>
+
+                                            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+                                                <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 calc(16% - 10px)">
+                                                        <mat-label>Fecha Inicio</mat-label>
+                                                        <input matInput type="text" name="fechaFin" [(ngModel)]="fechaInicioFormateada" [ngModelOptions]="{standalone: true}" [disabled]="true">
+                                                    </mat-form-field>
+                                                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 calc(16% - 10px)">
+                                                        <mat-label>Fecha Fin</mat-label>
+                                                        <input matInput type="text" name="fechaFin" [(ngModel)]="fechaFinFormateada" [ngModelOptions]="{standalone: true}" [disabled]="true">
+                                                    </mat-form-field>
+                                                </div>
+                                            </div>
+
+
+                                            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+                                                <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                                    <pixvs-mat-select [matSelectCtrl]="form.get('plataforma')" [datos]="plataformas"
+                                                        [appearance]="'outline'"
+                                                        [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                                        [campoValor]="'valor'" [label]="'Plataforma'" [required]="isRequired('plataforma',form)"
+                                                        [seleccionarUnicaOpcion]="false"
+                                                        fxFlex="1 0 auto" [ngStyle]="{'pointer-events': 'none'}">
+                                                    </pixvs-mat-select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="30" fxFlex.gt-md="30" class="mat-elevation-z8">
+
+                                        <div fxLayout="row wrap" fxLayoutGap="20px grid" style="text-align: center;padding: 15px;">
+                                            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                    <b>Días</b>
+                                                </div>
+                                            </div>
+                                            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                    <b>Horas</b>
+                                                </div>
+                                            </div>
+                                            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                    Lunes
+                                                </div>
+                                            </div>
+                                            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                    {{modalidadControl?.value?.lunes? modalidadControl.value.horasPorDia: '0'}}
+                                                </div>
+                                            </div>
+                                            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                    Martes
+                                                </div>
+                                            </div>
+                                            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                    {{modalidadControl?.value?.martes? modalidadControl.value.horasPorDia: '0'}}
+                                                </div>
+                                            </div>
+                                            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                    Miércoles
+                                                </div>
+                                            </div>
+                                            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                    {{modalidadControl?.value?.miercoles? modalidadControl.value.horasPorDia: '0'}}
+                                                </div>
+                                            </div>
+                                            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                    Jueves
+                                                </div>
+                                            </div>
+                                            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                    {{modalidadControl?.value?.jueves? modalidadControl.value.horasPorDia: '0'}}
+                                                </div>
+                                            </div>
+                                            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                    Viernes
+                                                </div>
+                                            </div>
+                                            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                    {{modalidadControl?.value?.viernes? modalidadControl.value.horasPorDia: '0'}}
+                                                </div>
+                                            </div>
+                                            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                    Sábado
+                                                </div>
+                                            </div>
+                                            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                    {{modalidadControl?.value?.sabado? modalidadControl.value.horasPorDia: '0'}}
+                                                </div>
+                                            </div>
+                                            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                    Domingo
+                                                </div>
+                                            </div>
+                                            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                    {{modalidadControl?.value?.domingo? modalidadControl.value.horasPorDia: '0'}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div fxlayout="row" fxlayoutalign="start center" class="my-20" style="display: flex;">
+                                        <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font">query_builder</mat-icon>
+                                        <div class="h2 secondary-text ng-tns-c345-79">Datos del grupo</div>
+                                    </div>
+
+                                    <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+                                        
+                                        <div fxLayout="row wrap" fxLayoutGap="20px grid">
+
+                                           <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Código del grupo</mat-label>
+                                                <input type="text" matInput name="codigoGrupo" formControlName="codigoGrupo"
+                                                    required="{{ isRequired('codigoGrupo', form) }}" [readonly]="true">
+                                                <mat-error *ngIf="(!!form.get('codigoGrupo').errors)">
+                                                    {{validatorService.getMessage(form.get('codigoGrupo'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Nombre del grupo</mat-label>
+                                                <input type="text" matInput name="nombreGrupo" formControlName="nombreGrupo"
+                                                    required="{{ isRequired('nombreGrupo', form) }}" [readonly]="true">
+                                                <mat-error *ngIf="(!!form.get('nombreGrupo').errors)">
+                                                    {{validatorService.getMessage(form.get('nombreGrupo'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+
+                                            <pixvs-mat-select #plantelSelect *ngIf="(esJobs || esJobsSems) && planteles" #nivelSelect [matSelectCtrl]="plantelControl" [datos]="planteles"
+                                                [appearance]="'outline'"
+                                                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                                [campoValor]="'nombre'" [label]="'Plantel'"
+                                                fxFlex="1 0 auto" [ngStyle]="{'pointer-events': 'none'}">
+                                            </pixvs-mat-select>
+
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto" *ngIf="!!form.get('fechaFinInscripcionesFormat')?.value">
+                                                <mat-label>Fecha Fin Inscripciones</mat-label>
+                                                <input type="text" matInput name="fechaFinInscripcionesFormat" formControlName="fechaFinInscripcionesFormat"
+                                                    required="{{ isRequired('fechaFinInscripcionesFormat', form) }}" [readonly]="true">
+                                                <mat-error *ngIf="(!!form.get('fechaFinInscripcionesFormat').errors)">
+                                                    {{validatorService.getMessage(form.get('fechaFinInscripcionesFormat'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto" *ngIf="!!form.get('fechaFinInscripcionesBecasFormat')?.value">
+                                                <mat-label>Fecha Fin Inscripciones Becas</mat-label>
+                                                <input type="text" matInput name="fechaFinInscripcionesBecasFormat" formControlName="fechaFinInscripcionesBecasFormat"
+                                                    required="{{ isRequired('fechaFinInscripcionesBecasFormat', form) }}" [readonly]="true">
+                                                <mat-error *ngIf="(!!form.get('fechaFinInscripcionesBecasFormat').errors)">
+                                                    {{validatorService.getMessage(form.get('fechaFinInscripcionesBecasFormat'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+
+                                        </div>
+                                                        
+                                    
+                                        
+                                        <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Nivel</mat-label>
+                                                <input type="text" matInput name="nivel" formControlName="nivel"
+                                                    required="{{ isRequired('nivel', form) }}" max="{{form.get('programaIdioma').value? form.get('programaIdioma').value.numeroNiveles : ''}}" [readonly]="true">
+                                                <mat-error *ngIf="(!!form.get('nivel').errors)">
+                                                    {{validatorService.getMessage(form.get('nivel'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Grupo</mat-label>
+                                                <input type="text" matInput name="grupo" formControlName="grupo"
+                                                    required="{{ isRequired('grupo', form) }}" [readonly]="true">
+                                                <mat-error *ngIf="(!!form.get('grupo').errors)">
+                                                    {{validatorService.getMessage(form.get('grupo'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+
+                                            <pixvs-mat-select [matSelectCtrl]="form.get('modalidadHorario')" [datos]="modalidadControl.value?.horarios"
+                                                [appearance]="'outline'"
+                                                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                                [campoValor]="'nombre'" [label]="'Horario'" [required]="isRequired('modalidadHorario',form)"
+                                                [seleccionarUnicaOpcion]="false"
+                                                fxFlex="1 0 auto" [ngStyle]="{'pointer-events': 'none'}">
+                                            </pixvs-mat-select>
+
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Calificación mínima aprobatoria</mat-label>
+                                                <input type="number" matInput name="calificacionMinima" formControlName="calificacionMinima" max="100" min="0" 
+                                                pattern="^\d*(\.\d{0,2})?$"
+                                                    required="{{ isRequired('calificacionMinima', form) }}">
+                                                <mat-error *ngIf="(!!form.get('calificacionMinima').errors)">
+                                                    {{validatorService.getMessage(form.get('calificacionMinima'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Porcentaje de Faltas permitidas</mat-label>
+                                                <input type="text" matInput name="faltasPermitidas" formControlName="faltasPermitidas"
+                                                required="{{ isRequired('faltasPermitidas', form) }}">
+                                                <mat-error *ngIf="(!!form.get('faltasPermitidas').errors)">
+                                                    {{validatorService.getMessage(form.get('faltasPermitidas'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                        </div>
+                                    
+                                        
+                                        <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                            <pixvs-mat-select [matSelectCtrl]="form.get('tipoGrupo')" [datos]="tipoGrupo"
+                                                [appearance]="'outline'"
+                                                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                                [campoValor]="'valor'" [label]="'Tipo de grupo'" [required]="isRequired('tipoGrupo',form)"
+                                                [seleccionarUnicaOpcion]="false"
+                                                fxFlex="1 0 auto">
+                                            </pixvs-mat-select>
+
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Cupo</mat-label>
+                                                <input matInput name="cupo" formControlName="cupo"  type="number" min="1">
+                                            </mat-form-field>
+
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Aula</mat-label>
+                                                <input type="text" matInput name="aula" formControlName="aula"
+                                                    required="{{ isRequired('aula', form) }}">
+                                                <mat-error *ngIf="(!!form.get('aula').errors)">
+                                                    {{validatorService.getMessage(form.get('aula'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Comentarios</mat-label>
+                                                <input type="text" matInput name="comentarios" formControlName="comentarios"
+                                                    required="{{ isRequired('comentarios', form) }}">
+                                                <mat-error *ngIf="(!!form.get('comentarios').errors)">
+                                                    {{validatorService.getMessage(form.get('comentarios'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                        </div>
+                                    
+                                        
+                                        <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                            <ng-container *ngIf="!mostrarBtnCambioProfesor">
+                                                <pixvs-mat-select [matSelectCtrl]="form.get('empleado')" [datos]="profesores"
+                                                    [appearance]="'outline'"
+                                                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                                    [campoValor]="'nombreCompleto'" [label]="'Profesor'" [required]="isRequired('empleado',form)"
+                                                    [seleccionarUnicaOpcion]="false"
+                                                    fxFlex="1 0 auto" [ngStyle]="{'pointer-events': sePuedeCambiarProfesor() ? 'none' : ''}">
+                                                </pixvs-mat-select>
+                                            </ng-container>
+                                            <div *ngIf="mostrarBtnCambioProfesor"  fxFlex="1 0 auto" fxLayout="row wrap" fxLayoutGap="20px grid" [ngStyle]="{'pointer-events': (estatus == 'Finalizado' || estatus == 'Cancelado') ? 'none' : ''}">
+                                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                    <mat-label>Profesor</mat-label>
+                                                    <input type="text" matInput name="profesorTexto" [value]="nuevoProfesorTitular?.nombreCompleto || form?.get('empleado')?.value?.nombreCompleto" [readonly]="true">
+                                                </mat-form-field>
+                                            </div>
+                                            
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Categoria</mat-label>
+                                                <input type="text" matInput name="categoriaProfesor" formControlName="categoriaProfesor"
+                                                    required="{{ isRequired('categoriaProfesor', form) }}" [readonly]="true">
+                                                <mat-error *ngIf="(!!form.get('categoriaProfesor').errors)">
+                                                    {{validatorService.getMessage(form.get('categoriaProfesor'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Sueldo</mat-label>
+                                                <input type="text" matInput name="sueldoProfesor" formControlName="sueldoProfesor"
+                                                    required="{{ isRequired('sueldoProfesor', form) }}"prefix="$ " mask="separator.2" thousandSeparator="," [readonly]="!permisoSueldo">
+                                                <mat-error *ngIf="(!!form.get('sueldoProfesor').errors)">
+                                                    {{validatorService.getMessage(form.get('sueldoProfesor'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                        </div>
+                                        <div fxLayout="row wrap" fxLayoutGap="20px grid" *ngIf="mostrarBtnCambioProfesor" [ngStyle]="{'pointer-events': (estatus == 'Finalizado' || estatus == 'Cancelado') ? 'none' : ''}">
+                                            <div fxFlex="0 0 auto">
+                                                <button mat-raised-button type="button" class="blue" (click)="onCambioProfesor()" [disabled]="form?.disabled">Cambio de profesor</button>
+                                            </div>
+                                        </div>
+                                        <!--<div fxLayout="row wrap" fxLayoutAlign="start center">
+                                            <div fxLayout="row" fxLayoutAlign="start center" class="mb-20" [ngStyle]="{'pointer-events': permisoMultisede ? '' : 'none'}">
+                                                <mat-checkbox color="primary" name="multisede" formControlName="multisede">
+                                                    Multisede
+                                                </mat-checkbox>
+                                            </div>
+                                        </div>-->
+                                    </div>
+
+
+
+                                </div>
+
+
+                            </div>
+                        </mat-tab>
+                        <mat-tab label="Alumnos" class="h-100-p">
+                            <div class="tab-content p-24 h-100-p">
+                                <div fxLayout="row wrap" fxLayoutGap="20px grid" class="h-100-p">
+                                    <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="80" fxFlex.gt-md="80" class="h-100-p">
+                                        <div fxFlex="0 0 100%" fxLayout="row">
+                                            <mat-table fxFlex="100" [dataSource]="dataSource" class="tabla-alumnos ficha-table h-100-p" style="max-height: 100%;" cdkVirtualFor [@animateStagger]="{value:'50'}" id="tablaAlumnos" [ngClass]="{'jobs': esJobs && !esJobsSems, 'jobs-sems': !esJobs && esJobsSems, 'ambos': esJobs && esJobsSems, 'ninguno': !esJobs && !esJobsSems}">
+                                                <ng-container matColumnDef="imagen">
+                                                    <mat-header-cell
+                                                        *matHeaderCellDef
+                                                    ></mat-header-cell>
+                                                    <mat-cell *matCellDef="let element" fxLayout="row" fxLayoutAlign="center center" class="text-center">
+                                                        <img
+                                                            mat-card-avatar
+                                                            style="border-radius: 100%; height: 35px;"
+                                                            src="{{element?.alumno?.fotoId != null ? apiUrl + '/v1/archivo/' + (element?.alumno?.fotoId | hashId) : 'assets/images/avatars/profile.jpg' }}"
+                                                        />
+                                                    </mat-cell>
+                                                </ng-container>
+                                                <ng-container matColumnDef="codigo">
+                                                    <mat-header-cell
+                                                        *matHeaderCellDef
+                                                    >Código alumno</mat-header-cell>
+                                                    <mat-cell *matCellDef="let element" >
+                                                        <p>{{ element.alumno.codigo }}</p>
+                                                    </mat-cell>
+                                                </ng-container>
+                                                <ng-container matColumnDef="codigoUDG">
+                                                    <mat-header-cell
+                                                        *matHeaderCellDef
+                                                    >Código UDG</mat-header-cell>
+                                                    <mat-cell *matCellDef="let element" >
+                                                        <p>{{ element.alumno.codigoAlumnoUDG }}</p>
+                                                    </mat-cell>
+                                                </ng-container>
+                                                <ng-container matColumnDef="primerApellido">
+                                                    <mat-header-cell
+                                                        *matHeaderCellDef
+                                                    >Primer apellido</mat-header-cell>
+                                                    <mat-cell *matCellDef="let element" >
+                                                        <p>{{element.alumno.primerApellido}}</p>
+                                                    </mat-cell>
+                                                </ng-container>
+                                                <ng-container matColumnDef="segundoApellido">
+                                                    <mat-header-cell
+                                                        *matHeaderCellDef
+                                                    >Segundo apellido</mat-header-cell>
+                                                    <mat-cell *matCellDef="let element" >
+                                                        <p>{{ element.alumno.segundoApellido || ''}}</p>
+                                                    </mat-cell>
+                                                </ng-container>
+                                                <ng-container matColumnDef="nombre">
+                                                    <mat-header-cell
+                                                        *matHeaderCellDef
+                                                    >Nombre</mat-header-cell>
+                                                    <mat-cell *matCellDef="let element" >
+                                                        <p>{{element.alumno.nombre}}</p>
+                                                    </mat-cell>
+                                                </ng-container>
+                                                <ng-container matColumnDef="centroUniversitario">
+                                                    <mat-header-cell
+                                                        *matHeaderCellDef
+                                                    >Centro universitario</mat-header-cell>
+                                                    <mat-cell *matCellDef="let element" >
+                                                        <p>{{element.alumno.centroUniversitarioJOBS?.referencia}}</p>
+                                                    </mat-cell>
+                                                </ng-container>
+                                                <ng-container matColumnDef="carrera">
+                                                    <mat-header-cell
+                                                        *matHeaderCellDef
+                                                    >Carrera</mat-header-cell>
+                                                    <mat-cell *matCellDef="let element" >
+                                                        <p>{{element.alumno.carreraJOBS?.valor}}</p>
+                                                    </mat-cell>
+                                                </ng-container>
+                                                <ng-container matColumnDef="preparatoria">
+                                                    <mat-header-cell
+                                                        *matHeaderCellDef
+                                                    >Preparatoria</mat-header-cell>
+                                                    <mat-cell *matCellDef="let element" >
+                                                        <p>{{element.alumno.preparatoriaJOBS?.valor}}</p>
+                                                    </mat-cell>
+                                                </ng-container>
+                                                <ng-container matColumnDef="bachillerato">
+                                                    <mat-header-cell
+                                                        *matHeaderCellDef
+                                                    >Bachillerato</mat-header-cell>
+                                                    <mat-cell *matCellDef="let element" >
+                                                        <p>{{element.alumno.bachilleratoTecnologico}}</p>
+                                                    </mat-cell>
+                                                </ng-container>
+                                                <ng-container matColumnDef="edad">
+                                                    <mat-header-cell
+                                                        *matHeaderCellDef
+                                                    >Edad</mat-header-cell>
+                                                    <mat-cell *matCellDef="let element" >
+                                                        <p>{{getEdad(element.alumno.fechaNacimiento)}}</p>
+                                                    </mat-cell>
+                                                </ng-container>
+                                                <ng-container matColumnDef="correoElectronico">
+                                                    <mat-header-cell
+                                                        *matHeaderCellDef
+                                                    >Correo electrónico</mat-header-cell>
+                                                    <mat-cell *matCellDef="let element" >
+                                                        <p>{{element.alumno.correoElectronico}}</p>
+                                                    </mat-cell>
+                                                </ng-container>
+                                                <ng-container matColumnDef="telefono">
+                                                    <mat-header-cell
+                                                        *matHeaderCellDef
+                                                    >Teléfono</mat-header-cell>
+                                                    <mat-cell *matCellDef="let element" >
+                                                        <p>{{element.alumno.telefonoFijo}}</p>
+                                                    </mat-cell>
+                                                </ng-container>
+                                                <ng-container matColumnDef="inscripcion">
+                                                    <mat-header-cell
+                                                        *matHeaderCellDef
+                                                    >Inscripción</mat-header-cell>
+                                                    <mat-cell *matCellDef="let element" >
+                                                        <p>{{element.estatus.valor}}</p>
+                                                    </mat-cell>
+                                                </ng-container>
+                                                <ng-container matColumnDef="ordenVenta">
+                                                    <mat-header-cell
+                                                        *matHeaderCellDef
+                                                    >Orden de venta</mat-header-cell>
+                                                    <mat-cell *matCellDef="let element" >
+                                                        <p>{{ element.estatus.id == 2000510 || element.gradoId != null ? element.codigo : ''}}</p>
+                                                    </mat-cell>
+                                                </ng-container>
+                                                <ng-container matColumnDef="menu" stickyEnd>
+                                                    <mat-header-cell
+                                                        *matHeaderCellDef
+                                                    ></mat-header-cell>
+                                                    <mat-cell *matCellDef="let element; let i = index" align="end">
+                                                        <button type="button" mat-icon-button [matMenuTriggerFor]="menu" [disabled]="!deshabilitarBotones">
+                                                            <mat-icon>more_vert</mat-icon>
+                                                          </button>
+                                                          <mat-menu #menu="matMenu">
+                                                            <button type="button" mat-menu-item (click)="confirmarBaja(element)" *ngIf="((esJobs || esJobsSems) && permisoBajaGrupo && element.estatus.id != 2000513) || (element.estatus.id != 2000511 && !esJobs && !esJobsSems)">
+                                                              <span>Baja de grupo</span>
+                                                            </button>
+                                                            <button *ngIf="((esJobs || esJobsSems) && permiteCambioGrupo) || (!esJobs && !esJobsSems && permiteCambioGrupo && element.estatus.id != 2000511)" type="button" mat-menu-item (click)="abrirModalCambioGrupo(element)">
+                                                              <span>Cambio de grupo</span>
+                                                            </button>
+                                                            <button type="button" mat-menu-item (click)="posponerCurso(element)" *ngIf="element.estatus.valor != 'Pendiente de pago'">
+                                                              <span>Posponer curso</span>
+                                                            </button>
+                                                            <hr>
+                                                            <button type="button" mat-menu-item (click)="confirmBorrarInscripcion(element, i)" *ngIf="element.estatus.id == 2000511">
+                                                                <mat-icon>remove</mat-icon>
+                                                                <span>Borrar inscripción</span>
+                                                            </button>
+                                                            <button type="button" mat-menu-item (click)="imprimirKarddexAlumno(element.alumno)">
+                                                              <mat-icon>school</mat-icon>
+                                                              <span>Historial académico</span>
+                                                            </button>
+                                                            <button type="button" mat-menu-item (click)="getBoleta(element.alumno)">
+                                                              <mat-icon>face</mat-icon>
+                                                              <span>Boleta Calificaciones</span>
+                                                            </button>
+                                                            <button type="button" mat-menu-item (click)="getOrdenVenta(element)" *ngIf="element.estatus.valor == 'Pagada'">
+                                                              <mat-icon>shopping_cart</mat-icon>
+                                                              <span>Imprimir Orden de Venta</span>
+                                                            </button>
+                                                            <button *ngIf="element.carreraTexto" type="button" mat-menu-item (click)="copiarLiga(element.carreraTexto)">
+                                                              <mat-icon>link</mat-icon>
+                                                              <span>Copiar Liga de Pagos</span>
+                                                            </button>
+                                                          </mat-menu> 
+                                                    </mat-cell>
+                                                </ng-container>
+                                                <mat-header-row *matHeaderRowDef="displayedColumnsAlumnos; sticky:true"></mat-header-row>
+                                                <mat-row *matRowDef="let row; columns: displayedColumnsAlumnos;" class="element"></mat-row>
+                                            </mat-table>
+                                        </div>
+                                    </div>
+                                    <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="20" fxFlex.gt-md="20" class="h-100-p">
+
+                                        <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                            <div class="mat-elevation-z8">
+                                                <div class="p-16" fxLayout="row" fxLayoutAlign="space-between center">
+                                                    <div class="h1 pr-16">Resumen</div>
+                                                </div>
+                                                <table class="simple clickable">
+                                                    <thead>
+                                                        <tr>
+                                                            <th></th>
+                                                            <th class="text-right">Cantidad</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>Cupo</td>
+                                                            <td class="text-right">{{form.get('cupo').value}}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Total de alumnos</td>
+                                                            <td class="text-right">{{inscripciones.length}}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Pagados</td>
+                                                            <td class="text-right">{{inscripcionesPagadas}}</td>
+                                                        </tr>
+                                                        <!--<tr>
+                                                            <td>En Proceso</td>
+                                                            <td class="text-right">{{inscripcionesEnProceso}}</td>
+                                                        </tr>-->
+                                                        <tr>
+                                                            <td>Pendientes</td>
+                                                            <td class="text-right">{{inscripcionesPendientes}}</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-tab>
+                        <mat-tab label="Listado de clases">
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                    <table mat-table [dataSource]="listadoClases" style="width: 100%;">
+                                        <ng-container matColumnDef="numero">
+                                            <th mat-header-cell *matHeaderCellDef> Número </th>
+                                            <td mat-cell *matCellDef="let element"> {{element.numeroClase}} </td>
+                                        </ng-container>
+                                        <ng-container matColumnDef="fechaClase">
+                                            <th mat-header-cell *matHeaderCellDef> Fecha Clase </th>
+                                            <td mat-cell *matCellDef="let element"> {{element.fechaHarcodeada}} </td>
+                                        </ng-container>
+                                        <ng-container matColumnDef="profesor">
+                                            <th mat-header-cell *matHeaderCellDef> Profesor clase </th>
+                                            <!-- <td mat-cell *matCellDef="let element"> {{element.profesor}} </td> -->
+                                            <td mat-cell *matCellDef="let element" [ngClass]="{'red-fg': !!profesoresTitularesController?.profesoresSuplentesMap[element.soloFecha]?.empleado}"> {{
+                                                profesoresTitularesController?.profesoresSuplentesMap[element.soloFecha]?.empleado
+                                                    ? profesoresTitularesController?.profesoresSuplentesMap[element.soloFecha]?.empleado.nombreCompletoSinCodigo
+                                                    : (
+                                                        profesoresTitularesController?.profesoresTitularesMap[element.soloFecha]?.empleado
+                                                            ? profesoresTitularesController?.profesoresTitularesMap[element.soloFecha]?.empleado.nombreCompletoSinCodigo
+                                                            : grupo?.empleado?.nombreCompletoSinCodigo
+                                                    )
+                                            }}</td>
+                                        </ng-container>
+                                        <ng-container matColumnDef="estatus">
+                                            <th mat-header-cell *matHeaderCellDef> Estatus </th>
+                                            <td mat-cell *matCellDef="let element"> {{element.estatus}} </td>
+                                        </ng-container>
+                                        <ng-container matColumnDef="acciones">
+                                            <th mat-header-cell *matHeaderCellDef> Acciones </th>
+                                            <td mat-cell *matCellDef="let element; let i = index"> 
+                                                <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font" (click)="abrirModal(i)" style="cursor: pointer" [ngStyle]="{'pointer-events': (!deshabilitarBotones) ? 'none' : ''}" *ngIf="form.get('empleado').value">swap_horiz</mat-icon>&nbsp;
+                                                <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font"  style="cursor: pointer" *ngIf="element.historial && element.historial.length > 0" (click)="abrirHistorial(element.historial)">history</mat-icon>
+                                                <mat-icon  role="img" class="mat-icon mr-16 secondary-text red-fg" aria-hidden="true" data-mat-icon-type="font"  style="cursor: pointer"  [ngStyle]="{'pointer-events': (!deshabilitarBotones) ? 'none' : ''}" *ngIf="!!profesoresTitularesController?.profesoresSuplentesMap[element.soloFecha]?.empleado" (click)="confirmarCancelarProfesorSustituto(profesoresTitularesController.profesoresSuplentesMap[element.soloFecha],element)" matTooltip="Cancelar profesor sustituto">cancel</mat-icon>
+                                            </td>
+                                        </ng-container>
+                                        <tr mat-header-row *matHeaderRowDef="displayedColumnsClases"></tr>
+                                        <tr mat-row *matRowDef="let row; columns: displayedColumnsClases;"></tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </mat-tab>
+                        <mat-tab label="Criterios de evaluacion" *ngIf="fechasHabiles && fechasHabiles.length > 0">
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                    <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+                                        <table mat-table [dataSource]="listaExamenDetalle">
+                                            <ng-container matColumnDef="actividad">
+                                                <th mat-header-cell *matHeaderCellDef> Actividad </th>
+                                                <td mat-cell *matCellDef="let element"> {{element.actividad}} </td>
+                                            </ng-container>
+                                            <ng-container matColumnDef="formato">
+                                                <th mat-header-cell *matHeaderCellDef> Formato </th>
+                                                <td mat-cell *matCellDef="let element"> {{element.formato}} </td>
+                                            </ng-container>
+                                            <ng-container matColumnDef="score">
+                                                <th mat-header-cell *matHeaderCellDef> Puntaje </th>
+                                                <td mat-cell *matCellDef="let element"> {{element.score}} </td>
+                                            </ng-container>
+                                            <!-- <ng-container matColumnDef="fechaInicio">
+                                                <th mat-header-cell *matHeaderCellDef> Fecha Test </th>
+                                                <td mat-cell *matCellDef="let element"> {{element.dias > fechasHabiles?.length ? fechasHabiles[fechasHabiles?.length -1] : fechasHabiles[element.dias - 1]}} </td>
+                                            </ng-container> -->
+                                            <ng-container matColumnDef="tiempo">
+                                                <th mat-header-cell *matHeaderCellDef> Tiempo </th>
+                                                <td mat-cell *matCellDef="let element"> {{element.tiempo + ' min'}} </td>
+                                            </ng-container>
+                                            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                                            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-tab>
+                        <mat-tab label="Calificaciones y Asistencias">
+                            <!-- TODO: Agregar ngIf para cargar el componente solo cuando se encuentre en el tab -->
+                            <!-- TODO: Modificar componentes para heredar un listado de alumnos adecuado -->
+                            <!-- TODO: Refinar las consultas de asistencias y calificaciones para traer menos datos -->
+                            <!-- TODO: Revisar alternativas para el render de los comentarios -->
+                            <ng-container>
+                                <div class="h-100-p">
+                                    <div class="w-100-p p-4" style="text-align: end;">
+                                        <button type="button" mat-raised-button color="primary" (click)="tipoTabla = 'grades'" [disabled]="tipoTabla == 'grades'">Calificaciones</button>&nbsp;&nbsp;
+                                        <button type="button" mat-raised-button color="primary" (click)="tipoTabla = 'attendance'" [disabled]="tipoTabla == 'attendance'">Asistencias</button>
+                                    </div>
+                                    <div class="w-100-p" [style.height]="'calc(100% - 44px)'">
+                                        <ng-container *ngIf="tipoTabla == 'grades'; else attendanceTemplate">
+                                            <tab-calificaciones [grupoId]="currentId" (eventEsCargando)="_grupoService.cargando = $event"></tab-calificaciones>
+                                        </ng-container>
+                                        <ng-template #attendanceTemplate>
+                                            <tab-asistencias [grupoId]="currentId" (eventEsCargando)="_grupoService.cargando = $event"></tab-asistencias>
+                                        </ng-template>
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </mat-tab>
+                        <mat-tab label="Evidencias" *ngIf="grupo.programaIdioma?.esPcp">
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                    <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+                                        <div fxLayout="column" class="w-100-p h-100-p" fxLayoutGap="20px">
+                                            <div fxLayout="row" fxLayoutAlign="end end">
+                                                <button type="button" class="btn-nuevo" mat-mini-fab color="primary" (click)="abrirEvidenciasModal()" [disabled]="!deshabilitarBotones">
+                                                    <mat-icon>add</mat-icon>
+                                                </button>
+                                            </div>
+
+                                            <pixvs-tabla-simple #tableEvidencias
+                                                [columnaId]="'id'"
+                                                [service]="_evidenciasService"
+                                                [localeEN]="localeEN" [localeES]="localeES"
+                                                [columnas]="columnasTablaEvidencias" 
+                                                [columnasFechas]="columnasFechasEvidencias" 
+                                                [displayedColumns]="getDisplayedColumnsEvidencias()" 
+                                                [reordenamiento]="false">
+                                            </pixvs-tabla-simple>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-tab>
+                    </mat-tab-group>
+                </form>
+            </div>
+            <!-- / CONTENT -->
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

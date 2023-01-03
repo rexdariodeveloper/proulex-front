@@ -1,0 +1,68 @@
+<!-- SIDEBAR HEADER -->
+<div fxLayout="column" fxLayoutAlign="space-between start" class="header accent p-24 pb-4">
+
+    <div class="account" fxLayout="column" [@animate]="{value:'*',params:{delay:'300ms'}}">
+        <div fxLayout="row" fxLayoutAlign="start center" fxHide fxShow.gt-xs>
+            <mat-icon class="secondary-text s-18">home</mat-icon>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">{{ modulo }}</span>
+        </div>
+
+        <div class="logo mb-12 mb-md-0" fxLayout="row" fxLayoutAlign="start center">
+            <mat-icon class="logo-icon s-32 mr-16" [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
+                {{ icon }}
+            </mat-icon>
+            <span class="logo-text h1" [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+                {{ titulo }}
+            </span>
+        </div>
+
+        <div class="title"></div>
+    </div>
+
+</div>
+<!-- / SIDEBAR HEADER -->
+
+<!-- SIDEBAR CONTENT -->
+<div class="content" fusePerfectScrollbar [@animate]="{value:'*',params:{y:'50px'}}">
+
+
+    <div class="px-24 pt-24 pb-8" fxLayout="column" fxFlexFill>
+
+
+        <div fxFlex>
+
+            <div class="pb-8" fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                <span style="color: darkgray;">Filtros:</span>
+            </div>
+
+            <pixvs-dynamic-components [regConfig]="regConfig" (output)="filtar($event)"></pixvs-dynamic-components>
+
+        </div>
+
+    </div>
+
+
+
+</div>
+<div class="px-12 pt-12 pb-12 fuse-navy-50-bg" fxLayout="row">
+
+
+    <button debounceClick mat-raised-button type="submit" #filtrar (debounceClick)="buscar()" class="boton-filtrar mt-12"
+        class="boton-filtrar w-100-p" [ngClass]="{'boton-listado-selector': listadoMenuOpciones?.length > 0}">
+        <span>{{ 'INTERFAZ.FILTRAR' | translate  }}</span>
+    </button>
+
+    <button *ngIf="listadoMenuOpciones?.length > 0" mat-raised-button class="boton-filtrar options-selector" [matMenuTriggerFor]="listadoMenu"
+        aria-label="Select" matTooltip="{{ 'INTERFAZ.ACCIONES' | translate  }}">
+        <mat-icon>more_vert</mat-icon>
+    </button>
+
+    <mat-menu #listadoMenu="matMenu">
+        <button mat-menu-item *ngFor="let opcion of listadoMenuOpciones" (click)="selectedOpcion(opcion)">
+            <mat-icon>{{opcion.icon}}</mat-icon>
+            <span>{{opcion.title}}</span>
+        </button>
+    </mat-menu>
+</div>
+<!-- / SIDEBAR CONTENT -->

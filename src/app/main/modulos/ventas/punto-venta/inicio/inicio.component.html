@@ -1,0 +1,39 @@
+<form *ngIf="!!form" focusInvalidInput name="form" id="form" [formGroup]="form" class="product w-100-p h-100-p" fxLayout="row" fxLayoutAlign="center center" submi>
+    <!-- <div class="w-100-p h-100-p" fxLayout="row" fxLayoutAlign="center center"> -->
+        <mat-card>
+            <mat-card-header>
+                <mat-card-title>
+                    <div class="w-100-p" fxLayout="column" fxLayoutAlign="start start">
+                        <img style="height: 100px" src="app/main/img/logos/logo_back_white.png">
+                        <span class="font-size-40 font-weight-900 w-100-p text-center">Apertura de turno</span>
+                    </div>
+                </mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+                <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                    <pixvs-mat-select [matSelectCtrl]="sucursalControl" [datos]="sucursales"
+                        [appearance]="'outline'"
+                        [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                        [campoValor]="'nombre'" [label]="'Sede'"
+                        [required]="isRequired('sucursal')" fxFlex="100">
+                    </pixvs-mat-select>
+                </div>
+                <div *ngIf="planteles?.length > 1" fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                    <pixvs-mat-select [matSelectCtrl]="plantelControl" [datos]="planteles"
+                        [appearance]="'outline'"
+                        [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                        [campoValor]="'nombre'" [label]="'Plantel'"
+                        [required]="isRequired('plantel')" fxFlex="100">
+                    </pixvs-mat-select>
+                </div>
+            </mat-card-content>
+            <mat-card-actions>
+                <div class="w-100-p pb-12 pt-8" fxLayout="column" fxLayoutAlign="start center">
+                    <button mat-raised-button color="accent" class="btn-abrir-turno" type="submit" form="form" (debounceClick)="abrirTurno()">
+                        <span class="font-size-20">Abrir turno</span>
+                    </button>
+                </div>
+            </mat-card-actions>
+        </mat-card>
+    <!-- </div> -->
+</form>

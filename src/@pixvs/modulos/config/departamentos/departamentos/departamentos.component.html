@@ -1,0 +1,244 @@
+<div id="organigrama" class="page-layout carded left-sidebar fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center layout-pad0">
+
+        <!-- HEADER -->
+        <ficha-crud *ngIf="config" [config]="config" [cargando]="_departamentosService?.cargando" [isGuardadoPersonalizado]="true" (output)="guardar($event)" [mostrarBorrar]="false" [mostrarEditar]="false" [titulo]="'TITULO' | translate" [form]="form" [currentId]="null"
+            [pageType]="'nuevo'" [dataService]="_departamentosService" class="header accent" fxLayout="column" fxLayoutAlign="center center" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center">
+        </ficha-crud>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card h-100-p">
+            <div class="content h-100-p">
+                <div fxLayout="column" fxFlex="1 0 calc(40%)" fxFlex.lt-sm="1 0 calc(100%)">
+                    <div fxlayout="row wrap" fxlayoutalign="start center" class="m-20 separator">
+                        <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font">business</mat-icon>
+                        <div class="h2 secondary-text ng-tns-c345-79">Estructura</div>
+                    </div>
+                    <div fxLayout="row wrap" class="px-20 h-100-p" fxFlex="auto" fusePerfectScrollbar>
+                        <pixvs-mat-tree #treeDepartamentos [campoRecuperar]="'info'"></pixvs-mat-tree>
+                    </div>
+                </div>
+                <div fxLayout="column" fxFlex="1 0 calc(60%)" fxFlex.lt-sm="1 0 calc(100%)">
+                    <!--<div fxlayout="row wrap" fxlayoutalign="start center" class="m-20 separator">
+						<mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font">description</mat-icon>
+						<div class="h2 secondary-text ng-tns-c345-79">Datos del departamento</div>
+					</div>-->
+                    <div class="block" fxLayout="column" class="px-20" id="afterForm">
+                        <form *ngIf="!!form" name="form" id="form" [formGroup]="form">
+                            <mat-tab-group #tabs class="h-100-p" mat-stretch-tabs>
+                                <mat-tab label="Datos del departamento">
+                                    <div fxLayout="row wrap" class="px-20" fxFlex="auto">
+                                        <div class="product w-100-p" fxLayout="column" fxFlex>
+                                            <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                    <mat-label>Prefijo</mat-label>
+                                                    <input matInput name="prefijo" formControlName="prefijo" required="{{ isRequired(form,'prefijo') }}">
+                                                    <mat-error *ngIf="(!!form.get('prefijo').errors)">
+                                                        {{validatorService.getMessage(form.get('prefijo'))}}
+                                                    </mat-error>
+                                                </mat-form-field>
+
+                                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                    <mat-label>Nombre</mat-label>
+                                                    <input matInput name="nombre" formControlName="nombre" required="{{ isRequired(form,'nombre') }}">
+                                                    <mat-error *ngIf="(!!form.get('nombre').errors)">
+                                                        {{validatorService.getMessage(form.get('nombre'))}}
+                                                    </mat-error>
+                                                </mat-form-field>
+                                            </div>
+
+                                            <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                                <pixvs-mat-select [matSelectCtrl]="departamentoPadreControl" [datos]="departamentos" [appearance]="'outline'" [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate" [campoValor]="'nombre'" [label]="'Departamento padre'" [required]="isRequired(form,'departamentoPadre')"
+                                                    fxFlex="1 0 auto">
+                                                </pixvs-mat-select>
+
+                                                <pixvs-mat-select [matSelectCtrl]="responsableControl" [datos]="usuarios" [appearance]="'outline'" [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate" [campoValor]="'nombreCompleto'" [label]="'Responsable'" [required]="isRequired(form,'responsable')"
+                                                    fxFlex="1 0 auto">
+                                                </pixvs-mat-select>
+                                            </div>
+
+                                            <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                                <pixvs-mat-select [matSelectCtrl]="usuariosPermisosControl" [datos]="usuarios" [appearance]="'outline'" [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate" [campoValor]="'nombreCompleto'" [label]="'Usuarios permisos'" [required]="isRequired(form,'responsable')"
+                                                    [multiple]="true" fxFlex="1 0 auto">
+                                                </pixvs-mat-select>
+                                            </div>
+
+                                            <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                                <div fxLayout="row" fxLayoutAlign="center center" class="mb-20">
+                                                    <mat-checkbox color="primary" name="autoriza" formControlName="autoriza">
+                                                        Permite autorizar
+                                                    </mat-checkbox>
+                                                </div>
+                                            </div>
+
+                                            <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                                <div fxLayout="row" fxLayoutAlign="center center" class="mb-20">
+                                                    <mat-checkbox color="primary" name="activo" formControlName="activo">
+                                                        Activo
+                                                    </mat-checkbox>
+                                                </div>
+                                            </div>
+
+                                            <!--<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <button *ngIf="!!departamentoEditar" mat-raised-button type="button" (click)="onCancelarEdicion()" class="px-12 py-4">Cancelar edición</button>
+                                            <button *ngIf="!!departamentoEditar" mat-raised-button type="button" (click)="onBorrar()" class="px-12 py-4 ml-8" color="warn"><mat-icon>delete</mat-icon></button>
+                                        </div>-->
+                                        </div>
+                                    </div>
+                                </mat-tab>
+                                <mat-tab label="Datos del puesto">
+                                    <div fxLayout="row wrap" class="px-20" fxFlex="auto">
+                                        <pixvs-mat-select [matSelectCtrl]="puestoControl" [datos]="puestos" [appearance]="'outline'" [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate" [campoValor]="['codigo', 'nombre']" [label]="'Puesto'" [required]="isRequired(form,'puesto')" fxFlex="1 0 auto">
+                                        </pixvs-mat-select>
+                                    </div>
+                                    <div fxLayout="row wrap" class="px-20" fxFlex="auto">
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                            <mat-label># Vacantes</mat-label>
+                                            <input matInput name="numeroVacantes" formControlName="numeroVacantes" required="{{ isRequired(form,'numeroVacantes') }}" mask="999">
+                                            <mat-error *ngIf="(!!form.get('numeroVacantes').errors)">
+                                                {{validatorService.getMessage(form.get('numeroVacantes'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+                                    <div fxLayout="row wrap" class="px-20" fxFlex="auto">
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                            <mat-label>Proposito del puesto</mat-label>
+                                            <input matInput name="propositoPuesto" formControlName="propositoPuesto" required="{{ isRequired(form,'propositoPuesto') }}">
+                                            <mat-error *ngIf="(!!form.get('propositoPuesto').errors)">
+                                                {{validatorService.getMessage(form.get('propositoPuesto'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+                                    <div fxLayout="row wrap" class="px-20" fxFlex="auto">
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                            <mat-label>Observaciones</mat-label>
+                                            <input matInput name="observaciones" formControlName="observaciones" required="{{ isRequired(form,'observaciones') }}">
+                                            <mat-error *ngIf="(!!form.get('observaciones').errors)">
+                                                {{validatorService.getMessage(form.get('observaciones'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+                                    <div fxLayout="row" fxLayoutAlign="start start" fxLayoutGap="10px">
+                                        <!--    responsabilidades     -->
+                                        <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                            <div fxlayout="row" fxlayoutalign="start center" class="my-20" style="display: flex;border-bottom: solid 1px lightgray;width: 100%">
+                                                <div fxLayout="column" fxFlex="80" fxFlex.gt-sm="80" fxFlex.gt-md="80">
+                                                    <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font"><span class="material-icons">explore</span></mat-icon>
+                                                    <div class="h2 secondary-text ng-tns-c345-79">Responsabilidades</div>
+                                                </div>
+
+                                                <div fxLayout="column" fxFlex="20" fxFlex.gt-sm="20" fxFlex.gt-md="20" fxLayoutAlign="end end">
+                                                    <button *ngIf="form?.enabled" mat-mini-fab color="primary" (click)="abrirModal(null, 'Responsabilidad')">
+                                                        <mat-icon>add</mat-icon>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div fxLayout="row wrap" class="px-20" fxFlex="auto" *ngFor="let responsabilidad of responsabilidades.controls; let i = index">
+                                                <div [formGroup]="responsabilidad" style="width: 100%">
+                                                    <div fxLayout="column" fxFlex="70" fxFlex.gt-sm="70" fxFlex.gt-md="70" fxLayoutAlign="start start" clas="p-0">
+                                                        {{responsabilidad.get('descripcion').value }}
+                                                    </div>
+                                                    <div fxLayout="column" fxFlex="30" fxFlex.gt-sm="30" fxFlex.gt-md="30" fxLayoutAlign="center center" clas="p-0">
+                                                        <div style="display: inline">
+                                                            <button *ngIf="form?.enabled" mat-icon-button color="accent" (click)="deleteHabilidadResponsabilidad(responsabilidad, 'Responsabilidad')">
+                                                                <mat-icon>delete</mat-icon>
+                                                            </button>
+                                                            <div fxFlex></div>
+                                                            <button *ngIf="form?.enabled" mat-icon-button color="accent" (click)="abrirModal(responsabilidad, 'Responsabilidad')">
+                                                                <mat-icon>edit</mat-icon>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--    Habilidades     -->
+                                        <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                            <div fxlayout="row" fxlayoutalign="start center" class="my-20" style="display: flex;border-bottom: solid 1px lightgray;width: 100%">
+                                                <div fxLayout="column" fxFlex="75" fxFlex.gt-sm="75" fxFlex.gt-md="75">
+                                                    <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font"><span class="material-icons">explore</span></mat-icon>
+                                                    <div class="h2 secondary-text ng-tns-c345-79">Habilidades</div>
+                                                </div>
+
+                                                <div fxLayout="column" fxFlex="25" fxFlex.gt-sm="25" fxFlex.gt-md="20" fxLayoutAlign="end end">
+                                                    <button *ngIf="form?.enabled" mat-mini-fab color="primary" (click)="abrirModal(null, 'Habilidad')">
+                                                        <mat-icon>add</mat-icon>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div fxLayout="row wrap" class="px-20" fxFlex="auto" *ngFor="let habilidad of habilidades.controls; let i = index">
+                                                <div [formGroup]="habilidad" style="width: 100%">
+                                                    <!--<div fxLayout="row wrap" class="px-20" fxFlex="auto" [formGroup]="habilidad"></div>-->
+                                                    <div fxLayout="column" fxFlex="70" fxFlex.gt-sm="70" fxFlex.gt-md="70" fxLayoutAlign="start start">
+                                                        {{habilidad.get('descripcion').value }}
+                                                    </div>
+                                                    <div fxLayout="column" fxFlex="30" fxFlex.gt-sm="30" fxFlex.gt-md="30" fxLayoutAlign="space-between center">
+                                                        <div style="display: inline">
+                                                            <button *ngIf="form?.enabled" mat-icon-button color="accent" (click)="deleteHabilidadResponsabilidad(habilidad, 'Habilidad')">
+                                                                <mat-icon>delete</mat-icon>
+                                                            </button>
+                                                            <div fxFlex></div>
+                                                            <button *ngIf="form?.enabled" mat-icon-button color="accent" (click)="abrirModal(habilidad, 'Habilidad')">
+                                                                <mat-icon>edit</mat-icon>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--<div fxLayout="row wrap" class="px-20" fxFlex="auto" fxlayoutalign="start center">
+                                        <h2>Responsabilidades y habilidades</h2>
+                                    </div>
+                                    <div fxLayout="row wrap" class="px-20" fxFlex="auto" formArrayName="responsabilidadHabilidad" *ngIf="true">
+                                        <div fxLayout="column" fxFlex="1 0 calc(50%)" fxFlex.lt-sm="1 0 calc(100%)">
+                                            <div fxLayout="row wrap" class="px-20" fxFlex="auto" *ngFor="let responsabilidad of responsabilidades.controls; let i = index">
+                                                <div fxLayout="row wrap" class="px-20" fxFlex="auto" [formGroup]="responsabilidad">
+                                                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                        <mat-label>Responsabilidad</mat-label>
+                                                        <input matInput name="descripcion" formControlName="descripcion">
+                                                    </mat-form-field>
+                                                </div>
+                                            </div>
+                                            <div fxLayout="row wrap" class="px-20" fxFlex="auto">
+                                                <button mat-mini-fab class="btn-nuevo" (click)="addResposabilidadHabilidad(true)">
+                                                    <mat-icon>add</mat-icon> <span style="color: #00897b;">&nbsp;&nbsp; Agregar responsabilidad</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div fxLayout="column" fxFlex="1 0 calc(50%)" fxFlex.lt-sm="1 0 calc(100%)">
+                                            <div fxLayout="row wrap" class="px-20" fxFlex="auto" *ngFor="let habilidad of habilidades.controls; let i = index">
+                                                <div fxLayout="row wrap" class="px-20" fxFlex="auto" [formGroup]="habilidad">
+                                                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                        <mat-label>Habilidad</mat-label>
+                                                        <input matInput name="descripcion" formControlName="descripcion">
+                                                    </mat-form-field>
+                                                </div>
+                                            </div>
+                                            <div fxLayout="row wrap" class="px-20" fxFlex="auto">
+                                                <button mat-mini-fab class="btn-nuevo" (click)="addResposabilidadHabilidad(false)">
+                                                    <mat-icon>add</mat-icon><span style="color: #00897b;"> &nbsp;&nbsp;Agregar habilidad</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>-->
+                                </mat-tab>
+                            </mat-tab-group>
+                        </form>
+                    </div>
+                    <div fxlayout="row wrap" fxlayoutalign="start center" class="m-20 separator">
+                        <button *ngIf="!!departamentoEditar" mat-raised-button type="button" (click)="onCancelarEdicion()" class="px-12 py-4">Cancelar edición</button>
+                        <button *ngIf="!!departamentoEditar" mat-raised-button type="button" (click)="onBorrar()" class="px-12 py-4 ml-8" color="warn"><mat-icon>delete</mat-icon></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

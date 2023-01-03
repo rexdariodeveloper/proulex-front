@@ -1,0 +1,36 @@
+<div style="min-height: 200px; max-height: 400px">
+	<div mat-dialog-title class="text-center">
+		<h1>Respuesta</h1>
+	</div>
+	<div mat-dialog-content class="pb-24 h-300" style="overflow-y: auto">
+		<div *ngIf="!!response && response.length > 0">
+			<div>
+				<table mat-table class="w-100-p h-100-p" [dataSource]="response">
+		  
+					<ng-container matColumnDef="codigo">
+					  <th mat-header-cell *matHeaderCellDef> Código </th>
+					  <td mat-cell *matCellDef="let element"> {{element.codigo}} </td>
+					</ng-container>
+				  
+					<ng-container matColumnDef="nombre">
+					  <th mat-header-cell *matHeaderCellDef> Nombre </th>
+					  <td mat-cell *matCellDef="let element"> {{element.nombre}} </td>
+					</ng-container>
+				  
+					<ng-container matColumnDef="error">
+					  <th mat-header-cell *matHeaderCellDef> Mensaje </th>
+					  <td mat-cell *matCellDef="let element"> {{element.error}} </td>
+					</ng-container>
+				  
+					<tr mat-header-row *matHeaderRowDef="['codigo','nombre','error']"></tr>
+					<tr mat-row *matRowDef="let row; columns: ['codigo','nombre','error'];"></tr>
+				</table>
+			</div>
+		</div>
+		
+	</div>
+	<div mat-dialog-actions fxLayoutAlign="end end" fxLayoutGap="5px">
+		<button mat-raised-button class="mat-accent mr-16" (click)="aceptar()">Aceptar</button>
+	</div>
+</div>
+

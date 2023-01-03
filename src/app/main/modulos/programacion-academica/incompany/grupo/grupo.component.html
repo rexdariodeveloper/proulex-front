@@ -1,0 +1,1182 @@
+<div id="ficha-programa" class="pixvs-theme-listado page-layout carded fullwidth inner-scroll" *ngIf="vistaPrincipal">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <ficha-crud *ngIf="config" [config]="config" [isGuardadoPersonalizado]="true" (output)="guardar()"
+            [mostrarBorrar]="grupo?.activo" [mostrarEditar]="mostrarEditar" [mostrarGuardar]="mostrarGuardar" [titulo]="titulo" [mostrarBorrar]="mostrarBorrar"
+            [subTituloTraduccion]="pageType" [form]="form" [currentId]="currentId" [pageType]="pageType"
+            [dataService]="_grupoService" class="header accent" fxLayout="column" fxLayoutAlign="center center"
+            fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center" (outputDesHabilitarCampos)="deshabilitarCampos()" [cargando]="_grupoService?.cargando" [isDesHabilitarPersonalizado]="true">
+        </ficha-crud>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <mat-progress-bar *ngIf="_grupoService?.cargando" [color]="'primary'" [mode]="'query'">
+            </mat-progress-bar>
+
+            <div style="height: 0px;">
+                <button debounceClick mat-mini-fab class="boton-refresh" (debounceClick)="recargar()"
+                    matTooltip="{{ 'INTERFAZ.RECARGAR' | translate  }}">
+                    <mat-icon class="s-16">refresh</mat-icon>
+                </button>
+            </div>
+
+            <!-- CONTENT -->
+            <div class="content" *ngIf="form">
+
+                <form focusInvalidInput name="form" id="form" [formGroup]="form" class="product w-100-p"
+                    fxLayout="column" fxFlex>
+
+                    <mat-tab-group [selectedIndex]="selectedIndex">
+
+                        <mat-tab label="Datos Generales">
+
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+
+                                <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+
+                                    <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                        <pixvs-mat-select [matSelectCtrl]="form.get('sucursal')" [datos]="sucursales"
+                                            [appearance]="'outline'"
+                                            [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                            [campoValor]="'nombre'" [label]="'Sedes'" [required]="isRequired('sucursal',form)"
+                                            fxFlex="1 0 auto">
+                                        </pixvs-mat-select>
+
+                                        <pixvs-mat-select [matSelectCtrl]="form.get('cliente')" [datos]="clientes"
+                                            [appearance]="'outline'"
+                                            [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                            [campoValor]="'nombre'" [label]="'Cliente'" [required]="isRequired('cliente',form)"
+                                            fxFlex="1 0 auto">
+                                        </pixvs-mat-select>
+                                    </div>
+                                            
+
+
+                                    <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                        <div fxlayout="row" fxlayoutalign="start center" class="my-20" style="display: flex; border-bottom: solid 1px lightgray;">
+                                            <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font">account_balance</mat-icon>
+                                            <div class="h2 secondary-text ng-tns-c345-79">Condiciones de pago</div>
+                                        </div>
+                                    </div>
+
+                                    <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                        <!--<div style="width: 100%" [ngStyle]="{'pointer-events': (!deshabilitarBotones) ? 'none' : ''}">
+                                            
+                                            <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font" (click)="pdf.click(); $event.preventDefault()" style="cursor: pointer; float: right;" color="primary">attachment</mat-icon><input #pdf type="file" (change)="pdfChangeEvent($event)" style="display:none;" />
+                                            
+                                        </div>-->
+                                        
+                                        <table mat-table [dataSource]="archivos" style="width: 100%;">
+                                            <ng-container matColumnDef="nombreOriginal">
+                                                <th mat-header-cell *matHeaderCellDef> Nombre </th>
+                                                <td mat-cell *matCellDef="let element"> {{element.nombreOriginal}} </td>
+                                            </ng-container>
+                                            <ng-container matColumnDef="creadoPor">
+                                                <th mat-header-cell *matHeaderCellDef> Creado Por </th>
+                                                <td mat-cell *matCellDef="let element"> {{element.creadoPor}} </td>
+                                            </ng-container>
+                                            <ng-container matColumnDef="fecha">
+                                                <th mat-header-cell *matHeaderCellDef> Fecha </th>
+                                                <td mat-cell *matCellDef="let element"> {{element.fecha}} </td>
+                                            </ng-container>
+                                            <ng-container matColumnDef="boton">
+                                                <th mat-header-cell *matHeaderCellDef style="text-align: end"> <button mat-fab color="primary" (click)="pdf.click(); $event.preventDefault()" [disabled]="!deshabilitarBotones"><mat-icon style="cursor: pointer; float: right; color: white" color="primary">add</mat-icon></button><input #pdf type="file" (change)="pdfChangeEvent($event)" style="display:none;" /></th>
+                                                <td mat-cell *matCellDef="let element"> </td>
+                                            </ng-container>
+                                            <tr mat-header-row *matHeaderRowDef="displayedColumnsArchivos"></tr>
+                                            <tr mat-row *matRowDef="let row; columns: displayedColumnsArchivos;" (click)="descargarPDF(row)"></tr>
+                                        </table>
+                                        
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+                        </mat-tab>
+
+                        <mat-tab label="Grupos">
+
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+
+                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                    <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="20" fxFlex.gt-md="20">
+                                        <div class="nav material2">
+
+                                            <div class="nav-item" aria-label="inbox">
+                                                <a class="nav-link" matRipple
+                                                   [ngClass]="{'active accent':filterBy ==='all'}" (click)="getGruposActivos()">
+                                                    <span class="title">Activos</span>
+                                                </a>
+                                            </div>
+
+                                            <div class="nav-item" aria-label="frequently contacted">
+                                                <a class="nav-link" matRipple [ngClass]="{'active accent':filterBy ==='frequent'}" (click)="getGruposFinalizados()">
+                                                    <div class="title">Finalizados</div>
+                                                </a>
+                                            </div>
+
+                                            <div class="nav-item" aria-label="starred" >
+                                                <a class="nav-link" matRipple [ngClass]="{'active accent':filterBy ==='starred'}" (click)="getGruposCancelados()">
+                                                    <div class="title">Cancelados</div>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="80" fxFlex.gt-md="80">
+                                        <!--<div style="width: 100%">
+                                            <button mat-fab color="primary" (click)="nuevoGrupo(null)" style="float: right;" [disabled]="!deshabilitarBotones">
+                                                <mat-icon>add</mat-icon>
+                                            </button> 
+                                        </div>-->
+                                        <table mat-table [dataSource]="gruposTabla" style="width: 100%;">
+                                            <ng-container matColumnDef="codigo">
+                                                <th mat-header-cell *matHeaderCellDef> Código </th>
+                                                <td mat-cell *matCellDef="let element"> {{element.codigo}} </td>
+                                            </ng-container>
+                                            <ng-container matColumnDef="nombre">
+                                                <th mat-header-cell *matHeaderCellDef> Nombre </th>
+                                                <td mat-cell *matCellDef="let element"> {{element.nombre}} </td>
+                                            </ng-container>
+                                            <ng-container matColumnDef="alias">
+                                                <th mat-header-cell *matHeaderCellDef> Alias </th>
+                                                <td mat-cell *matCellDef="let element"> {{element.alias}} </td>
+                                            </ng-container>
+                                            <ng-container matColumnDef="fechaInicio">
+                                                <th mat-header-cell *matHeaderCellDef> Fecha inicio </th>
+                                                <td mat-cell *matCellDef="let element"> {{element.fechaInicio}} </td>
+                                            </ng-container>
+                                            <ng-container matColumnDef="fechaFin">
+                                                <th mat-header-cell *matHeaderCellDef> Fecha fin </th>
+                                                <td mat-cell *matCellDef="let element"> {{element.fechaFin}} </td>
+                                            </ng-container>
+                                            <ng-container matColumnDef="profesor">
+                                                <th mat-header-cell *matHeaderCellDef> Profesor </th>
+                                                <td mat-cell *matCellDef="let element">
+                                                {{element.nuevoProfesorTitular?.nombreCompleto ? element.nuevoProfesorTitular?.nombreCompleto.replace(element.nuevoProfesorTitular?.nombreCompleto.substr(0, element.nuevoProfesorTitular?.nombreCompleto.indexOf('-')),'').replace('-','') : element.empleado.nombreCompleto.replace(element.empleado.nombreCompleto.substr(0, element.empleado.nombreCompleto.indexOf('-')),'').replace('-','')}}
+                                                </td>
+                                            </ng-container>
+                                            <ng-container matColumnDef="acciones">
+                                                <th mat-header-cell *matHeaderCellDef></th>
+                                                <td mat-cell *matCellDef="let element; let i = index">
+                                                    <button mat-icon-button *ngIf="element.estatus.id != 2000622">
+                                                        <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font" (click)="confirmarBorrarGrupo(i)" style="cursor: pointer; color: red" [ngStyle]="{'pointer-events': (!deshabilitarBotones) ? 'none' : ''}">delete
+                                                        </mat-icon>
+                                                    </button> 
+                                                    <button mat-icon-button *ngIf="element.estatus.id != 2000622 && element.id !=null">
+                                                        <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font" (click)="nuevoGrupo(element,i)" style="cursor: pointer;" [ngStyle]="{'pointer-events': (!deshabilitarBotones) ? 'none' : ''}">edit
+                                                        </mat-icon>
+                                                    </button> 
+                                                </td>
+                                            </ng-container>
+                                            <ng-container matColumnDef="boton">
+                                                <th mat-header-cell *matHeaderCellDef> 
+                                                    <button mat-fab color="primary" (click)="nuevoGrupo(null)" style="float: right;" [disabled]="!deshabilitarBotones">
+                                                    <mat-icon>add</mat-icon>
+                                                    </button>  
+                                                </th>
+                                                <td mat-cell *matCellDef="let element"> </td>
+                                            </ng-container>
+                                            <tr mat-header-row *matHeaderRowDef="displayedColumnsGrupos"></tr>
+                                            <tr mat-row *matRowDef="let row; columns: displayedColumnsGrupos;let i = index" [ngStyle]="{'pointer-events': (!deshabilitarBotones) ? 'none' : ''}" [hidden]="row.estatus.id != 2000620  && (filterBy == 'frequent' || filterBy == 'all')"></tr>
+                                        </table>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </mat-tab>
+
+
+                    </mat-tab-group>
+
+                    
+
+                </form>
+
+
+            </div>
+            <!-- / CONTENT -->
+
+        </div>
+        <!-- / CONTENT CARD -->
+
+
+    </div>
+    <!-- / CENTER -->
+</div>
+<div id="academy-course" class="page-layout simple left-sidebar inner-scroll" *ngIf="!vistaPrincipal">
+
+    <!-- SIDEBAR -->
+    <fuse-sidebar class="sidebar" name="academy-course-left-sidebar-1" position="left" lockedOpen="gt-md">
+
+        <!-- SIDEBAR CONTENT -->
+        <div class="content" fusePerfectScrollbar>
+
+            <div class="steps">
+
+                <div class="step"
+                     *ngFor="let step of steps; let i = index; let last = last; let first = first"
+                     (click)="gotoStep(i)"
+                     [ngClass]="{'current': currentStep === i, 'completed': currentStep > i, 'last': last, 'first': first}">
+                    <div class="index">
+                        <span>{{i + 1}}</span>
+                    </div>
+                    <div class="title">{{step.title}}</div>
+                </div>
+
+            </div>
+
+        </div>
+        <!-- / SIDEBAR CONTENT -->
+
+    </fuse-sidebar>
+    <!-- / SIDEBAR -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <div class="header accent p-24" fxLayout="row" fxLayoutAlign="start center">
+
+            <button mat-icon-button class="mr-16" (click)="regresar()">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+
+            <div>
+                <h2>{{grupo.codigo ? grupo.codigo : 'Nuevo grupo'}}{{grupoAdd.get('empleado')?.value ?'-'+ grupoAdd.get('empleado').value.nombreCompleto.replace(grupoAdd.get('empleado').value.nombreCompleto.substr(0, grupoAdd.get('empleado').value.nombreCompleto.indexOf('-')),'').replace('-','') : ''}}</h2>
+            </div>
+
+        </div>
+        <!-- / HEADER -->
+
+        
+
+        <!-- CONTENT -->
+        <div id="course-content" class="content">
+
+            <ng-container>
+
+                <div class="course-step" fusePerfectScrollbar
+                     *ngIf="currentStep === 0"
+                     [@slideIn]="animationDirection">
+
+                    <div id="course-step-content" class="course-step-content" *ngIf="grupoAdd">
+                        <form focusInvalidInput name="form" id="grupoAdd" [formGroup]="grupoAdd" class="product w-100-p">
+                            <div class="tab-content p-24" fusePerfectScrollbar fxLayoutGap="10px grid">
+                                    <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="70" fxFlex.gt-md="70">
+                                        <div fxlayout="row" fxlayoutalign="start center" class="my-20" style="display: flex;">
+                                            <h1>Datos generales</h1>
+                                        </div>
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <pixvs-mat-select #sucursalSelect [matSelectCtrl]="form.get('sucursal')" [datos]="sucursales"
+                                            [appearance]="'outline'"
+                                            [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                            [campoValor]="'nombre'" [label]="'Sedes'" [required]="isRequired('sucursal',form)"
+                                            fxFlex="1 0 auto" [ngStyle]="{'pointer-events': 'none'}">
+                                            </pixvs-mat-select>
+                                            <pixvs-mat-select #cursoSelect [matSelectCtrl]="grupoAdd.get('programaIdioma')" [datos]="cursos"
+                                            [appearance]="'outline'"
+                                            [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                            [campoValor]="'nombre'" [label]="'Programas'" [required]="isRequired('programaIdioma',grupoAdd)"
+                                            fxFlex="1 0 auto" [ngStyle]="{'pointer-events': grupoAdd.get('id')?.value !=null ? 'none' : ''}">
+                                            </pixvs-mat-select>
+                                            <pixvs-mat-select #nivelSelect [matSelectCtrl]="grupoAdd.get('nivelControl')" [datos]="jsonNiveles"
+                                            [appearance]="'outline'"
+                                            [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                            [campoValor]="'nombre'" [label]="'Nivel'" [required]="isRequired('nivelControl',grupoAdd)"
+                                            fxFlex="1 0 auto" [ngStyle]="{'pointer-events': grupoAdd.get('id')?.value !=null ? 'none' : ''}">
+                                            </pixvs-mat-select>
+                                        </div>
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Alias grupo</mat-label>
+                                                <input type="text" matInput name="alias" formControlName="alias" >
+                                                <mat-error *ngIf="(!!grupoAdd.get('alias').errors)">
+                                                    {{validatorService.getMessage(grupoAdd.get('alias'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                        </div>
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <pixvs-mat-select #modalidadSelect [matSelectCtrl]="grupoAdd.get('paModalidad')" [datos]="modalidadesDatos"
+                                                [appearance]="'outline'"
+                                                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                                [campoValor]="'nombre'" [label]="'Modalidades'" [required]="isRequired('paModalidad',grupoAdd)"
+                                                fxFlex="1 0 auto" [ngStyle]="{'pointer-events': grupoAdd.get('id')?.value !=null ? 'none' : ''}">
+                                            </pixvs-mat-select>
+                                            <pixvs-mat-select [matSelectCtrl]="grupoAdd.get('tipoGrupo')" [datos]="tiposGrupos"
+                                                [appearance]="'outline'"
+                                                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                                [campoValor]="'valor'" [label]="'Tipo de grupo'" [required]="isRequired('tipoGrupo',grupoAdd)"
+                                                fxFlex="1 0 auto">
+                                            </pixvs-mat-select>
+                                        </div>
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 calc(16% - 10px)">
+                                                <mat-label>Fecha Inicio</mat-label>
+                                                <input matInput type="date" name="fechaInicio" formControlName="fechaInicio" [min]="fechaActual" [readonly]="grupoAdd.get('id')?.value !=null">
+                                                <mat-error *ngIf="(!!grupoAdd.get('fechaInicio').errors)">
+                                                    {{validatorService.getMessage(grupoAdd.get('fechaInicio'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 calc(16% - 10px)">
+                                                <mat-label>Fecha Fin</mat-label>
+                                                <input matInput type="date" name="fechaFin" formControlName="fechaFin" [min]="grupoAdd.get('fechaInicio')?.value" [readonly]="grupoAdd.get('id')?.value !=null">
+                                                <mat-error *ngIf="(!!grupoAdd.get('fechaFin').errors)">
+                                                    {{validatorService.getMessage(grupoAdd.get('fechaFin'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                        </div>
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Calificación mínima aprobatoria</mat-label>
+                                                <input type="text" matInput name="calificacionMinima" formControlName="calificacionMinima"
+                                                    required="{{ isRequired('calificacionMinima', grupoAdd) }}">
+                                                <mat-error *ngIf="(!!grupoAdd.get('calificacionMinima').errors)">
+                                                    {{validatorService.getMessage(grupoAdd.get('calificacionMinima'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Faltas permitidas</mat-label>
+                                                <input type="text" matInput name="faltasPermitidas" formControlName="faltasPermitidas"
+                                                    required="{{ isRequired('faltasPermitidas', grupoAdd) }}">
+                                                <mat-error *ngIf="(!!grupoAdd.get('faltasPermitidas').errors)">
+                                                    {{validatorService.getMessage(grupoAdd.get('faltasPermitidas'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Cupo</mat-label>
+                                                <input type="text" matInput name="cupo" formControlName="cupo"
+                                                    required="{{ isRequired('cupo', grupoAdd) }}">
+                                                <mat-error *ngIf="(!!grupoAdd.get('cupo').errors)">
+                                                    {{validatorService.getMessage(grupoAdd.get('cupo'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                        </div>
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <pixvs-mat-select #materialSelect [matSelectCtrl]="grupoAdd.get('materialControl')" [datos]="articulos"
+                                            [appearance]="'outline'"
+                                            [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                            [campoValor]="'nombreArticulo'" [label]="'Material'" [required]="isRequired('materialControl',grupoAdd)" [multiple]="true"
+                                            fxFlex="1 0 auto">
+                                            </pixvs-mat-select>
+                                            <pixvs-mat-select [matSelectCtrl]="grupoAdd.get('plataforma')" [datos]="plataformas"
+                                                [appearance]="'outline'"
+                                                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                                [campoValor]="'valor'" [label]="'Plataforma'" [required]="isRequired('plataforma',grupoAdd)"
+                                                fxFlex="1 0 auto">
+                                            </pixvs-mat-select>
+                                        </div>
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <ng-container *ngIf="!permisos[grupoAdd.get('id')?.value]">
+                                                <pixvs-mat-select [matSelectCtrl]="grupoAdd.get('empleado')" [datos]="profesores"
+                                                    [appearance]="'outline'"
+                                                    [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                                    [campoValor]="'nombreCompleto'" [label]="'Profesor'" [required]="isRequired('empleado',grupoAdd)"
+                                                    fxFlex="1 0 auto">
+                                                </pixvs-mat-select>
+                                            </ng-container>
+                                            <div *ngIf="permisos[grupoAdd.get('id')?.value]"  fxFlex="1 0 auto" fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                    <mat-label>Profesor</mat-label>
+                                                    <input type="text" matInput name="profesorTexto" [value]=" nuevoProfesorTitular?.nombreCompleto || grupoAdd?.get('empleado')?.value?.nombreCompleto" [readonly]="true">
+                                                </mat-form-field>
+                                            </div>
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Categoria</mat-label>
+                                                <input type="text" matInput name="categoriaProfesor" formControlName="categoriaProfesor"
+                                                    required="{{ isRequired('categoriaProfesor', grupoAdd) }}" [readonly]="!permisoCategoria">
+                                                <mat-error *ngIf="(!!grupoAdd.get('categoriaProfesor').errors)">
+                                                    {{validatorService.getMessage(grupoAdd.get('categoriaProfesor'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Sueldo</mat-label>
+                                                <input type="text" matInput name="sueldoProfesor" formControlName="sueldoProfesor"
+                                                    required="{{ isRequired('sueldoProfesor', grupoAdd) }}"prefix="$ " mask="separator.2" thousandSeparator="," [readonly]="!permisoSueldo">
+                                                <mat-error *ngIf="(!!grupoAdd.get('sueldoProfesor').errors)">
+                                                    {{validatorService.getMessage(grupoAdd.get('sueldoProfesor'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                        </div>
+                                        <div fxLayout="row wrap" fxLayoutGap="20px grid" *ngIf="permisos[grupoAdd.get('id')?.value]">
+                                            <div fxFlex="0 0 auto">
+                                                <button mat-raised-button type="button" class="blue" (click)="onCambioProfesor()" [disabled]="grupoAdd?.disabled">Cambio de profesor</button>
+                                            </div>
+                                        </div>
+                                        
+
+                                    </div>
+
+                                    <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="30" fxFlex.gt-md="30">
+                                        <br><br><br><br><br><br>
+                                        <mat-card *ngIf="!modalidadPersonalizada">
+                                            <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+                                                    <div class="h1 pr-16">Horario</div>
+                                                </div>
+                                                <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="33" fxFlex.gt-md="33">
+                                                    <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                        <b>Días</b>
+                                                    </div>
+                                                </div>
+                                                <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="33" fxFlex.gt-md="33">
+                                                    <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                        <b>Horario</b>
+                                                    </div>
+                                                </div>
+                                                <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="34" fxFlex.gt-md="34">
+                                                    <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                        <span style="text-align: end; width: 100%"><b>Horas</b></span>
+                                                    </div>
+                                                </div>
+                                                <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="30" fxFlex.gt-md="30">
+                                                    <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                        Lunes
+                                                    </div>
+                                                </div>
+                                                <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                    <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                        <ng-container *ngIf="modalidadControl?.value?.lunes">
+                                                            <span >
+                                                              {{grupoAdd.get('horario').value}}
+                                                            </span>
+                                                        </ng-container>
+                                                    </div>
+                                                </div>
+                                                <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="20" fxFlex.gt-md="20">
+                                                    <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                        <span style="text-align: end; width: 100%">{{modalidadControl?.value?.lunes? modalidadControl.value.horasPorDia: '0'}}</span>
+                                                    </div>
+                                                </div>
+                                                <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="30" fxFlex.gt-md="30">
+                                                    <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                        Martes
+                                                    </div>
+                                                </div>
+                                                <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                    <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                        <ng-container *ngIf="modalidadControl?.value?.martes">
+                                                            <span >
+                                                              {{grupoAdd.get('horario').value}}
+                                                            </span>
+                                                        </ng-container>
+                                                    </div>
+                                                </div>
+                                                <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="20" fxFlex.gt-md="20">
+                                                    <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                        <span style="text-align: end;width: 100%">{{modalidadControl?.value?.martes? modalidadControl.value.horasPorDia: '0'}}</span>
+                                                    </div>
+                                                </div>
+                                                <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="30" fxFlex.gt-md="30">
+                                                    <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                        Miércoles
+                                                    </div>
+                                                </div>
+                                                <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                    <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                        <ng-container *ngIf="modalidadControl?.value?.miercoles">
+                                                            <span >
+                                                              {{grupoAdd.get('horario').value}}
+                                                            </span>
+                                                        </ng-container>
+                                                    </div>
+                                                </div>
+                                                <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="20" fxFlex.gt-md="20">
+                                                    <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                        <span style="text-align: end;width: 100%">{{modalidadControl?.value?.miercoles? modalidadControl.value.horasPorDia: '0'}}</span>
+                                                    </div>
+                                                </div>
+                                                <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="30" fxFlex.gt-md="30">
+                                                    <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                        Jueves
+                                                    </div>
+                                                </div>
+                                                <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                    <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                        <ng-container *ngIf="modalidadControl?.value?.jueves">
+                                                            <span >
+                                                              {{grupoAdd.get('horario').value}}
+                                                            </span>
+                                                        </ng-container>
+                                                    </div>
+                                                </div>
+                                                <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="20" fxFlex.gt-md="20">
+                                                    <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                        <span style="text-align: end;width: 100%">{{modalidadControl?.value?.jueves? modalidadControl.value.horasPorDia: '0'}}</span>
+                                                    </div>
+                                                </div>
+                                                <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="30" fxFlex.gt-md="30">
+                                                    <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                        Viernes
+                                                    </div>
+                                                </div>
+                                                <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                    <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                        <ng-container *ngIf="modalidadControl?.value?.viernes">
+                                                            <span >
+                                                              {{grupoAdd.get('horario').value}}
+                                                            </span>
+                                                        </ng-container>
+                                                    </div>
+                                                </div>
+                                                <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="20" fxFlex.gt-md="20">
+                                                    <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                        <span style="text-align: end;width: 100%">{{modalidadControl?.value?.viernes? modalidadControl.value.horasPorDia: '0'}}</span>
+                                                    </div>
+                                                </div>
+                                                <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="30" fxFlex.gt-md="30">
+                                                    <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                        Sábado
+                                                    </div>
+                                                </div>
+                                                <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                    <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                        <ng-container *ngIf="modalidadControl?.value?.sabado">
+                                                            <span >
+                                                              {{grupoAdd.get('horario').value}}
+                                                            </span>
+                                                        </ng-container>
+                                                    </div>
+                                                </div>
+                                                <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="20" fxFlex.gt-md="20">
+                                                    <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                        <span style="text-align: end;width: 100%">{{modalidadControl?.value?.sabado? modalidadControl.value.horasPorDia: '0'}}</span>
+                                                    </div>
+                                                </div>
+                                                <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                    <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                        <b>Total: </b>
+                                                    </div>
+                                                </div>
+                                                <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                    <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                        <span style="text-align: end;width: 100%">{{horasTotales}}</span>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </mat-card> 
+
+                                        <mat-card *ngIf="modalidadPersonalizada">
+                                            <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+                                                    <div class="h1 pr-16">Horario</div>
+                                                </div>
+                                                <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="33" fxFlex.gt-md="33">
+                                                    <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                        <b>Días</b>
+                                                    </div>
+                                                </div>
+                                                <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="33" fxFlex.gt-md="33">
+                                                    <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                        <b>Horario</b>
+                                                    </div>
+                                                </div>
+                                                <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="34" fxFlex.gt-md="34">
+                                                    <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                        <span style="text-align: end; width: 100%"><b>Horas</b></span>
+                                                    </div>
+                                                </div>
+                                                <ng-container *ngFor="let horario of grupoAdd.get('horarios').value">
+                                                    <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="33" fxFlex.gt-md="33">
+                                                        <span>{{horario.dia}}</span>
+                                                    </div>
+                                                    <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="33" fxFlex.gt-md="33">
+                                                        <span>{{horario.horaInicioString && horario.horaFinString ? horario.horaInicioString+'-'+horario.horaFinString : ''}}</span>
+                                                    </div>
+                                                    <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="33" fxFlex.gt-md="33">
+                                                        <span style="text-align: end;width: 100%">{{restarHoras(horario.horaInicioString, horario.horaFinString) != '-' ? restarHoras(horario.horaInicioString, horario.horaFinString) : '-'}}</span>
+                                                    </div>
+                                                </ng-container>
+                                                <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                    <span><b>Total</b></span>
+                                                </div>
+                                                <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                    <span style="text-align: end;width: 100%">{{sumarHoras()}}</span>
+                                                </div>
+
+                                            </div>
+                                        </mat-card> 
+                                    </div>
+
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+
+                <div class="course-step" fusePerfectScrollbar
+                     *ngIf="currentStep === 1"
+                     [@slideIn]="animationDirection" style="width: 100% !important;">
+
+                    <div id="course-step-content" class="course-step-content">
+                        <div fxlayout="row" fxlayoutalign="start center" style="padding: 20px;display: flex;">
+                            <h1>Criterios de evaluación</h1>
+                        </div>
+                        <div style="position: relative; min-height: 200px; max-height: calc(77vh - 155px); overflow: auto;">
+                            <table mat-table [dataSource]="getCriteriosEvaluacionActivo()" style="width: 100%;">
+                                <ng-container matColumnDef="actividadEvaluacion.actividad">
+                                    <th mat-header-cell *matHeaderCellDef> Test </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.actividadEvaluacion.actividad}} </td>
+                                    <td mat-footer-cell *matFooterCellDef> <b>Total</b> </td>
+                                </ng-container>
+                                <ng-container matColumnDef="modalidad.nombre">
+                                    <th mat-header-cell *matHeaderCellDef> Modalidad </th>
+                                    <td mat-cell *matCellDef="let element"> {{modalidadPersonalizada ? 'Personalizada' : element.modalidad.nombre}} </td>
+                                    <td mat-footer-cell *matFooterCellDef></td>
+                                </ng-container>
+                                <ng-container matColumnDef="testFormat.valor">
+                                    <th mat-header-cell *matHeaderCellDef> Test Format </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.testFormat.valor}} </td>
+                                    <td mat-footer-cell *matFooterCellDef></td>
+                                </ng-container>
+                                <ng-container matColumnDef="fechaAplica">
+                                    <th mat-header-cell *matHeaderCellDef> Fecha Aplica </th>
+                                    <td mat-cell *matCellDef="let element"> <ng-container *ngIf="element.dias">{{element.dias > listadoClases.length ? listadoClases[listadoClases.length -1] : listadoClases[element.dias - 1]}}</ng-container> <ng-container *ngIf="!element.dias">{{element.fechaAplica}}</ng-container></td>
+                                    <td mat-footer-cell *matFooterCellDef></td>
+                                </ng-container>
+                                <ng-container matColumnDef="score">
+                                    <th mat-header-cell *matHeaderCellDef> Score </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.score}} </td>
+                                    <td mat-footer-cell *matFooterCellDef><b>{{getScoreTotal()}} </b></td>
+                                </ng-container>
+                                <ng-container matColumnDef="time">
+                                    <th mat-header-cell *matHeaderCellDef> Time </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.time ? element.time+' min' : 'Continuos'}} </td>
+                                    <td mat-footer-cell *matFooterCellDef><b>{{getTimeTotal()}} minuto(s)</b> </td>
+                                </ng-container>
+                                <ng-container matColumnDef="acciones">
+                                    <th mat-header-cell *matHeaderCellDef>Acciones</th>
+                                    <td mat-cell *matCellDef="let element; let i = index">
+                                        <button mat-icon-button [matMenuTriggerFor]="listadoMenu" (click)="$event.stopPropagation();">
+                                            <mat-icon>more_vert</mat-icon>
+                                        </button>
+                                        <mat-menu #listadoMenu="matMenu">
+                                            <div fxLayout="column" fxLayoutAlign="start start">
+                                                <button mat-button class="w-100-p" (click)="abrirModalCriterioEvaluacion(element, i)">
+                                                    <mat-icon role="img" class="mat-icon secondary-text mt-8" aria-hidden="true" data-mat-icon-type="font">edit</mat-icon>
+                                                    <span>Editar</span>
+                                                </button> 
+                                                <button mat-button class="w-100-p" (click)="confirmaBorrarCriterioEvaluacion(element, i)">
+                                                    <mat-icon role="img" class="mat-icon secondary-text mt-8" aria-hidden="true" data-mat-icon-type="font">delete</mat-icon>
+                                                    <span>Borrar</span>
+                                                </button> 
+                                            </div>
+                                        </mat-menu>
+                                    </td>
+                                </ng-container>
+                                <ng-container matColumnDef="boton">
+                                    <th mat-header-cell *matHeaderCellDef> 
+                                        <button mat-fab color="primary"  style="float: right;" [disabled]="!deshabilitarBotones" (click)="abrirModalCriterioEvaluacion(null, null)">
+                                            <mat-icon>add</mat-icon>
+                                        </button>  
+                                    </th>
+                                    <td mat-cell *matCellDef="let element"> </td>
+                                </ng-container>
+                                <tr mat-header-row *matHeaderRowDef="displayedColumnsCriteriosEvaluacion"></tr>
+                                <tr mat-row *matRowDef="let row; let i = index; columns: displayedColumnsCriteriosEvaluacion;" ></tr>
+                                <tr mat-footer-row *matFooterRowDef="displayedColumnsFooterCriteriosEvaluacion"></tr>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="course-step"
+                     *ngIf="currentStep === 2"
+                     [@slideIn]="animationDirection" style="width: 100% !important;">
+
+                    <div id="course-step-content" class="course-step-content" *ngIf="criterioEconomicoFormGroup">
+                        <form focusInvalidInput name="form" id="criterioEconomicoFormGroup" [formGroup]="criterioEconomicoFormGroup" class="product w-100-p">
+                            <div class="tab-content p-24" fusePerfectScrollbar fxLayoutGap="10px grid">
+                                <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+                                    <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                        <pixvs-mat-select [seleccionarUnicaOpcion]="false" [matSelectCtrl]="criterioEconomicoFormGroup.get('precioIncompany')" [datos]="listaZona"
+                                        [appearance]="'outline'"
+                                        [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                        [campoValor]="'nombre'" [label]="'Zona'" [required]="isRequired('precioIncompany',criterioEconomicoFormGroup)"
+                                        fxFlex="1 0 auto">
+                                        </pixvs-mat-select>
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                            <mat-label>Porcentaje de comisión</mat-label>
+                                            <input type="text" matInput name="porcentajeComision" formControlName="porcentajeComision"
+                                                required="{{ isRequired('porcentajeComision', criterioEconomicoFormGroup) }}" step=".01" [readonly]="!permisoComision"><span matSuffix>%</span>
+                                            <mat-error *ngIf="(!!criterioEconomicoFormGroup.get('porcentajeComision').errors)">
+                                                {{validatorService.getMessage(criterioEconomicoFormGroup.get('porcentajeComision'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                            <mat-label>Porcentaje apoyo de transporte</mat-label>
+                                            <input type="text" matInput name="porcentajeApoyoTransporte" formControlName="porcentajeApoyoTransporte"
+                                                required="{{ isRequired('porcentajeApoyoTransporte', criterioEconomicoFormGroup) }}" step=".01" [readonly]="!permisoPorcentaje"><span matSuffix>%</span>
+                                            <mat-error *ngIf="(!!criterioEconomicoFormGroup.get('porcentajeApoyoTransporte').errors)">
+                                                {{validatorService.getMessage(criterioEconomicoFormGroup.get('porcentajeApoyoTransporte'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                            <mat-label>Kilometros de distancia</mat-label>
+                                            <input type="text" matInput name="kilometrosDistancia" formControlName="kilometrosDistancia"
+                                                required="{{ isRequired('kilometrosDistancia', criterioEconomicoFormGroup) }}" step=".01">
+                                            <mat-error *ngIf="(!!criterioEconomicoFormGroup.get('kilometrosDistancia').errors)">
+                                                {{validatorService.getMessage(criterioEconomicoFormGroup.get('kilometrosDistancia'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+                                    <!-- <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                            <mat-label>Precio de venta del grupo</mat-label>
+                                            <input type="text" matInput name="precioVentaGrupo" formControlName="precioVentaGrupo"
+                                                required="{{ isRequired('precioVentaGrupo', criterioEconomicoFormGroup) }}" prefix="$" mask="separator.2" thousandSeparator="," [readonly]="!permisoPrecio">
+                                            <mat-error *ngIf="(!!criterioEconomicoFormGroup.get('precioVentaGrupo').errors)">
+                                                {{validatorService.getMessage(criterioEconomicoFormGroup.get('precioVentaGrupo'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                            <mat-label>Precio de materiales</mat-label>
+                                            <input type="text" matInput name="precioMaterial" formControlName="precioMaterial"
+                                                required="{{ isRequired('precioMaterial', criterioEconomicoFormGroup) }}" prefix="$" mask="separator.2" thousandSeparator=",">
+                                            <mat-error *ngIf="(!!criterioEconomicoFormGroup.get('precioMaterial').errors)">
+                                                {{validatorService.getMessage(criterioEconomicoFormGroup.get('precioMaterial'))}}
+                                            </mat-error>
+                                        </mat-form-field>   
+                                        
+                                    </div> -->
+                                    <div fxlayout="row" fxlayoutalign="start center" class="my-20" style="display: flex; border-bottom: solid 1px lightgray;">
+                                        <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font">attach_money</mat-icon>
+                                        <div class="h2 secondary-text ng-tns-c345-79">Cargo para el cliente</div>
+                                    </div>
+                                    <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                            <mat-label>Precio de venta del curso</mat-label>
+                                            <input type="text" matInput name="clientePrecioVentaCurso" formControlName="clientePrecioVentaCurso"
+                                                required="{{ isRequired('clientePrecioVentaCurso', criterioEconomicoFormGroup) }}" prefix="$" mask="separator.2" thousandSeparator="," [readonly]="!permisoPrecio">
+                                            <mat-error *ngIf="(!!criterioEconomicoFormGroup.get('clientePrecioVentaCurso').errors)">
+                                                {{validatorService.getMessage(criterioEconomicoFormGroup.get('clientePrecioVentaCurso'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                            <mat-label>Precio de venta del libro</mat-label>
+                                            <input type="text" matInput name="clientePrecioVentaLibro" formControlName="clientePrecioVentaLibro"
+                                                required="{{ isRequired('clientePrecioVentaLibro', criterioEconomicoFormGroup) }}" prefix="$" mask="separator.2" thousandSeparator=",">
+                                            <mat-error *ngIf="(!!criterioEconomicoFormGroup.get('clientePrecioVentaLibro').errors)">
+                                                {{validatorService.getMessage(criterioEconomicoFormGroup.get('clientePrecioVentaLibro'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                            <mat-label>Precio de venta de la certificación</mat-label>
+                                            <input type="text" matInput name="clientePrecioVentaCertificacion" formControlName="clientePrecioVentaCertificacion"
+                                                required="{{ isRequired('clientePrecioVentaCertificacion', criterioEconomicoFormGroup) }}" prefix="$" mask="separator.2" thousandSeparator=",">
+                                            <mat-error *ngIf="(!!criterioEconomicoFormGroup.get('clientePrecioVentaCertificacion').errors)">
+                                                {{validatorService.getMessage(criterioEconomicoFormGroup.get('clientePrecioVentaCertificacion'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+                                    <div fxlayout="row" fxlayoutalign="start center" class="my-20" style="display: flex; border-bottom: solid 1px lightgray;">
+                                        <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font">attach_money</mat-icon>
+                                        <div class="h2 secondary-text ng-tns-c345-79">Cargo para el alumno</div>
+                                    </div>
+                                    <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                            <mat-label>Precio de venta del curso</mat-label>
+                                            <input type="text" matInput name="precioVentaCurso" formControlName="precioVentaCurso"
+                                                required="{{ isRequired('precioVentaCurso', criterioEconomicoFormGroup) }}" prefix="$" mask="separator.2" thousandSeparator=",">
+                                            <mat-error *ngIf="(!!criterioEconomicoFormGroup.get('precioVentaCurso').errors)">
+                                                {{validatorService.getMessage(criterioEconomicoFormGroup.get('precioVentaCurso'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                            <mat-label>Precio de venta del libro</mat-label>
+                                            <input type="text" matInput name="precioVentaLibro" formControlName="precioVentaLibro"
+                                                required="{{ isRequired('precioVentaLibro', criterioEconomicoFormGroup) }}" prefix="$" mask="separator.2" thousandSeparator=",">
+                                            <mat-error *ngIf="(!!criterioEconomicoFormGroup.get('precioVentaLibro').errors)">
+                                                {{validatorService.getMessage(criterioEconomicoFormGroup.get('precioVentaLibro'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+                                        <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                            <mat-label>Precio de venta de la certificación</mat-label>
+                                            <input type="text" matInput name="precioVentaCertificacion" formControlName="precioVentaCertificacion"
+                                                required="{{ isRequired('precioVentaCertificacion', criterioEconomicoFormGroup) }}" prefix="$" mask="separator.2" thousandSeparator=",">
+                                            <mat-error *ngIf="(!!criterioEconomicoFormGroup.get('precioVentaCertificacion').errors)">
+                                                {{validatorService.getMessage(criterioEconomicoFormGroup.get('precioVentaCertificacion'))}}
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="course-step" fusePerfectScrollbar
+                     *ngIf="currentStep === 3"
+                     [@slideIn]="animationDirection" style="width: 100% !important;">
+                    <div id="course-step-content" class="course-step-content">
+                        <div style="position: relative; min-height: 200px; max-height: calc(77vh - 155px); overflow: auto;">
+                            <table mat-table [dataSource]="getListaComisionActivo()" style="width: 100%;">
+                                <ng-container matColumnDef="empleado">
+                                    <th mat-header-cell *matHeaderCellDef> Empleado </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.usuario.nombreCompleto}} </td>
+                                    <td mat-footer-cell *matFooterCellDef> <b>Total</b> </td>
+                                </ng-container>
+                                <ng-container matColumnDef="porcentaje">
+                                    <th mat-header-cell *matHeaderCellDef> Porcentaje </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.porcentaje}}%</td>
+                                    <td mat-footer-cell *matFooterCellDef></td>
+                                </ng-container>
+                                <ng-container matColumnDef="montoComision">
+                                    <th mat-header-cell *matHeaderCellDef> Monto de Comisión </th>
+                                    <td mat-cell *matCellDef="let element"> ${{element.montoComision | number: '.2' }} </td>
+                                    <td mat-footer-cell *matFooterCellDef></td>
+                                </ng-container>
+                                <ng-container matColumnDef="acciones">
+                                    <th mat-header-cell *matHeaderCellDef>Acciones</th>
+                                    <td mat-cell *matCellDef="let element; let i = index">
+                                        <button mat-icon-button [matMenuTriggerFor]="listadoMenu" (click)="$event.stopPropagation();">
+                                            <mat-icon>more_vert</mat-icon>
+                                        </button>
+                                        <mat-menu #listadoMenu="matMenu">
+                                            <div fxLayout="column" fxLayoutAlign="start start">
+                                                <button mat-button class="w-100-p" (click)="abrirModalComision(element, i)">
+                                                    <mat-icon role="img" class="mat-icon secondary-text mt-8" aria-hidden="true" data-mat-icon-type="font">edit</mat-icon>
+                                                    <span>Editar</span>
+                                                </button> 
+                                                <button mat-button class="w-100-p" (click)="borrarComision(element, i)">
+                                                    <mat-icon role="img" class="mat-icon secondary-text mt-8" aria-hidden="true" data-mat-icon-type="font">delete</mat-icon>
+                                                    <span>Borrar</span>
+                                                </button> 
+                                            </div>
+                                        </mat-menu>
+                                    </td>
+                                </ng-container>
+                                <ng-container matColumnDef="boton">
+                                    <th mat-header-cell *matHeaderCellDef> 
+                                        <button mat-fab color="primary"  style="float: right;" [disabled]="!deshabilitarBotones" (click)="abrirModalComision(null)">
+                                            <mat-icon>add</mat-icon>
+                                        </button>  
+                                    </th>
+                                    <td mat-cell *matCellDef="let element"> </td>
+                                </ng-container>
+                                <tr mat-header-row *matHeaderRowDef="displayedColumnsListaComision"></tr>
+                                <tr mat-row *matRowDef="let row; let i = index; columns: displayedColumnsListaComision;" ></tr>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="course-step"
+                     *ngIf="currentStep === 4"
+                     [@slideIn]="animationDirection" style="width: 100% !important;">
+
+                    <div id="course-step-content" class="course-step-content">
+                        <div fxlayout="row" fxlayoutalign="start center" class="my-20" style="display: flex;padding: 20px;">
+                            <h1>Listado de Clases</h1>
+                        </div>
+                        <div style="position: relative; min-height: 200px; max-height: calc(77vh - 155px); overflow: auto;">
+                            <table mat-table [dataSource]="clasesTabla" style="width: 100%;" *ngIf="listadoClases && listadoClases.length > 0">
+                                <ng-container matColumnDef="id">
+                                    <th mat-header-cell *matHeaderCellDef> Código </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+                                </ng-container>
+                                <ng-container matColumnDef="fecha">
+                                    <th mat-header-cell *matHeaderCellDef> Fecha </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.fecha}} </td>
+                                </ng-container>
+                                <ng-container matColumnDef="estatus">
+                                    <th mat-header-cell *matHeaderCellDef> Estatus </th>
+                                    <td mat-cell *matCellDef="let element"> 
+                                        {{element.borrada && !element.reprogramada ? 'Cancelada':''}} 
+                                        {{element.fecha >= fechaActual && !element.borrada && !element.reprogramada ? 'Pendiente':''}}
+                                        {{element.fecha < fechaActual && !element.borrada && !element.reprogramada ? 'Finalizada':''}}
+                                        {{element.reprogramada && !element.borrada ? 'Reprogramada':''}}
+                                    </td>
+                                </ng-container>
+                                <ng-container matColumnDef="nivel">
+                                    <th mat-header-cell *matHeaderCellDef> Nivel </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.nivel}} </td>
+                                </ng-container>
+                                <ng-container matColumnDef="acciones">
+                                    <th mat-header-cell *matHeaderCellDef>  </th>
+                                    <td mat-cell *matCellDef="let element; let i = index"> 
+                                        <button mat-icon-button [matMenuTriggerFor]="menu" *ngIf="!element.borrada">
+                                          <mat-icon>more_vert</mat-icon>
+                                        </button>
+                                        <mat-menu #menu="matMenu">
+                                          <button mat-menu-item (click)="reprogramarClase(element,i)">
+                                            <span>Reprogramar</span>
+                                          </button>
+                                          <button mat-menu-item (click)="cancelarClase(element)">
+                                            <span>Cancelar</span>
+                                          </button>
+                                        </mat-menu>
+                                    </td>
+                                </ng-container>
+                                <tr mat-header-row *matHeaderRowDef="displayedColumnsClases"></tr>
+                                <tr mat-row *matRowDef="let row; let i = index; columns: displayedColumnsClases;"></tr>
+                            </table>
+                            <mat-paginator [length]="resultsLength" [pageSize]="10"></mat-paginator>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="course-step" fusePerfectScrollbar
+                     *ngIf="currentStep === 5"
+                     [@slideIn]="animationDirection" style="width: 100% !important;">
+
+                    <div id="course-step-content" class="course-step-content">
+                        <div fxlayout="row" fxlayoutalign="start center" class="my-20" style="display: flex;padding: 20px;">
+                            <h1>Alumnos</h1>
+                        </div>
+                        <div class="tab-content p-24 h-100-p">
+                            <div fxLayout="row wrap" fxLayoutGap="20px grid" class="h-100-p">
+                                <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100" class="h-100-p">
+                                    <div fxFlex="0 0 100%" fxLayout="row">
+                                        <mat-table fxFlex="100" [dataSource]="dataSource" class="tabla-alumnos ficha-table h-100-p" style="max-height: 100%;" cdkVirtualFor [@animateStagger]="{value:'50'}" id="tablaAlumnos" [ngClass]="{'jobs': esJobs && !esJobsSems, 'jobs-sems': !esJobs && esJobsSems, 'ambos': esJobs && esJobsSems, 'ninguno': !esJobs && !esJobsSems}">
+                                            <ng-container matColumnDef="imagen">
+                                                <mat-header-cell
+                                                    *matHeaderCellDef
+                                                ></mat-header-cell>
+                                                <mat-cell *matCellDef="let element" fxLayout="row" fxLayoutAlign="center center" class="text-center">
+                                                    <img
+                                                        mat-card-avatar
+                                                        style="border-radius: 100%; height: 35px;"
+                                                        src="{{element?.alumno?.fotoId != null ? apiUrl + '/v1/archivo/' + (element?.alumno?.fotoId | hashId) : 'assets/images/avatars/profile.jpg' }}"
+                                                    />
+                                                </mat-cell>
+                                            </ng-container>
+                                            <ng-container matColumnDef="codigo">
+                                                <mat-header-cell
+                                                    *matHeaderCellDef
+                                                >Código alumno</mat-header-cell>
+                                                <mat-cell *matCellDef="let element" >
+                                                    <p>{{ element.alumno.codigo }}</p>
+                                                </mat-cell>
+                                            </ng-container>
+                                            <ng-container matColumnDef="primerApellido">
+                                                <mat-header-cell
+                                                    *matHeaderCellDef
+                                                >Primer apellido</mat-header-cell>
+                                                <mat-cell *matCellDef="let element" >
+                                                    <p>{{element.alumno.primerApellido}}</p>
+                                                </mat-cell>
+                                            </ng-container>
+                                            <ng-container matColumnDef="segundoApellido">
+                                                <mat-header-cell
+                                                    *matHeaderCellDef
+                                                >Segundo apellido</mat-header-cell>
+                                                <mat-cell *matCellDef="let element" >
+                                                    <p>{{ element.alumno.segundoApellido || ''}}</p>
+                                                </mat-cell>
+                                            </ng-container>
+                                            <ng-container matColumnDef="nombre">
+                                                <mat-header-cell
+                                                    *matHeaderCellDef
+                                                >Nombre</mat-header-cell>
+                                                <mat-cell *matCellDef="let element" >
+                                                    <p>{{element.alumno.nombre}}</p>
+                                                </mat-cell>
+                                            </ng-container>
+                                            <ng-container matColumnDef="edad">
+                                                <mat-header-cell
+                                                    *matHeaderCellDef
+                                                >Edad</mat-header-cell>
+                                                <mat-cell *matCellDef="let element" >
+                                                    <p>{{getEdad(element.alumno.fechaNacimiento)}}</p>
+                                                </mat-cell>
+                                            </ng-container>
+                                            <ng-container matColumnDef="correoElectronico">
+                                                <mat-header-cell
+                                                    *matHeaderCellDef
+                                                >Correo electrónico</mat-header-cell>
+                                                <mat-cell *matCellDef="let element" >
+                                                    <p>{{element.alumno.correoElectronico}}</p>
+                                                </mat-cell>
+                                            </ng-container>
+                                            <ng-container matColumnDef="telefono">
+                                                <mat-header-cell
+                                                    *matHeaderCellDef
+                                                >Teléfono</mat-header-cell>
+                                                <mat-cell *matCellDef="let element" >
+                                                    <p>{{element.alumno.telefonoFijo}}</p>
+                                                </mat-cell>
+                                            </ng-container>
+                                            <ng-container matColumnDef="inscripcion">
+                                                <mat-header-cell
+                                                    *matHeaderCellDef
+                                                >Inscripción</mat-header-cell>
+                                                <mat-cell *matCellDef="let element" >
+                                                    <p>{{element.estatus.valor}}</p>
+                                                </mat-cell>
+                                            </ng-container>
+                                            <ng-container matColumnDef="ordenVenta">
+                                                <mat-header-cell
+                                                    *matHeaderCellDef
+                                                >Orden de venta</mat-header-cell>
+                                                <mat-cell *matCellDef="let element" >
+                                                    <p>{{element.codigo}}</p>
+                                                </mat-cell>
+                                            </ng-container>
+                                            <mat-header-row *matHeaderRowDef="displayedColumnsAlumnos; sticky:true"></mat-header-row>
+                                            <mat-row *matRowDef="let row; columns: displayedColumnsAlumnos;" class="element"></mat-row>
+                                        </mat-table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+                <div class="course-step" fusePerfectScrollbar
+                     *ngIf="currentStep === 6"
+                     [@slideIn]="animationDirection" style="width: 100% !important;">
+
+                    <div id="course-step-content" class="course-step-content">
+                        <div fxlayout="row" fxlayoutalign="start center" class="my-20" style="display: flex;padding: 20px;">
+                            <h1>Asistencias y Calificaciones</h1>
+                        </div>
+                        <div style="width: 100%; padding: 5px 5px 5px 5px;text-align: end;">
+                            <button type="button" mat-raised-button color="primary" (click)="mostrarCalificaciones=true;mostrarAsistencias=false" [disabled]="mostrarCalificaciones">Calificaciones</button>&nbsp;&nbsp;
+                            <button type="button" mat-raised-button color="primary" (click)="mostrarCalificaciones=false;mostrarAsistencias=true" [disabled]="mostrarAsistencias">Asistencias</button>
+                        </div>
+                        <ng-container *ngIf="mostrarCalificaciones && !mostrarAsistencias">
+                            <div style="overflow-y: auto; width: 100%" *ngIf="!isNullOrEmpty(dataSourceCalificaciones)">
+                                <table class="tabla-calificaciones" style="width:100%" mat-table [dataSource]="dataSourceCalificaciones">
+                                    <ng-container *ngFor="let header of tableHeaders; let i = index" [matColumnDef]="header.name" [sticky]="i < 5" [stickyEnd]="isLast(i,tableHeaders)">
+                                        <th mat-header-cell *matHeaderCellDef class="table-header accent"> {{header.label}}</th>
+                                        <td mat-cell *matCellDef="let element; let index = index" [ngClass]="{'accent': isLast(i,tableHeaders)}">
+                                            <div [ngClass]="{'align-left': i > 0 && i < 5}">
+                                                {{getControl(index, header.name).value}} {{!!header.puntaje? (' de '+ header.puntaje) : ''}}
+                                            </div>
+                                        </td>
+                                    </ng-container>
+                                    <ng-container *ngFor="let group of tableGroups; let i = index" [matColumnDef]="group.name" [sticky]="i == 0" [stickyEnd]="isLast(i,tableGroups)">
+                                        <th mat-header-cell *matHeaderCellDef 
+                                            [style.text-align]="center"
+                                            [attr.colspan]="group.span"
+                                            class="group-header accent"
+                                        >
+                                        {{group.label}} 
+                                        </th>
+                                    </ng-container>
+                                    
+                                    <tr mat-header-row *matHeaderRowDef="displayedTableGroups; sticky: true"></tr>
+                                    <tr mat-header-row *matHeaderRowDef="displayedColumnsCalificaciones; sticky: true"></tr>
+                                    <tr mat-row *matRowDef="let row; columns: displayedColumnsCalificaciones;" class="h-24"></tr>
+                                </table>
+                            </div>
+                        </ng-container>
+                        <ng-container *ngIf="!mostrarCalificaciones && mostrarAsistencias">
+                            <div class="asistencias">
+                                <div fxLayout="row" style="border: 1px solid lightgrey; min-height: 72px;">
+                                    <div fxLayout="column" fxLayoutAlign="center center" fxFlex="60" fxFlexOffset="20">
+                                        <div class="calendar-header" fxLayout="row" fxLayoutAlign="center center">
+                                            <button type="button" mat-icon-button (click)="changeDate(-1)">
+                                                <mat-icon>chevron_left</mat-icon>
+                                            </button>
+                                            <span>{{fechasAsistencias[currentIndex] | date: 'EEEE dd MMMM yyyy'}}</span>
+                                            <button type="button" mat-icon-button (click)="changeDate(1)">
+                                                <mat-icon>chevron_right</mat-icon>
+                                            </button>                                
+                                        </div>
+                                    </div>
+                                </div>
+                                <div fxLayout="row" class="w-100-p" [style]="(opened? 'height: calc(100% - 294px);' : 'height: calc(100% - 140px);') + ' overflow: auto;'">
+                                    <div fxLayout="column" class="w-100-p">
+                                        <table *ngIf="!!dateColumns" mat-table [dataSource]="resumeDataSource" class="w-100-p">
+                                      
+                                            <ng-container matColumnDef="codigo" sticky>
+                                              <th mat-header-cell *matHeaderCellDef class="text-center cell accent"> <span>Código</span> </th>
+                                              <td mat-cell *matCellDef="let element" class="text-center cell"> <span class="text-bold" [style.color]="getColor(element.alumno.id)">{{element.alumno?.codigo}}</span> </td>
+                                            </ng-container>
+                                            
+                                            <ng-container matColumnDef="apellido1" sticky>
+                                                <th mat-header-cell *matHeaderCellDef class="text-center cell accent"> <span>Primer apellido</span> </th>
+                                                <td mat-cell *matCellDef="let element" class="text-left cell"> <span>{{element.alumno.primerApellido}}</span> </td>
+                                            </ng-container>
+                                              
+                                            <ng-container matColumnDef="apellido2" sticky>
+                                                <th mat-header-cell *matHeaderCellDef class="text-center cell accent"> <span>Segundo apellido</span> </th>
+                                                <td mat-cell *matCellDef="let element" class="text-left cell"> <span>{{element.alumno.segundoApellido}}</span> </td>
+                                            </ng-container>
+                    
+                                            <ng-container matColumnDef="nombre" sticky>
+                                              <th mat-header-cell *matHeaderCellDef class="text-center cell accent"> <span>Nombre(s)</span> </th>
+                                              <td mat-cell *matCellDef="let element" class="text-left cell cell-end"> <span>{{element.alumno.nombre}}</span> </td>
+                                            </ng-container>
+                    
+                                            <ng-container *ngFor="let dateColumn of dateColumns" [matColumnDef]="dateColumn.name">
+                                                <th mat-header-cell *matHeaderCellDef class="w-100 text-center accent"> <span>{{dateColumn.label | date: 'dd MMM'}}</span> </th>
+                                                <td mat-cell *matCellDef="let element" class="w-100 p-8 relative">
+                                                    <div *ngIf="element[dateColumn.name].tipoAsistenciaId == null" class="grey w-80-p h-36"></div>
+                                                    <div *ngIf="element[dateColumn.name].tipoAsistenciaId == 2000550" class="green w-80-p h-36"></div>
+                                                    <div *ngIf="element[dateColumn.name].tipoAsistenciaId == 2000551" class="warn w-80-p h-36"></div>
+                                                    <div *ngIf="element[dateColumn.name].tipoAsistenciaId == 2000552" class="warn w-80-p py-8 h-36 text-center">J</div>
+                                                    <div *ngIf="element[dateColumn.name].tipoAsistenciaId == 2000553" class="orange w-80-p py-8 h-36 text-center">{{element[dateColumn.name].minutosRetardo}}</div>
+                                                    <div *ngIf="!!element[dateColumn.name].comentario" class="absolute-tooltip" [style.width.%]="85">
+                                                        <mat-icon #tooltip="matTooltip" [matTooltip]="element[dateColumn.name].comentario" matTooltipPosition="above">arrow_right</mat-icon>
+                                                    </div>
+                                            </ng-container>
+                                          
+                                            <tr mat-header-row *matHeaderRowDef="resumeColumns; sticky: true;" class="accent"></tr>
+                                            <tr mat-row *matRowDef="let row; columns: resumeColumns;"></tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+            </ng-container>
+
+        </div>
+        <!-- / CONTENT -->
+
+        <div class="step-navigation">
+
+            <button mat-fab class="previous mat-accent fuse-white-fg"
+                    (click)="gotoPreviousStep()"
+                    [disabled]="currentStep === 0"
+                    [fxHide]="currentStep === 0">
+                <mat-icon>chevron_left</mat-icon>
+            </button>
+
+            <button mat-fab class="next mat-accent fuse-white-fg"
+                    (click)="gotoNextStep()"
+                    [disabled]="currentStep === steps.length - 1"
+                    [fxHide]="currentStep === steps.length - 1">
+                <mat-icon>chevron_right</mat-icon>
+            </button>
+
+            <button mat-fab class="done green-600"
+                    (click)="verificarGrupo()"
+                    [disabled]="currentStep !== steps.length - 1"
+                    [fxShow]="currentStep === steps.length - 1">
+                <mat-icon>check</mat-icon>
+            </button>
+
+        </div>
+        
+
+    </div>
+    <!-- / CENTER -->
+
+</div>
+
+<!--<div *ngIf="!vistaPrincipal">
+    <div class="content" *ngIf="grupoAdd">
+        <form focusInvalidInput name="grupoAdd" id="grupoAdd" [formGroup]="grupoAdd" class="product w-100-p"
+            fxLayout="column" fxFlex>
+            holis
+        </form>
+    </div>
+</div>-->

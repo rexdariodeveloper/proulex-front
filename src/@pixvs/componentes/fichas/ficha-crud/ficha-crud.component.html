@@ -1,0 +1,156 @@
+<!-- HEADER -->
+
+<!-- APP TITLE -->
+<div fxLayout="row" fxLayoutAlign="start center">
+
+    <button *ngIf="!!config?.rutaAtras" mat-icon-button class="mr-0 mr-sm-16" [routerLink]="config.rutaAtras" [queryParams]="config.queryParamsRutaAtras || {}">
+        <mat-icon>arrow_back</mat-icon>
+    </button>
+
+    <button *ngIf="mostrarVolver" mat-icon-button class="mr-0 mr-sm-16" (click)="onVolver.emit(true)">
+        <mat-icon>arrow_back</mat-icon>
+    </button>
+
+    <mat-icon class="logo-icon s-24 mr-16" [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
+        {{config.icono}}
+    </mat-icon>
+
+    <div fxLayout="column" fxLayoutAlign="start start" [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+        <div class="h2" *ngIf="pageType ==='nuevo'">
+            {{ titulo ? titulo : 'INTERFAZ.NUEVO' | translate }}
+        </div>
+        <div class="h2" *ngIf="pageType !=='nuevo'">
+            {{titulo}}
+        </div>
+        <div class="subtitle secondary-text" *ngIf="!!subTitulo || !!subTituloTraduccion">
+            <span>{{ subTitulo ? subTitulo : ( ('FICHA.'+(subTituloTraduccion | uppercase) ) | translate ) }}</span>
+        </div>
+        <div class="subtitle secondary-text" *ngIf="!!subTextoExtra">
+            <span>{{ subTextoExtra }}</span>
+        </div>
+    </div>
+</div>
+<!-- / APP TITLE -->
+
+
+<!-- ADD BUTTON -->
+<div fxLayout="row" fxLayoutAlign="start center">
+    <div debounceClick fxLayout="column" fxLayoutAlign="start start"
+        [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+        <button mat-raised-button type="button" form="form" [disabled]="cargando" *ngIf="mostrarCancelar && pageType ==='ver'"
+            class="boton-borrar mt-12 ml-12" (debounceClick)="cancelar()">
+            <span>{{ 'INTERFAZ.CANCELAR' | translate }}</span>
+        </button>
+    </div>
+
+    <div debounceClick fxLayout="column" fxLayoutAlign="start start"
+        [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+        <button mat-raised-button type="button" form="form" [disabled]="cargando" *ngIf="mostrarRechazar"
+            class="boton-editar mt-12 ml-12" (debounceClick)="rechazar()">
+            <span>{{ 'INTERFAZ.RECHAZAR' | translate }}</span>
+        </button>
+    </div>
+    <div debounceClick fxLayout="column" fxLayoutAlign="start start"
+        [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+        <button mat-raised-button type="submit" form="form" [disabled]="cargando" *ngIf="mostrarAprobar"
+            class="boton-guardar mt-12 ml-12" (debounceClick)="aprobar()">
+            <span>{{ 'INTERFAZ.APROBAR' | translate  }}</span>
+        </button>
+    </div>
+
+    <div debounceClick fxLayout="column" fxLayoutAlign="start start"
+        [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+        <button mat-raised-button type="button" form="form" [disabled]="cargando" *ngIf="mostrarAfectar"
+            class="boton-guardar mt-12 ml-12" (debounceClick)="dataService.afectar = true; guardarPersonalizado()">
+            <span>{{ 'INTERFAZ.AFECTAR' | translate }}</span>
+        </button>
+	</div>
+	
+	<div debounceClick fxLayout="column" fxLayoutAlign="start start"
+		[@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+		<button mat-raised-button type="button" form="form" [disabled]="cargando" *ngIf="pageType != 'ver' && mostrarEnviar"
+			class="boton-editar mt-12 ml-12" (debounceClick)="isEnviarPersonalizado ? enviarPersonalizado() : enviar()">
+			<span>{{ 'INTERFAZ.ENVIAR' | translate }}</span>
+		</button>
+	</div>
+
+    <div debounceClick fxLayout="column" fxLayoutAlign="start start"
+        [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+        <button mat-raised-button type="submit" form="form" [disabled]="cargando" *ngIf="!ocultarGuardar && (pageType !=='ver' || mostrarGuardar)"
+            class="boton-guardar mt-12 ml-12" (debounceClick)="isGuardadoPersonalizado ? guardarPersonalizado() : guardar()">
+            <span>{{ cargando ? ('INTERFAZ.GUARDANDO' | translate ) + '...' : (etiquetaBotonGuardar ? etiquetaBotonGuardar : ('INTERFAZ.GUARDAR' | translate)) }}</span>
+        </button>
+    </div>
+
+    <div debounceClick *ngIf="mostrarBorrar && rolMenu?.eliminar" fxLayout="column" class="mr-12"
+        fxLayoutAlign="start start" [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+        <a mat-raised-button type="submit" *ngIf="pageType ==='ver'" class="boton-borrar mt-12"
+            matTooltip="{{ etiquetaBotonEliminar ? etiquetaBotonEliminar : ('INTERFAZ.ELIMINAR' | translate)  }}" (debounceClick)="borrar()">
+            <mat-icon>delete</mat-icon>
+        </a>
+    </div>
+
+    <div debounceClick *ngIf="mostrarEditar && rolMenu?.modificar" fxLayout="column" fxLayoutAlign="start start"
+        [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+        <a mat-raised-button type="submit" *ngIf="pageType ==='ver'" class="boton-editar mt-12"
+            [ngClass]="listadoAcciones?.length > 0 ? 'boton-ficha-selector' : ''"
+            (debounceClick)="editar()">
+            <!-- <mat-icon class="mr-12">edit</mat-icon> -->
+            <span>{{ 'INTERFAZ.EDITAR' | translate }}</span>
+        </a>
+    </div>
+
+    <div debounceClick *ngIf="mostrarImprimir" fxLayout="column" fxLayoutAlign="start start"
+        [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+        <a mat-raised-button type="submit" class="boton-editar mt-12"
+            [ngClass]="listadoAcciones?.length > 0 ? 'boton-ficha-selector' : ''"
+            (debounceClick)="imprimir()">
+            <span>{{ 'INTERFAZ.IMPRIMIR' | translate }}</span>
+        </a>
+    </div>
+
+    <div debounceClick *ngIf="listadoAcciones?.length > 0" fxLayout="column" fxLayoutAlign="start start"
+        [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+        <a mat-raised-button type="submit" *ngIf="listadoAcciones?.length > 0" class="mt-12 options-selector"
+            [ngClass]="[(listadoAcciones?.length > 0) ? 'options-selector' : 'options-selector-complete',  pageType !=='ver'? 'boton-guardar' : 'boton-editar']"
+            [matMenuTriggerFor]="listadoMenu" aria-label="Select"
+            matTooltip="{{ 'INTERFAZ.ACCIONES' | translate  }}">
+            <span><mat-icon>more_vert</mat-icon></span>
+        </a>
+    </div>
+
+    <mat-menu #listadoMenu="matMenu">
+        <div *ngFor="let accion of listadoAcciones">
+            <button mat-menu-item *ngIf="accion.tipo != 'imprimir'" (click)="action(accion)">
+                <mat-icon>{{accion.icon}}</mat-icon>
+                <span>{{accion.title}}</span>
+            </button>
+            <button mat-menu-item *ngIf="accion.tipo == 'imprimir'" (click)="action(accion)" printSectionId="printable" ngxPrint>
+                <mat-icon>{{accion.icon}}</mat-icon>
+                <span>{{accion.title}}</span>
+            </button>
+        </div>
+    </mat-menu>
+
+</div>
+
+
+
+<div *ngIf="historial && historial.length > 0"
+    style="bottom: 0; position: absolute; right: 0; margin-bottom: 20px; z-index: 100;">
+
+    <button mat-mini-fab (click)="abrirHistorial()" class="accent mt-12 boton-historial"
+        matTooltip="{{ 'INTERFAZ.HISTORIAL' | translate  }}">
+        <mat-icon>history</mat-icon>
+    </button>
+
+</div>
+
+
+
+
+
+
+<!-- / ADD BUTTON -->
+
+<!-- / HEADER -->

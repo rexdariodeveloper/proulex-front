@@ -1,0 +1,164 @@
+<div id="alertas" class="page-layout carded left-sidebar fullwidth inner-scroll">
+    <div class="top-bg accent h-100"></div>
+    <div class="center layout-pad0">
+        <ficha-crud *ngIf="config" [config]="config" [cargando]="_alertaService?.cargando" [isGuardadoPersonalizado]="true" (output)="guardar($event)" [mostrarBorrar]="false" [mostrarEditar]="false" [ocultarGuardar]="true" [titulo]="titulo" [form]="form" [currentId]="null"
+            [pageType]="'nuevo'" [dataService]="_alertaService" class="accent h-76" fxLayout="column" fxLayoutAlign="center center" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center">
+        </ficha-crud>
+        <div class="content-card h-100-p">
+            <div fxLayout="row" class="h-100-p">
+                <div fxFlex="30" style="border-right: 1px solid lightgray;">
+                    <div fxLayout="row wrap" class="h-100-p">
+                        <div class="p-16" fxFlex="100" style="background-color: #F5F5F5; max-height: 75px;">
+                            <span class="mat-headline">Módulos</span>
+                        </div>
+                        <div class="w-100-p h-90-p" style="overflow: auto;">
+                            <pixvs-mat-tree #tree></pixvs-mat-tree>
+                        </div>
+                    </div>
+                </div>
+                <div fxFlex style="background-color: #F5F5F5;">
+                    <div fxLayout="row wrap" class="h-100-p">
+                        <div class="px-40 py-16" fxFlex="100">
+                            <span class="mat-headline">Configuración de etapas</span>
+                        </div>
+                        <div class="mx-40 w-100-p h-80-p p-16" style="background-color: whitesmoke; border-radius: 8px; overflow-y:  auto;">
+                            <div fxFlex="1 0 calc(20%-10px)" fxFlex.lt-sm="100" *ngIf="etapas.length > 0" style="text-align:left;">
+                                <div *ngFor="let etapa of etapas">
+                                    <button mat-button class="w-80-p" (click)="getEtapa(etapa)">
+                                        Etapa {{ etapa.orden }}
+                                    </button>
+                                    <button mat-icon-button class="w-10-p" *ngIf="etapa.orden == etapas.length && !etapa?.id" (click)="deleteEtapa()">
+                                        <mat-icon>close</mat-icon>
+                                    </button>
+                                </div>
+                                <button mat-stroked-button class="w-90-p" color="accent" (click)="addEtapa()">
+                                    <mat-icon>add</mat-icon>Nueva etapa
+                                </button>
+                            </div>
+                            <div [hidden]="etapa" fxFlex="1 0 calc(40%-10px)" fxFlex.lt-sm="100" style="text-align: center;">
+                            </div>
+                            <div *ngIf="etapa" fxFlex="1 0 calc(40%-10px)" fxFlex.lt-sm="100" style="text-align: center;">
+                                <form [formGroup]="form" fxLayout="column" fxFlex>
+                                    <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                        <pixvs-mat-select [matSelectCtrl]="form.controls['tipoAlerta']" [datos]="listadoTiposAlertas" [appearance]="'outline'" [multiple]="false" [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate" [campoValor]="'valor'" [label]="'Tipo alerta'" [required]="isRequired('tipoAlerta')"
+                                            fxFlex="1 0 auto">
+                                        </pixvs-mat-select>
+                                    </div>
+                                    <div *ngIf="esAutorizacion">
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid" [hidden]="!esAutorizacion">
+                                            <pixvs-mat-select [matSelectCtrl]="form.controls['tipoAprobacion']" [datos]="listadoTiposAprobacion" [appearance]="'outline'" [multiple]="false" [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate" [campoValor]="'valor'" [label]="'Tipo Aprobación'"
+                                                [required]="isRequired('tipoAprobacion')" fxFlex="1 0 auto">
+                                            </pixvs-mat-select>
+                                        </div>
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <pixvs-mat-select [matSelectCtrl]="form.controls['tipoOrden']" [datos]="listadoTiposOrden" [appearance]="'outline'" [multiple]="false" [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate" [campoValor]="'valor'" [label]="'Orden'" [required]="isRequired('tipoOrden')"
+                                                fxFlex="1 0 auto">
+                                            </pixvs-mat-select>
+                                        </div>
+                                        <div fxLayout="row wrap" *ngIf="esParalela" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <pixvs-mat-select [matSelectCtrl]="form.controls['condicionAprobacion']" [datos]="listadoTiposFinalizar" [appearance]="'outline'" [multiple]="false" [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate" [campoValor]="'valor'" [label]="'Condiciones para terminar proceso'"
+                                                [required]="isRequired('condicionAprobacion')" fxFlex="1 0 auto">
+                                            </pixvs-mat-select>
+                                        </div>
+                                    </div>
+                                    <div [hidden]="esUsuario || !esAutorizacion || !form.controls['tipoAprobacion']?.value" style="text-align: start; margin-bottom: 20px;">
+                                        <span class="mat-subheading-1" style="padding-left: 5px;">Departamentos</span>
+                                        <pixvs-mat-tree #treeDepartamentos [campoRecuperar]="'info'" [recuperarTodo]="false"></pixvs-mat-tree>
+                                    </div>
+                                    <div *ngIf="esAutorizacion && esUsuario">
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <pixvs-mat-chip-autocomplete [matCtrl]="form?.controls['detalles']" [datos]="listadoUsuarios" [selectedElements]="form?.controls['detalles']?.value || []" [appearance]="'outline'" [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate" [required]="isRequired('detalles')"
+                                                [campoValor]="'nombreCompleto'" [label]="'Añadir aprobadores'" fxFlex="1 0 auto"></pixvs-mat-chip-autocomplete>
+                                        </div>
+                                    </div>
+                                    <div *ngIf="!esAutorizacion">
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <pixvs-mat-select [matSelectCtrl]="form.controls['notificadores']" [datos]="listadoUsuariosNotificacion" [appearance]="'outline'" [multiple]="true" [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate" [campoValor]="'nombreCompleto'" [label]="'Añadir notificadores'"
+                                                [required]="isRequired('notificadores')" fxFlex="1 0 auto">
+                                            </pixvs-mat-select>
+                                        </div>
+                                    </div>
+                        
+                                    <div fxLayout="row wrap" *ngIf="esAutorizacion" fxLayoutAlign="start start" fxLayoutGap="10px grid">
+                                        <div fxLayout="column" fxLayoutAlign="start start" fxLayoutGap="10px grid" class="w-100-p">
+                                            <mat-checkbox color="primary" name="Notificacion Inicial" (change)="toogleCheckbox($event,form.controls['notificacionInicial'])" [checked]="form.controls['notificacionInicial'].value">
+                                                Notificación Inicial
+                                            </mat-checkbox>
+                                        </div>
+                                        <div fxLayout="column wrap" fxLayoutAlign="start start" fxLayoutGap="10px grid" class="w-100-p">
+                                            <div *ngIf="form.controls['notificacionInicial'].value" class="w-100-p">
+                                                <pixvs-mat-select [matSelectCtrl]="form.controls['iniciales']" [datos]="listadoUsuarios" [appearance]="'outline'" [multiple]="true" [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate" [campoValor]="'nombreCompleto'" [label]="'Usuarios'" [required]="isRequired('iniciales')"
+                                                    fxFlex="1 0 auto">
+                                                </pixvs-mat-select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div fxLayout="row wrap" *ngIf="esAutorizacion" fxLayoutAlign="start start" fxLayoutGap="10px grid">
+                                        <div fxLayout="row wrap" fxLayoutAlign="start start" fxLayoutGap="10px grid" class="w-100-p">
+                                            <mat-checkbox color="primary" name="Notificacion Final" (change)="toogleCheckbox($event,form.controls['notificacionFinal'])" [checked]="form.controls['notificacionFinal'].value">
+                                                Notificación Final
+                                            </mat-checkbox>
+                                        </div>
+                                        <div fxLayout="column wrap" fxLayoutAlign="start start" fxLayoutGap="10px grid" class="w-100-p">
+                                            <div *ngIf="form.controls['notificacionFinal'].value" class="w-100-p">
+                                                <pixvs-mat-select [matSelectCtrl]="form.controls['finales']" [datos]="listadoUsuariosNotificacion" [appearance]="'outline'" [multiple]="true" [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate" [campoValor]="'nombreCompleto'" [label]="'Usuarios'"
+                                                    [required]="isRequired('finales')" fxFlex="1 0 auto">
+                                                </pixvs-mat-select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div *ngIf="mostrarCriteriosEconomicos?.valor == '1'" fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                        <div fxLayout="row" fxLayoutAlign="center center" class="mb-20">
+                                            <mat-checkbox color="primary" name="Criterios Económicos" (change)="toogleCheckbox($event, form.controls['criteriosEconomicos'])" [checked]="form.controls['criteriosEconomicos'].value">
+                                                Criterios Económicos
+                                            </mat-checkbox>
+                                        </div>
+                                    </div>
+                                    <div *ngIf="form.controls['criteriosEconomicos'].value">
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Monto Máximo</mat-label>
+                                                <input type="number" matInput name="montoMaximo" formControlName="montoMaximo">
+                                            </mat-form-field>
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Monto Mínimo</mat-label>
+                                                <input type="number" matInput name="montoMinimo" formControlName="montoMinimo">
+                                            </mat-form-field>
+                                        </div>
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <pixvs-mat-select [matSelectCtrl]="form.controls['tipoMonto']" [datos]="listadoTiposMontos" [appearance]="'outline'" [multiple]="false" [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate" [campoValor]="'valor'" [label]="'Tipo Monto'" [required]="isRequired('tipoMonto')"
+                                                fxFlex="1 0 auto">
+                                            </pixvs-mat-select>
+                                        </div>
+                                    </div>
+                                    <div *ngIf="mostrarUsuarioNotificacion?.valor == '1'" fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                        <div fxLayout="row" fxLayoutAlign="center center" class="mb-20">
+                                            <mat-checkbox color="primary" name="Mostrar Usuario" (change)="toogleCheckbox($event, form.controls['mostrarUsuario'])" [checked]="form.controls['mostrarUsuario'].value">
+                                                Mostrar usuario en notificación
+                                            </mat-checkbox>
+                                        </div>
+                                    </div>
+                                    <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                        <div fxLayout="row" fxLayoutAlign="center center" class="mb-20">
+                                            <mat-checkbox color="primary" name="Notificacion por correo" (change)="toogleCheckbox($event, form.controls['notificacionCorreo'])" [checked]="form.controls['notificacionCorreo'].value">
+                                                Notificación por correo electronico
+                                            </mat-checkbox>
+                                        </div>
+                                    </div>
+                                    <div fxLayout="row wrap" fxLayoutAlign="end center" class="mb-20" fxLayoutGap="10px">
+                                        <button mat-raised-button (click)="onCancelar()">
+                                            <span>Cancelar</span>
+                                        </button>
+                                        <button mat-raised-button color="primary" (click)="onSave()">
+                                            <span>Guardar</span>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

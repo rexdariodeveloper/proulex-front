@@ -1,0 +1,240 @@
+<div id="ficha-beca" class="pixvs-theme-listado page-layout carded fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <ficha-crud *ngIf="config" 
+        [config]="config" 
+        [isGuardadoPersonalizado]="true" 
+        (output)="guardar()" 
+        (outputAprobar)="onAprobar()"
+        [isAprobarPersonalizado]="true"
+        [isBorrarPersonalizado]="true" 
+        (outputBorrar)="onBorrar()"
+        [mostrarBorrar]="beca?.estatus?.valor =='Pendiente por aplicar' && pageType != 'alerta'" 
+        [mostrarAprobar]="pageType == 'alerta'" 
+        [mostrarRechazar]="pageType == 'alerta'" 
+        [ocultarGuardar]="pageType == 'alerta'" 
+        [titulo]="titulo"
+        [subTituloTraduccion]="pageType" 
+        [form]="form" 
+        [currentId]="currentId" 
+        [pageType]="pageType"
+        [dataService]="_becaService" 
+        class="header accent" fxLayout="column" fxLayoutAlign="center center"
+        fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center">
+        </ficha-crud>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <mat-progress-bar *ngIf="_becaService?.cargando" [color]="'primary'" [mode]="'query'">
+            </mat-progress-bar>
+
+            <div style="height: 0px;">
+                <button debounceClick mat-mini-fab class="boton-refresh" (debounceClick)="recargar()"
+                    matTooltip="{{ 'INTERFAZ.RECARGAR' | translate  }}">
+                    <mat-icon class="s-16">refresh</mat-icon>
+                </button>
+            </div>
+
+            <!-- CONTENT -->
+            <div class="content">
+                <form focusInvalidInput name="form" id="form" [formGroup]="form" class="product w-100-p" fxLayout="column" fxFlex *ngIf="!esAlerta">
+                    <mat-tab-group>
+                        <mat-tab label="Datos Generales">
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                    <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <pixvs-mat-select [matSelectCtrl]="entidadBecaControl" [datos]="entidadesBecas"
+                                                [appearance]="'outline'"
+                                                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                                [campoValor]="'nombre'" [label]="'Entidad Beca'" [required]="true"
+                                                [seleccionarUnicaOpcion]="!beca?.id"
+                                                fxFlex="1 0 auto">
+                                            </pixvs-mat-select>
+                                            <pixvs-mat-select *ngIf="pageType == 'nuevo'" [matSelectCtrl]="alumnoControl" [datos]="alumnos"
+                                                [appearance]="'outline'"
+                                                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                                [busquedaAsincronaActiva]="true" [busquedaAsincronaRuta]="'/api/v1/punto-venta/listados/alumnos'"
+                                                [campoValor]="['codigo','nombre']" [label]="'Alumno'"
+                                                [required]="false" fxFlex="1 0 auto">
+                                            </pixvs-mat-select>
+                                            <mat-form-field *ngIf="pageType != 'nuevo'" appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Alumno</mat-label>
+                                                <input type="text" matInput name="alumno" formControlName="alumno"
+                                                    required="{{ isRequired('alumno', form) }}">
+                                                <mat-error *ngIf="(!!form.get('alumno').errors)">
+                                                    {{validatorService.getMessage(form.get('alumno'))}}
+                                                </mat-error>
+                                            </mat-form-field> 
+                                            <button *ngIf="pageType == 'nuevo'" type="button" 
+                                                mat-button
+                                                class="indigo-fg"
+                                                (click)="onNuevoAlumno()"
+                                            >Nuevo alumno</button>
+                                        </div>
+
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <pixvs-mat-select [matSelectCtrl]="cursoControl" [datos]="cursos"
+                                                [appearance]="'outline'"
+                                                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                                [campoValor]="'nombre'" [label]="'Curso'" [required]="true"
+                                                [seleccionarUnicaOpcion]="!beca?.id"
+                                                fxFlex="1 0 auto">
+                                            </pixvs-mat-select> 
+                                            <pixvs-mat-select #modalidadSelect [matSelectCtrl]="modalidadControl" [datos]="modalidades"
+                                                [appearance]="'outline'"
+                                                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                                [campoValor]="'nombre'" [label]="'Modalidad'" [required]="true"
+                                                [seleccionarUnicaOpcion]="!beca?.id"
+                                                fxFlex="1 0 auto">
+                                            </pixvs-mat-select>  
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="3 0 auto">
+                                                <mat-label>Nivel</mat-label>
+                                                <input type="number" matInput name="nivel" formControlName="nivel"
+                                                    required="{{ isRequired('nivel', form) }}">
+                                                <mat-error *ngIf="(!!form.get('nivel').errors)">
+                                                    {{validatorService.getMessage(form.get('nivel'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="3 0 auto">
+                                                <mat-label>Descuento %</mat-label>
+                                                <input type="number" matInput name="descuento" formControlName="descuento"
+                                                    required="{{ isRequired('descuento', form) }}">
+                                                <mat-error *ngIf="(!!form.get('descuento').errors)">
+                                                    {{validatorService.getMessage(form.get('descuento'))}}
+                                                </mat-error>
+                                            </mat-form-field>                                        
+										</div>
+										
+										<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Comentarios</mat-label>
+                                                <textarea matInput name="comentarios" formControlName="comentarios"
+                                                    required="{{ isRequired('comentarios', form) }}"></textarea>
+                                                <mat-error *ngIf="(!!form.get('comentarios').errors)">
+                                                    {{validatorService.getMessage(form.get('comentarios'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                        </div>
+										
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-tab>
+                    </mat-tab-group>
+                </form>
+                <form focusInvalidInput name="formSolicitud" id="formSolicitud" [formGroup]="formSolicitud" class="product w-100-p" fxLayout="column" fxFlex *ngIf="esAlerta && formSolicitud">
+                    <mat-tab-group>
+                        <mat-tab label="Datos Generales">
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <div fxlayout="row" fxlayoutalign="start center" class="my-20" style="display: flex; border-bottom: solid 1px lightgray;">
+                                    <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font">face</mat-icon>
+                                    <div class="h2 secondary-text ng-tns-c345-79">Solicitud de Beca</div>
+                                </div>
+                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                        <mat-label>Folio</mat-label>
+                                        <input type="text" matInput name="codigo" formControlName="codigo" required="{{ isRequired('codigo', formSolicitud) }}" [readonly]="true">
+                                    </mat-form-field>
+                                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                        <mat-label>Fecha</mat-label>
+                                        <input type="text" matInput name="fechaCreacion" formControlName="fechaCreacion" required="{{ isRequired('fechaCreacion', formSolicitud) }}" [readonly]="true">
+                                    </mat-form-field>
+                                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                        <mat-label># Becas</mat-label>
+                                        <input type="text" matInput name="becasNumero" formControlName="becasNumero" required="{{ isRequired('becasNumero', formSolicitud) }}" [readonly]="true">
+                                    </mat-form-field>
+                                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                        <mat-label>Enviado por</mat-label>
+                                        <input type="text" matInput name="creadoPor" formControlName="creadoPor" required="{{ isRequired('creadoPor', formSolicitud) }}" [readonly]="true">
+                                    </mat-form-field>
+                                </div>
+                                <div fxlayout="row" fxlayoutalign="start center" class="my-20" style="display: flex; border-bottom: solid 1px lightgray;">
+                                    <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font">description</mat-icon>
+                                    <div class="h2 secondary-text ng-tns-c345-79">Becas</div>
+                                </div>
+                                <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                    <table fxFlex="100%" class="tabla-proveedores">
+                                        <thead>
+                                            <tr>
+                                                <td>
+                                                </td>
+                                                <td>
+                                                    Beneficiario
+                                                </td>
+                                                <td>
+                                                    Entidad Beca
+                                                </td>
+                                                <td>
+                                                    Código de Beca
+                                                </td>
+                                                <td>
+                                                    Curso
+                                                </td>
+                                                <td>
+                                                    Modalidad
+                                                </td>
+                                                <td>
+                                                    Nivel
+                                                </td>
+                                                <td>
+                                                    Descuento %
+                                                </td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngFor="let beca of formSolicitud.value.becas">
+                                                <td>
+                                                    <button *ngIf="!becasSeleccionadas[beca.id]" type="button" mat-icon-button matTooltip="Seleccionar beca"
+                                                        (click)="marcarBeca(beca)">
+                                                        <mat-icon>crop_square</mat-icon>
+                                                    </button>
+                                                    <button *ngIf="!!becasSeleccionadas[beca.id]" type="button" mat-icon-button matTooltip="Deseleccionar factura"
+                                                        (click)="marcarBeca(beca)">
+                                                        <mat-icon style="color: #039be5">check_box</mat-icon>
+                                                    </button>
+                                                </td>
+                                                <td>
+                                                    <span>{{beca.nombre + ' ' + beca.primerApellido + ' ' + beca.segundoApellido}}</span>
+                                                </td>
+                                                <td>
+                                                    <span>{{beca.entidadBeca?.codigo}}</span>
+                                                </td>
+                                                <td>
+                                                    <span>{{beca.codigoBeca}}</span>
+                                                </td>
+                                                <td>
+                                                    <span>{{beca.programaIdioma?.nombre}}</span>
+                                                </td>
+                                                <td>
+                                                    <span>{{beca.paModalidad?.nombre}}</span>
+                                                </td>
+                                                <td>
+                                                    <span>{{beca.nivel}}</span>
+                                                </td>
+                                                <td>
+                                                    <span>{{beca.descuento * 100}}</span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </mat-tab>
+                    </mat-tab-group>
+                </form>
+            </div>
+            <!-- / CONTENT -->
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

@@ -1,0 +1,7 @@
+navbar {
+	@media screen and (max-width: 600px) {
+	   height: calc(150vh - 40px); 
+    	overflow-y: auto;
+	}
+	
+}

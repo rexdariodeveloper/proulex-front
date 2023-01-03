@@ -1,0 +1,27 @@
+articulo-dialog{
+	table.tabla-localidades{
+		border-spacing: 0;
+		td{
+			&:first-child{
+				width: 50%;
+			}
+			&:not(:first-child){
+				width: 25%;
+			}
+		}
+		thead{
+			tr:last-child{
+				td{
+					padding: 1rem;
+					border-bottom: solid 2px black;
+				}
+			}
+		}
+		tbody{
+			td{
+				padding: 0rem 1rem 0rem 1rem;
+				border-bottom: solid 2px black;
+			}
+		}
+	}
+}

@@ -1,0 +1,71 @@
+import { PAModalidad,PAModalidadComboProjection } from './pamodalidad';
+import { ProgramaIdioma, ProgramaIdiomaComboProjection } from './programa-idioma';
+import { ControlMaestroMultiple, ControlMaestroMultipleComboProjection } from '@models/control-maestro-multiple';
+import { Empleado, EmpleadoComboProjection } from './empleado';
+import { Usuario } from '@models/usuario';
+import { ProgramaGrupoIncompanyHorario, ProgramaGrupoIncompanyHorarioEditarProjection } from './programa-grupo-incompany-horario';
+import { ProgramaGrupoIncompanyCriterioEvaluacion, ProgramaGrupoIncompanyCriterioEvaluacionEditarProjection } from './programa-grupo-incompany-criterio-evaluacion';
+import { ProgramaGrupoIncompanyClaseCancelada, ProgramaGrupoIncompanyClaseCanceladaEditarProjection } from './programa-grupo-incompany-clase-cancelada';
+import { ProgramaGrupoIncompanyClaseReprogramada, ProgramaGrupoIncompanyClaseReprogramadaEditarProjection } from './programa-grupo-incompany-clase-reprogramada';
+import { ProgramaGrupoIncompanyMaterial, ProgramaGrupoIncompanyMaterialEditarProjection } from './programa-grupo-incompany-material';
+
+export class ProgramaGrupoIncompanyGrupo {
+	public id?:number;
+    public programaGrupoIncompany?:number;
+    public programaIdioma?: ProgramaIdioma;
+    public programaIdiomaId?:number;
+    public codigo?: string;
+    public nombre?: string;
+    public nivel?: number;
+    public alias?: string;
+    public modalidad?: PAModalidad;
+    public modalidadId?: number;
+    public tipoGrupo?: ControlMaestroMultiple;
+    public tipoGrupoId?: number;
+    public fechaInicio?: Date;
+    public fechaFin?: Date;
+    public calificacionMinima?: number;
+    public faltasPermitidas?: number ;
+    public cupo?: number;
+    public horario?: string;
+    public plataforma?: ControlMaestroMultiple;
+    public plataformaId?: number;
+    public empleado?: Empleado;
+    public empleadoId?: number;
+    public modificadoPor?: Usuario;
+    public modificadoPorId?: number;
+    public borrado?: boolean;
+    public fechaModificacion?: Date;
+    public horarios?: ProgramaGrupoIncompanyHorario[];
+    public criteriosEvaluacion?: ProgramaGrupoIncompanyCriterioEvaluacion[];
+    public clasesCanceladas?: ProgramaGrupoIncompanyClaseCancelada[];
+    public clasesReprogramadas?: ProgramaGrupoIncompanyClaseReprogramada[];
+    public materiales?: ProgramaGrupoIncompanyMaterial[];
+}
+
+export class ProgramaGrupoIncompanyGrupoEditarProjection{
+	public id?:number;
+    public programaGrupoIncompany?:number;
+    public programaIdioma?: ProgramaIdiomaComboProjection;
+    public codigo?: string;
+    public nombre?: string;
+    public nivel?: number;
+    public alias?: string;
+    public modalidad?: PAModalidadComboProjection;
+    public tipoGrupo?: ControlMaestroMultipleComboProjection;
+    public fechaInicio?: Date;
+    public fechaFin?: Date;
+    public calificacionMinima?: number;
+    public faltasPermitidas?: number ;
+    public cupo?: number;
+    public horario?: string;
+    public borrado?: boolean;
+    public plataforma?: ControlMaestroMultipleComboProjection;
+    public empleado?: EmpleadoComboProjection;
+    public fechaModificacion?: Date;
+    public horarios?: ProgramaGrupoIncompanyHorarioEditarProjection[];
+    public criteriosEvaluacion?: ProgramaGrupoIncompanyCriterioEvaluacionEditarProjection[];
+    public clasesCanceladas?: ProgramaGrupoIncompanyClaseCanceladaEditarProjection[];
+    public clasesReprogramadas?: ProgramaGrupoIncompanyClaseReprogramadaEditarProjection[];
+    public materiales?: ProgramaGrupoIncompanyMaterialEditarProjection[];
+}

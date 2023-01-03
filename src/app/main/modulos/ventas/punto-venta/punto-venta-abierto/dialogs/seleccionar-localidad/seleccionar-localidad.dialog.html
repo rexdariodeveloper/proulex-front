@@ -1,0 +1,28 @@
+<h1 mat-dialog-title>
+	Seleccionar localidad
+</h1>
+<div mat-dialog-content class="font-size-20 warn-fg pb-12">
+    <div class="w-100-p" fxLayout="column">
+        <div fxLayout="row">
+            <pixvs-mat-select [matSelectCtrl]="localidadControl" [datos]="localidadesSucursal"
+                [appearance]="'outline'"
+                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                [campoValor]="'nombre'" [label]="'Localidad'"
+                [required]="false" fxFlex="100">
+            </pixvs-mat-select>
+        </div>
+    </div>
+</div>
+<div mat-dialog-actions align="end" fxLayout="row" fxLayoutAlign="space-between center">
+	<button
+		mat-button
+		(click)="cancelar()"
+	>Cancelar</button>
+	<button
+		mat-raised-button
+        class="mat-primary"
+		(click)="onAceptar()"
+	>
+        Aceptar
+    </button>
+</div>

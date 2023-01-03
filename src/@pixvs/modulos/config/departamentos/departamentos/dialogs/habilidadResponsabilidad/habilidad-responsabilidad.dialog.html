@@ -1,0 +1,12 @@
+<mat-toolbar color="primary">
+    <mat-toolbar-row>
+        <span class="title dialog-title">{{titulo}}</span>
+    </mat-toolbar-row>
+</mat-toolbar>
+<div mat-dialog-content>
+    <pixvs-dynamic-components #camposDinamicos [regConfig]="camposListado"></pixvs-dynamic-components>
+</div>
+<div mat-dialog-actions align="end">
+    <button mat-button (click)="cancelar()">Cancelar</button>
+    <button mat-raised-button class="mat-accent mr-16" (click)="aceptar()">Aceptar</button>
+</div>

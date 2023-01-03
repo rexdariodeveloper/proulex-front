@@ -1,0 +1,189 @@
+<!--
+<ficha-listado *ngIf="!!config" class="page-layout carded fullwidth inner-scroll" [config]="config" [filtros]="filtros" [filtrosOpciones]="filtrosOpciones" [nuevo]="false"></ficha-listado>
+-->
+<div id="pixvs-listado" class="pixvs-theme-listado page-layout carded left-sidebar fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- SIDEBAR -->
+    <fuse-sidebar class="sidebar" name="filtros-reporte-sidebar" position="left" lockedOpen="gt-lg">
+        <filtros-reporte-sidebar #filtrado [regConfig]="filtros" [titulo]="'TITULO' | translate "
+            [modulo]="'MODULO' | translate " [icon]="config.icono" [listadoMenuOpciones]="filtrosOpciones">
+        </filtros-reporte-sidebar>
+    </fuse-sidebar>
+    <!-- / SIDEBAR -->
+
+    <!-- CENTER -->
+    <div class="center" [ngClass]="{'layout-pad0': filtros}">
+
+        <!-- HEADER -->
+        <div class="header accent" fxLayout="column" fxLayoutAlign="center center" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center">
+            <!-- APP TITLE -->
+            <div fxLayout="column" fxLayoutAlign="center center" fxShow fxHide.gt-lg="{{filtros?.length > 0}}">
+
+                <div fxLayout="row" fxLayoutAlign="start center" fxHide fxShow.gt-xs>
+                    <mat-icon class="secondary-text s-18">home</mat-icon>
+                    <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+                    <span class="secondary-text">{{ 'MODULO' | translate  }}</span>
+                </div>
+
+                <div class="logo mb-12 mb-md-0" fxLayout="row" fxLayoutAlign="start center">
+                    <mat-icon class="logo-icon s-32 mr-16" [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
+                        {{config.icono}}
+                    </mat-icon>
+                    <span class="logo-text h1" [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+                        {{ 'TITULO' | translate  }}
+                    </span>
+                </div>
+            </div>
+            <div fxHide fxShow.gt-lg="{{filtros?.length > 0}}" style="width: 10%;"></div>
+            <!-- / APP TITLE -->
+
+            <!-- SEARCH -->
+            <div class="mx-32 mx-md-0">
+            </div>
+            <!-- / SEARCH -->
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <mat-progress-bar *ngIf="_fichasDataService?.cargando" [color]="'primary'" [mode]="'query'">
+            </mat-progress-bar>
+
+			<!-- BOTON FILTROS -->			
+			<button *ngIf="filtros" mat-icon-button fxHide.gt-lg class="primary sidebar-button sidebar-toggle"
+				matTooltip="{{ 'INTERFAZ.FILTROS' | translate  }}"
+				(click)="toggleSidebar('filtros-reporte-sidebar')">
+				<mat-icon class="mb-4">tune</mat-icon>
+			</button>
+			<!-- BOTON FILTROS -->
+			
+            <div *ngIf="url" class="h-100-p">
+                <visor-pdf [pdfSrc]="url" class="h-100-p"></visor-pdf>
+            </div>
+
+            <ng-container *ngIf="dataSource?.data?.length">
+				<div style="overflow: auto;">
+                    <mat-table class="ficha-table" style="width: 200%;" #tableDetalle [dataSource]="dataSource" matSort [@animateStagger]="{value:'50'}" id="table1" fusePerfectScrollbar>
+                        <!-- <mat-table class="ficha-table" style="width: 200%;" #tableDetalle [dataSource]="dataSource" matSort [@animateStagger]="{value:'50'}" id="table1" fusePerfectScrollbar> -->
+            
+                            <ng-container matColumnDef="fecha">
+                                <mat-header-cell *matHeaderCellDef fxFlex="0 0 8%">
+                                    <span class="text-nowrap w-100-p">Fecha</span>
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let reporte" fxFlex="0 0 8%"> {{ reporte.fecha | date:'dd/MM/yyyy HH:mm' }} </mat-cell>
+                            </ng-container>
+                            
+                            <ng-container matColumnDef="articulo">
+                                <mat-header-cell *matHeaderCellDef fxFlex="0 0 14%">
+                                    <span class="text-nowrap w-100-p">Artículo</span>
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let reporte" fxFlex="0 0 14%"> {{ reporte.articulo }} </mat-cell>
+                            </ng-container>
+        
+                            <ng-container matColumnDef="almacenLocalidad">
+                                <mat-header-cell *matHeaderCellDef fxFlex="0 0 8%">
+                                    <span class="text-nowrap w-100-p">Almacén / Localidad</span>
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let reporte" fxFlex="0 0 8%">
+                                    <span class="w-100-p">{{ reporte.almacenLocalidad }}</span>
+                                </mat-cell>
+                            </ng-container>
+        
+                            <ng-container matColumnDef="tipoMovimiento">
+                                <mat-header-cell *matHeaderCellDef fxFlex="0 0 6%">
+                                    <span class="text-nowrap w-100-p">Movimiento</span>
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let reporte" fxFlex="0 0 6%">
+                                    <span class="w-100-p">{{ reporte.tipoMovimiento }}</span>
+                                </mat-cell>
+                            </ng-container>
+            
+                            <ng-container matColumnDef="referencia">
+                                <mat-header-cell *matHeaderCellDef fxFlex="0 0 10%">
+                                    <span class="text-nowrap w-100-p">Referencia</span>
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let reporte" fxFlex="0 0 10%"> {{ reporte.referencia }} </mat-cell>
+                            </ng-container>
+        
+                            <ng-container matColumnDef="razon">
+                                <mat-header-cell *matHeaderCellDef fxFlex="fill">
+                                    <span class="text-nowrap w-100-p">Razón</span>
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let reporte" fxFlex="fill"> {{ reporte.razon }} </mat-cell>
+                            </ng-container>
+        
+                            <ng-container matColumnDef="usuario">
+                                <mat-header-cell *matHeaderCellDef fxFlex="0 0 12%">
+                                    <span class="text-nowrap w-100-p">Usuario</span>
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let reporte" fxFlex="0 0 12%"> {{ reporte.usuario }} </mat-cell>
+                            </ng-container>
+        
+                            <ng-container matColumnDef="existenciaAnterior">
+                                <mat-header-cell *matHeaderCellDef fxFlex="0 0 6%">
+                                    <span class="text-center text-nowrap w-100-p">Existencia anterior</span>
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let reporte" fxFlex="0 0 6%">
+                                    <span class="text-right w-100-p px-12">{{ reporte.existenciaAnterior }}</span>
+                                </mat-cell>
+                            </ng-container>
+        
+                            <ng-container matColumnDef="salida">
+                                <mat-header-cell *matHeaderCellDef fxFlex="0 0 6%">
+                                    <span class="text-center text-nowrap w-100-p">Salida</span>
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let reporte" fxFlex="0 0 6%">
+                                    <span class="text-right w-100-p px-12">{{ (reporte.salida) | mask:'separator.2':',' }}</span>
+                                </mat-cell>
+                            </ng-container>
+        
+                            <ng-container matColumnDef="entrada">
+                                <mat-header-cell *matHeaderCellDef fxFlex="0 0 6%">
+                                    <span class="text-center text-nowrap w-100-p">Entrada</span>
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let reporte" fxFlex="0 0 6%">
+                                    <span class="text-right w-100-p px-12">{{ (reporte.entrada) | mask:'separator.2':',' }}</span>
+                                </mat-cell>
+                            </ng-container>
+        
+                            <ng-container matColumnDef="total" >
+                                <mat-header-cell *matHeaderCellDef fxFlex="0 0 6%">
+                                    <span class="text-center text-nowrap w-100-p">Total</span>
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let reporte" fxFlex="0 0 6%">
+                                    <span class="text-right w-100-p px-12">{{ (reporte.total) | mask:'separator.2':',' }}</span>
+                                </mat-cell>
+                            </ng-container>
+        
+                            <ng-container matColumnDef="costo">
+                                <mat-header-cell *matHeaderCellDef fxFlex="0 0 8%">
+                                    <div fxLayout="column" class="w-100-p">
+                                        <span class="text-center text-nowrap w-100-p">Costo movimiento</span>
+                                    </div>
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let reporte" fxFlex="0 0 8%">
+                                    <span class="text-right w-100-p px-12">$ {{ (reporte.costo) | mask:'separator.2':',' }}</span>
+                                </mat-cell>
+                            </ng-container>
+        
+                            <ng-container>
+                                <mat-header-row *matHeaderRowDef="displayedColumns; sticky:true"></mat-header-row>
+                                <mat-row *matRowDef="let row; columns: displayedColumns;" class="element" matRipple></mat-row>
+                            </ng-container>
+            
+                        </mat-table>
+            
+                        <mat-paginator #paginator [length]="dataSource.filteredData.length" [pageIndex]="0" [pageSize]="10"
+                            [pageSizeOptions]="[10, 25, 100]" style="width: 200%;">
+                        </mat-paginator>
+                </div>
+			</ng-container>
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

@@ -1,0 +1,114 @@
+<!-- SIDEBAR HEADER -->
+<div
+	fxLayout="column"
+	fxLayoutAlign="space-between start"
+	class="header accent p-24 pb-4"
+>
+
+	<div
+		class="account"
+		fxLayout="column"
+		[@animate]="{value:'*',params:{delay:'300ms'}}"
+	>
+		<div
+			fxLayout="row"
+			fxLayoutAlign="start center"
+		>
+			<mat-icon class="secondary-text s-18">home</mat-icon>
+			<mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+			<span class="secondary-text">Configuración</span>
+		</div>
+
+		<div
+			class="logo mb-12 mb-md-0"
+			fxLayout="row"
+			fxLayoutAlign="start center"
+		>
+			<mat-icon
+				class="logo-icon s-32 mr-16"
+				[@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}"
+			>
+				list
+			</mat-icon>
+			<span
+				class="logo-text h1"
+				[@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}"
+			>
+				Listados generales
+			</span>
+		</div>
+
+		<div class="title"></div>
+	</div>
+
+</div>
+<!-- / SIDEBAR HEADER -->
+
+<!-- SIDEBAR CONTENT -->
+<div
+	class="content"
+	fusePerfectScrollbar
+	[@animate]="{value:'*',params:{y:'50px'}}"
+>
+
+
+	<div
+		class="px-0 pt-24 pb-8"
+		fxLayout="column"
+		fxFlexFill
+	>
+
+
+		<div fxFlex fxLayout="column">
+
+			<div fxLayout="row" class="pl-16">
+				<div class="search-wrapper" style="margin-right: 0px !important;">
+
+					<div
+						class="search"
+						fxFlex
+						fxLayout="row"
+						fxLayoutAlign="start center"
+					>
+						<mat-icon>search</mat-icon>
+						<input
+							#filter
+							placeholder="{{ 'INTERFAZ.BUSCAR' | translate  }}..."
+							[(ngModel)]="textoBuscar"
+						>
+					</div>
+				</div>
+			</div>
+
+			<div class="nav material2">
+				<ng-container *ngFor="let modulo of (menu | BuscarMenuPipe : textoBuscar)">
+					<div class="nav-subheader">{{ modulo.titulo }}</div>
+
+					<div
+						class="nav-item"
+						*ngFor="let catalogo of modulo.children"
+					>
+						<a
+							class="nav-link"
+							matRipple
+							[routerLink]="'/config/menu-listados-generales/ver/' + getHashId(catalogo.id)"
+							[routerLinkActive]="['active', 'accent']"
+						>
+							<mat-icon
+								class="nav-link-icon"
+								*ngIf="catalogo.icono"
+							>{{catalogo.icono}}</mat-icon>
+							<span>{{catalogo.titulo}}</span>
+						</a>
+					</div>
+				</ng-container>
+			</div>
+
+		</div>
+
+	</div>
+
+
+
+</div>
+<!-- / SIDEBAR CONTENT -->

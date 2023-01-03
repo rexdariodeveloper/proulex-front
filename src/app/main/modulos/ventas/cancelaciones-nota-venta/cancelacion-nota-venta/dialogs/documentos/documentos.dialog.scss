@@ -1,0 +1,21 @@
+cancelacion-nota-venta-documentos-dialog{
+    .attachment-list {
+        font-size: 13px;
+        .attachment {
+            border: 1px solid;
+            border-radius: 20px;
+            padding-left: 16px;
+            margin-top: 8px;
+            .filename {
+                overflow: hidden !important;
+                white-space: nowrap !important;
+                text-overflow: ellipsis !important;
+                font-weight: 600;
+                max-height: 300px !important;
+            }
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+    }
+}

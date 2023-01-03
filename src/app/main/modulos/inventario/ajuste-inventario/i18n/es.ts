@@ -1,0 +1,27 @@
+export const locale = {
+    lang: 'es',
+    data: {
+        'TITULO': 'Ajuste de Inventario',
+        'MODULO': 'Inventario',
+        'DATOS': 'Datos Generales',
+        'REFERENCIA': 'Referencia',
+        'ALMACEN/LOCALIDAD': 'Almacén / Localidad',
+        'CODIGO': 'Código',
+        'ARTICULO': 'Artículo',
+        'ALMACEN': 'Almacén',
+        'LOCALIDAD': 'Localidad',
+        'MOTIVO': 'Motivo de ajuste',
+        'OPERACION': 'Tipo de operación',
+        'CANTIDAD': 'Cantidad',
+        'COMENTARIO': 'Comentario',
+        'FECHA': 'Fecha de ajuste',
+        'DESDE': 'Desde',
+        'HASTA': 'Hasta',
+        'UM': 'Unidad de medida',
+        'COSTO_ULTIMO': 'Último costo',
+        'COSTO_MOVIMIENTO': 'Costo unitario',
+        'EXISTENCIA': 'Existencia',
+        'EXISTENCIA_FINAL': 'Existencia final',
+        'CANTIDAD_CERO': 'La cantidad de ajuste debe ser mayor a 0',
+    }
+};

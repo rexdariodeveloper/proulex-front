@@ -1,0 +1,179 @@
+<div id="ficha-tabulador" class="pixvs-theme-listado page-layout carded fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <ficha-crud *ngIf="config" [config]="config" [isGuardadoPersonalizado]="true" (output)="actualizarDatos()"
+            [mostrarBorrar]="tabulador?.activo " [mostrarEditar]="tabulador?.activo " [titulo]="titulo"
+            [subTituloTraduccion]="pageType" [form]="form" [currentId]="currentId" [pageType]="pageType"
+            [dataService]="_tabuladorService" class="header accent" fxLayout="column" fxLayoutAlign="center center"
+            fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center">
+        </ficha-crud>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <mat-progress-bar *ngIf="_tabuladorService?.cargando" [color]="'primary'" [mode]="'query'">
+            </mat-progress-bar>
+
+            <div style="height: 0px;">
+                <button debounceClick mat-mini-fab class="boton-refresh" (debounceClick)="recargar()"
+                    matTooltip="{{ 'INTERFAZ.RECARGAR' | translate  }}">
+                    <mat-icon class="s-16">refresh</mat-icon>
+                </button>
+            </div>
+
+            <!-- CONTENT -->
+            <div class="content">
+                <form focusInvalidInput name="form" id="form" [formGroup]="form" class="product w-100-p" fxLayout="column" fxFlex>
+                    <mat-tab-group>
+                        <mat-tab label="Datos Generales">
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                    <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Codigo Tabulador</mat-label>
+                                                <input type="text" matInput name="codigo" formControlName="codigo"
+                                                    required="{{ isRequired('codigo', form) }}">
+                                                <mat-error *ngIf="(!!form.get('codigo').errors)">
+                                                    {{validatorService.getMessage(form.get('codigo'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Nombre Tabulador</mat-label>
+                                                <input type="text" matInput name="descripcion" formControlName="descripcion"
+                                                    required="{{ isRequired('descripcion', form) }}">
+                                                <mat-error *ngIf="(!!form.get('descripcion').errors)">
+                                                    {{validatorService.getMessage(form.get('descripcion'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+
+                                            <div fxLayout="row" fxLayoutAlign="center center" class="mb-20">
+                                                <mat-checkbox color="primary" name="pagoDiasFestivos" formControlName="pagoDiasFestivos">
+                                                    Tabulador para pago de días festivos
+                                                </mat-checkbox>
+                                            </div>
+                                        </div>
+										
+
+                                        <!--<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <pixvs-mat-select [matSelectCtrl]="categoriaControl" [datos]="categorias"
+                                                [appearance]="'outline'"
+                                                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                                [campoValor]="'categoria'" [label]="'Categoria'"
+                                                fxFlex="45">
+                                            </pixvs-mat-select>
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Salario</mat-label>
+                                                <input matInput name="salario" [(ngModel)]="salario" [ngModelOptions]="{standalone: true}" type="text" prefix="$ " mask="separator.2" thousandSeparator=",">
+                                            </mat-form-field>
+                                            
+                                            
+                                        </div>-->
+
+                                        <div class="w-100-p" fxLayout="row">
+                                            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                <div fxLayout="row" fxLayoutAlign="start center" class="divisor" style="width:80%">
+                                                    <mat-icon class="m-0 mr-16 secondary-text">local_atm</mat-icon>
+                                                    <div class="h2 secondary-text">Sueldo por hora</div>
+                                                </div>
+                                                <table style="width:80%" mat-table [dataSource]="detalles.value">
+                                                    <!-- Categoria Column -->
+                                                    <ng-container matColumnDef="categoria">
+                                                        <th mat-header-cell *matHeaderCellDef> CATEGORIA </th>
+                                                        <td mat-cell *matCellDef="let element"> {{element.profesorCategoria?.categoria}} </td>
+                                                    </ng-container>
+
+                                                    <!-- Salario Column -->
+                                                    <ng-container matColumnDef="salario">
+                                                        <th mat-header-cell *matHeaderCellDef> SALARIO </th>
+                                                        <td mat-cell *matCellDef="let element; let index = index"> 
+                                                            <div (click)="editarRegistro(index, false)" *ngIf="filaEdicion != index" [ngStyle]="{'display': filaEdicion == index ? 'none' : ''}">{{detalles.controls[index].get('sueldo').value | currency}} 
+                                                            </div>
+                                                            <div *ngIf="filaEdicion == index">
+                                                                <mat-form-field style="width: 100px;">
+                                                                    <input matInput [(ngModel)]="detalles.controls[index].get('sueldo').value" [ngModelOptions]="{standalone: true}" prefix="$ " mask="separator.2" thousandSeparator="," (keydown.enter)="editarRegistro(index, true)" (keydown.Tab)="siguienteRegistro(index)"><button matSuffix mat-icon-button (click)="editarRegistro(index, true)"><mat-icon>close</mat-icon></button>
+                                                                </mat-form-field>
+                                                            </div>
+                                                        </td>
+                                                    </ng-container>
+                                                    <ng-container matColumnDef="acciones">
+                                                        <th mat-header-cell *matHeaderCellDef> 
+                                                            <button mat-fab color="primary" (click)="abrirModalCategoria()" [disabled]="!form?.enabled" type="button">
+                                                                <mat-icon>add</mat-icon>
+                                                            </button> 
+                                                        </th>
+                                                        <td mat-cell *matCellDef="let element; let i = index"> 
+                                                            <button mat-icon-button color="primary" (click)="borrarCategoria(i)" [disabled]="!form?.enabled" type="button">
+                                                                <mat-icon>delete</mat-icon>
+                                                            </button>
+                                                        </td>
+                                                    </ng-container>
+
+                                                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                                                    <tr mat-row *matRowDef="let row; columns: displayedColumns;" [hidden]="!row.activo"></tr>
+                                                </table>
+                                            </div>
+                                            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                <div fxLayout="row" fxLayoutAlign="start center" class="divisor" style="width:80%">
+                                                    <mat-icon class="m-0 mr-16 secondary-text">local_atm</mat-icon>
+                                                    <div class="h2 secondary-text">Cursos que aplica</div>
+                                                </div>
+                                                <div fxLayout="row">
+                                                    <div fxLayout="column" style="width: 100%;max-height: calc(65vh - 155px);overflow-y: auto;">
+                                                        <table style="width:100%" mat-table [dataSource]="cursos.value">
+                                                            <ng-container matColumnDef="idioma">
+                                                                <th mat-header-cell *matHeaderCellDef> IDIOMA </th>
+                                                                <td mat-cell *matCellDef="let element"> {{element.programaIdioma?.nombre}} </td>
+                                                            </ng-container>
+                                                            <ng-container matColumnDef="programa">
+                                                                <th mat-header-cell *matHeaderCellDef> PROGRAMA </th>
+                                                                <td mat-cell *matCellDef="let element"> {{element.programa?.nombre}} </td>
+                                                            </ng-container>
+                                                            <ng-container matColumnDef="modalidad">
+                                                                <th mat-header-cell *matHeaderCellDef> MODALIDAD </th>
+                                                                <td mat-cell *matCellDef="let element"> {{element.modalidad?.nombre}} </td>
+                                                            </ng-container>
+                                                            <ng-container matColumnDef="horario">
+                                                                <th mat-header-cell *matHeaderCellDef> HORARIO </th>
+                                                                <td mat-cell *matCellDef="let element"> {{element.modalidadHorario?.nombre}} </td>
+                                                            </ng-container>
+                                                            <ng-container matColumnDef="acciones">
+                                                                <th mat-header-cell *matHeaderCellDef> 
+                                                                    <button mat-fab color="primary" (click)="abrirModalCurso()" [disabled]="!form?.enabled" type="button">
+                                                                        <mat-icon>add</mat-icon>
+                                                                    </button>  </th>
+                                                                <td mat-cell *matCellDef="let element; let i = index">
+                                                                  <button mat-icon-button color="primary" (click)="borrarCurso(i)" [disabled]="!form?.enabled">
+                                                                        <mat-icon>delete</mat-icon>
+                                                                  </button>  
+                                                                </td>
+                                                            </ng-container>
+                                                            <tr mat-header-row *matHeaderRowDef="displayedColumnsCursos; sticky: true"></tr>
+                                                            <tr mat-row *matRowDef="let row; columns: displayedColumnsCursos;" [hidden]="!row.activo"></tr>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-tab>
+                    </mat-tab-group>
+                </form>
+            </div>
+            <!-- / CONTENT -->
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

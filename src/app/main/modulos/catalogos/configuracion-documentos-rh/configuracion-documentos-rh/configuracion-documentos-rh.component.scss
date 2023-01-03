@@ -1,0 +1,17 @@
+@import "@fuse/scss/fuse";
+
+.table-100{
+    width: 100%;
+}
+
+.dot{
+    height: 10px;
+    width: 10px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.mat-header-cell, .mat-cell {
+    display:flex;
+    justify-content:center;
+}

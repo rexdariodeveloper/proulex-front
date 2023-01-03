@@ -1,0 +1,228 @@
+<div id="convertirmodal">
+    <h1 mat-dialog-title>
+        Convertir
+    </h1>
+    <div mat-dialog-content>
+        <form
+            focusInvalidInput
+            name="form"
+            id="form"
+            [formGroup]="form"
+            class="product w-100-p h-100-p"
+            fxLayout="column"
+            fxFlex
+        >
+            <div fxLayout="column">
+                <div fxLayout="row" fxLayoutAlign="space-between center">
+                    <span style="font-weight: 900;" fxFlex="20%" class="text-center">Órden de compra</span>
+                    <span style="font-weight: 900;" fxFlex="20%" class="text-center">Proveedor</span>
+                    <span style="font-weight: 900;" fxFlex="20%" class="text-center">Almacén</span>
+                    <span style="font-weight: 900;" fxFlex="20%" class="text-center">Fecha requerida</span>
+                    <span style="font-weight: 900;" fxFlex="20%" class="text-center">Moneda</span>
+                </div>
+                <div *ngFor="let oc of ordenesCompra" fxLayout="row" fxLayoutAlign="space-between center">
+                    <span fxFlex="20%" class="text-center">{{ oc.codigo }}</span>
+                    <span fxFlex="20%" class="text-center">{{ oc.proveedor.nombre }}</span>
+                    <span fxFlex="20%" class="text-center">{{ oc.recepcionArticulosAlmacen.nombre }}</span>
+                    <div fxFlex="20%" fxLayout="row" fxLayoutAlign="center center">
+                        <mat-form-field
+                            appearance="outline"
+                            floatLabel="auto"
+                            fxFlex="90%"
+                        >
+                            <mat-label>Fecha requerida</mat-label>
+                            <input
+                                matInput
+                                [matDatepicker]="fechaRequerida"
+                                name="fechaRequerida{{oc.codigo}}"
+                                formControlName="fechaRequerida{{oc.codigo}}"
+                                disabled
+                            >
+                            <mat-datepicker-toggle
+                                matSuffix
+                                [for]="fechaRequerida"
+                            >
+                            </mat-datepicker-toggle>
+                            <mat-datepicker
+                                #fechaRequerida
+                                disabled="false"
+                            ></mat-datepicker>
+                        </mat-form-field>
+                    </div>
+                    <div fxFlex="20%" fxLayout="row" fxLayoutAlign="center center">
+                        <pixvs-mat-select [matSelectCtrl]="monedaControls[oc.codigo]" [datos]="monedas"
+                            [appearance]="'outline'"
+                            [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                            [campoValor]="['nombre']" [label]="'Moneda'" [required]="isRequired('moneda' + oc.codigo)"
+                            fxFlex="80%">
+                        </pixvs-mat-select>
+                        <button
+                            fxFlex="20%"
+                            mat-icon-button
+                            matTooltip="Vista previa"
+                            (click)="onVistaPrevia(oc)"
+                        >
+                            <mat-icon>print</mat-icon>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div mat-dialog-actions>
+        <button
+            mat-button
+            (click)="cancelar()"
+        >Cerrar</button>
+        <button
+            mat-button
+            [disabled]="form.disabled"
+            (click)="aceptar()"
+        >Aceptar</button>
+    </div>
+
+
+
+
+
+
+
+    <div id="print-section" style="display: none;">
+        <div fxLayout="column" class="w-100-p">
+            <div fxLayout="row">
+                <div fxFlex="25%" class="px-20">
+                    <img src="/app/main/img/logos/logo_back_white.png">
+                </div>
+                <div fxFlex="50%" fxLayout="row" fxLayoutAlign="center start">
+                    <span style="font-size: xx-large; color: #888888">Órden de compra</span>
+                </div>
+                <div fxFlex="25%" fxLayout="row" fxLayoutAlign="end start">
+                    <span style="font-size: larger; color: #888888">{{ fechaActual | date : 'dd/MM/yyyy'}}</span>
+                </div>
+            </div>
+            <div fxLayout="row">
+                <div fxLayout="column" fxFlex="auto" class="pr-12">
+                    <span class="text-nowrap font-weight-900">Código de OC:</span>
+                    <span class="text-nowrap font-weight-900">Fecha de OC:</span>
+                </div>
+                <div fxLayout="column" fxFlex="fill">
+                    <span>Pre-impresión</span>
+                    <span>{{ fechaActual | date : 'dd/MM/yyyy'}}</span>
+                </div>
+            </div>
+            <div fxLayout="row" class="pt-12">
+                <table class="tabla-imprimir-proveedor w-100-p">
+                    <thead>
+                        <tr>
+                            <th class="font-weight-900" style="width: 50%;">Datos del proveedor</th>
+                            <th class="font-weight-900" style="width: 50%;">Datos de envío</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="w-100-p" fxLayout="row">
+                                    <div fxLayout="column" fxFlex="auto" class="pr-12">
+                                        <span class="font-weight-900">{{ ocVistaPrevia?.proveedor?.codigo }}</span>
+                                        <span>Domicilio:</span>
+                                        <span class="text-nowrap">Codigo postal:</span>
+                                        <span>Teléfono:</span>
+                                    </div>
+                                    <div fxLayout="column" fxFlex="fill">
+                                        <span>{{ ocVistaPrevia?.proveedor?.nombre }}</span>
+                                        <span>{{ ocVistaPrevia?.proveedor?.domicilio }}</span>
+                                        <span>{{ ocVistaPrevia?.proveedor?.cp }}</span>
+                                        <span>{{ ocVistaPrevia?.proveedor?.telefono }}</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="w-100-p" fxLayout="row">
+                                    <div fxLayout="column" fxFlex="auto" class="pr-12">
+                                        <span>Sede:</span>
+                                        <span>Almacén:</span>
+                                        <span>Domicilio:</span>
+                                        <span class="text-nowrap">Código postal:</span>
+                                    </div>
+                                    <div fxLayout="column" fxFlex="fill">
+                                        <span>{{ ocVistaPrevia?.recepcionArticulosAlmacen?.sucursal?.nombre }}</span>
+                                        <span>{{ ocVistaPrevia?.recepcionArticulosAlmacen?.nombre }}</span>
+                                        <span>{{ ocVistaPrevia?.recepcionArticulosAlmacen?.domicilio }}</span>
+                                        <span>{{ ocVistaPrevia?.recepcionArticulosAlmacen?.cp }}</span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="start center" class="pt-12 pl-80">
+                <div>
+                    <span class="font-weight-900">Términos de pago: </span> <span>{{ ocVistaPrevia?.terminoPago }}</span>
+                </div>
+                <div class="pl-40">
+                    <span class="font-weight-900">Tipo de moneda: </span> <span>{{ ocVistaPrevia?.moneda?.nombre }}</span>
+                </div>
+            </div>
+            <div fxLayout="row" class="pt-12">
+                <table class="tabla-imprimir w-100-p">
+                    <thead>
+                        <tr>
+                            <th class="font-size-8 font-weight-900 text-center w-60">N° Partida</th>
+                            <th class="font-size-8 font-weight-900" >Código</th>
+                            <th class="font-size-8 font-weight-900 text-center w-60"  rowspan="2">Fecha requerida</th>
+                            <th class="font-size-8 font-weight-900 text-center w-60"  rowspan="2">UM</th>
+                            <th class="font-size-8 font-weight-900 text-center w-60"  rowspan="2">Cant. requerida</th>
+                            <th class="font-size-8 font-weight-900 text-center w-60"  rowspan="2">Cant. pendiente</th>
+                            <th class="font-size-8 font-weight-900 text-right w-60"  rowspan="2">Precio</th>
+                            <th class="font-size-8 font-weight-900 text-right w-60"  rowspan="2">Subtotal</th>
+                            <th class="font-size-8 font-weight-900 text-right w-60"  rowspan="2">IEPS</th>
+                            <th class="font-size-8 font-weight-900 text-right w-60"  rowspan="2">IVA</th>
+                            <th class="font-size-8 font-weight-900 text-right w-60"  rowspan="2">Total partida</th>
+                        </tr>
+                        <tr>
+                            <th class="font-size-8 font-weight-900 text-center">Requisición</th>
+                            <th class="font-size-8 font-weight-900">Descripción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <ng-container *ngFor="let detalle of (ocVistaPrevia?.detalles || []) ; index as i">
+                            <tr>
+                                <td class="font-size-8 no-border text-center">{{i+1}}</td>
+                                <td class="font-size-8 no-border">{{ detalle.articulo.codigoArticulo }}</td>
+                                <td class="font-size-8 text-center" rowspan="2">{{ detalle.fechaRequerida | date : 'dd/MM/yyyy' }}</td>
+                                <td class="font-size-8 text-center" rowspan="2">{{ detalle.unidadMedida.nombre }}</td>
+                                <td class="font-size-8 text-center" rowspan="2">{{ detalle.cantidad }}</td>
+                                <td class="font-size-8 text-center" rowspan="2">-</td>
+                                <td class="font-size-8 text-right text-nowrap" rowspan="2">$ {{ detalle.precio || 0 }}</td>
+                                <td class="font-size-8 text-right text-nowrap" rowspan="2">$ {{ detalle.subtotal || 0 }}</td>
+                                <td class="font-size-8 text-right text-nowrap" rowspan="2">$ {{ detalle.iepsTotal || 0 }}</td>
+                                <td class="font-size-8 text-right text-nowrap" rowspan="2">$ {{ detalle.ivaTotal || 0 }}</td>
+                                <td class="font-size-8 text-right text-nowrap" rowspan="2">$ {{ detalle.total || 0 }}</td>
+                            </tr>
+                            <tr>
+                                <td class="font-size-8">{{ detalle.codigoRequisicion }}</td>
+                                <td class="font-size-8">{{ detalle.articulo.nombreArticulo }}</td>
+                            </tr>
+                        </ng-container>
+                    </tbody>
+                </table>
+            </div>
+            <div fxFlex="fill"></div>
+            <div><span class="font-weight-900">Comentarios generales</span></div>
+            <div class="px-20 py-12" style="border: solid 2px; border-radius: 1rem">{{ ocVistaPrevia?.comentario }}</div>
+            <div fxLayout="row" fxLayoutAlign="space-around end" class="pt-80">
+                <div fxFlex="200px" fxLayout="column">
+                    <div class="divisor" fxLayout="row" fxLayoutAlign="center center">{{ usuarioActual?.nombreCompleto }}</div>
+                    <div fxLayout="row" fxLayoutAlign="center center"><span class="font-weight-900">Realizó</span></div>
+                </div>
+                <div fxFlex="200px" fxLayout="column">
+                    <div class="divisor" fxLayout="row" fxLayoutAlign="center center"></div>
+                    <div fxLayout="row" fxLayoutAlign="center center"><span class="font-weight-900">Autorizó</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button #printBtn type="button" [useExistingCss]="true" printSectionId="print-section" ngxPrint  style="display: none;"></button>
+</div>

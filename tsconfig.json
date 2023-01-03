@@ -1,0 +1,44 @@
+{
+    "compileOnSave": false,
+    "compilerOptions": {
+        "baseUrl": "./src",
+        "outDir": "./dist/out-tsc",
+        "sourceMap": true,
+        "declaration": false,
+        "downlevelIteration": true,
+        "experimentalDecorators": true,
+        "module": "esnext",
+        "moduleResolution": "node",
+        "importHelpers": true,
+        "target": "es2015",
+        "typeRoots": [
+            "node_modules/@types"
+        ],
+        "lib": [
+            "es2018",
+            "dom"
+        ],
+        "paths": {
+            "@fuse/*": [
+                "@fuse/*"
+            ],
+            "@app/*": ["app/*"],
+            "@traducciones-generales-en": ["@pixvs/traducciones/i18n/en.ts"],
+            "@traducciones-generales-es": ["@pixvs/traducciones/i18n/es.ts"],
+            "@environments/*": ["environments/*"],
+            "@main/*": ["app/main/*"],
+            "@modelos/*": ["app/main/modelos/*"],
+            "@servicios/*": ["app/main/servicios/*"],
+            "@models/*": ["@pixvs/models/*"],
+            "@services/*": ["@pixvs/services/*"],
+            "@utils/*": ["app/utils/*"],
+        }
+    },  
+    "angularCompilerOptions": {
+        "fullTemplateTypeCheck": false,
+        "strictInjectionParameters": false
+    },
+    "exclude": [
+        "app/main/sample/"
+      ]
+}

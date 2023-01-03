@@ -1,0 +1,99 @@
+<div id="ficha-CRUD" class="pixvs-theme-listado page-layout carded fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <ficha-crud *ngIf="config" [config]="config" [cargando]="_bancosService?.cargando"
+            [isGuardadoPersonalizado]="true" (output)="guardar()" [mostrarBorrar]="false"
+            [mostrarEditar]="true" [titulo]="titulo" [subTituloTraduccion]="pageType" [form]="form"
+            [currentId]="currentId" [pageType]="pageType" [dataService]="_bancosService" class="header accent"
+            fxLayout="column" fxLayoutAlign="center center" fxLayout.gt-sm="row"
+            fxLayoutAlign.gt-sm="space-between center">
+        </ficha-crud>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <mat-progress-bar *ngIf="_bancosService?.cargando" [color]="'primary'" [mode]="'query'">
+            </mat-progress-bar>
+
+            <div style="height: 0px;">
+                <button debounceClick mat-mini-fab class="boton-refresh" (debounceClick)="recargar()"
+                    matTooltip="{{ 'INTERFAZ.RECARGAR' | translate  }}">
+                    <mat-icon class="s-16">refresh</mat-icon>
+                </button>
+            </div>
+
+            <!-- CONTENT -->
+            <div class="content">
+                <form name="form" id="form" [formGroup]="form" class="product w-100-p" fxLayout="column" fxFlex>
+                    <mat-tab-group>
+                        <mat-tab label="Datos Generales">
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                    <div fxFlex="100%">
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="10">
+                                                <mat-label>Código</mat-label>
+                                                <input matInput name="codigo" formControlName="codigo" maxlength="3" pattern="^[0-9]{3}$" required="{{ isRequired('codigo') }}" style="text-transform: uppercase">
+                                                <mat-error *ngIf="(!!form.get('codigo').errors)">
+                                                    {{validatorService.getMessage(form.get('codigo'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="15">
+                                                <mat-label>RFC</mat-label>
+                                                <input type="text" matInput name="rfc"
+                                                    pattern="^([A-Z|a-z|&amp;]{3}\d{2}((0[1-9]|1[012])(0[1-9]|1\d|2[0-8])|(0[13456789]|1[012])(29|30)|(0[13578]|1[02])31)|([02468][048]|[13579][26])0229)(\w{2})([A|a|0-9]{1})$|^([A-Z|a-z]{4}\d{2}((0[1-9]|1[012])(0[1-9]|1\d|2[0-8])|(0[13456789]|1[012])(29|30)|(0[13578]|1[02])31)|([02468][048]|[13579][26])0229)((\w{2})([A|a|0-9]{1})){0,3}$"
+                                                    formControlName="rfc" required="{{ isRequired('rfc') }}"
+                                                    style="text-transform: uppercase">
+                                                <mat-error *ngIf="(!!form.get('rfc').errors)">
+                                                    {{validatorService.getMessage(form.get('rfc'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="20">
+                                                <mat-label>Nombre corto</mat-label>
+                                                <input matInput name="nombre" formControlName="nombre"
+                                                    required="{{ isRequired('nombre') }}"
+                                                    style="text-transform: uppercase">
+                                                <mat-error *ngIf="(!!form.get('nombre').errors)">
+                                                    {{validatorService.getMessage(form.get('nombre'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Razón social</mat-label>
+                                                <input matInput name="razonSocial" formControlName="razonSocial"
+                                                    required="{{ isRequired('razonSocial') }}"
+                                                    style="text-transform: uppercase">
+                                                <mat-error *ngIf="(!!form.get('razonSocial').errors)">
+                                                    {{validatorService.getMessage(form.get('razonSocial'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                    <mat-checkbox color="primary" name="activo"
+                                        formControlName="activo" fxFlex="1 0 auto">
+                                        Activo
+                                    </mat-checkbox>
+                                </div>
+                            </div>
+                        </mat-tab>
+                    </mat-tab-group>
+                </form>
+            </div>
+            <!-- / CONTENT -->
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

@@ -1,0 +1,103 @@
+<div mat-dialog-content>
+	<!-- <pixvs-dynamic-components #camposDinamicos [regConfig]="camposListado"></pixvs-dynamic-components> -->
+	<form *ngIf="!!form"
+		focusInvalidInput
+		name="form"
+		id="form"
+		[formGroup]="form"
+		class="product w-100-p"
+		fxLayout="column"
+		fxFlex
+	>
+		<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+			<pixvs-mat-select [matSelectCtrl]="articuloControl" [datos]="articulos"
+				[appearance]="'outline'"
+				[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+				[campoValor]="'nombreArticulo'" [label]="'Artículo'" [required]="isRequired('articulo')"
+				fxFlex="1 0 auto">
+			</pixvs-mat-select>
+		</div>
+
+		<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid" *ngIf="articuloControl?.value?.articuloSubtipoId != ArticulosSubtipos.PAQUETE_DE_LIBROS">
+			<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+				<mat-label>Existencia</mat-label>
+				<input matInput name="existencia" formControlName="existencia"
+					required="{{ isRequired('existencia') }}"
+					mask="separator.4" thousandSeparator=",">
+				<mat-error *ngIf="(!!form.get('existencia').errors)">
+					{{validatorService.getMessage(form.get('existencia'))}}
+				</mat-error>
+			</mat-form-field>
+		</div>
+
+		<div fxLayout="row" fxLayoutAlign="center center" *ngIf="cargandoComponentes">
+			<mat-spinner [diameter]="50"></mat-spinner>
+		</div>
+		<ng-container *ngIf="articuloControl?.value?.articuloSubtipoId == ArticulosSubtipos.PAQUETE_DE_LIBROS && !!articuloArbolComponentes">
+			<div fxLayout="column" class="pb-20">
+				<div fxLayout="row" fxLayoutAlign="start center" class="px-12 componentes-encabezado pb-8">
+					<div fxFlex="fill">
+						<span>Artículo</span>
+					</div>
+					<div fxFlex="15%">
+						<span>Unidad de medida</span>
+					</div>
+					<div fxFlex="15%">
+						<span>Cantidad paquete</span>
+					</div>
+					<div fxFlex="15%">
+						<span>Existencia</span>
+					</div>
+					<div fxFlex="30px"></div>
+				</div>
+				<ng-container *ngFor="let componente of articuloArbolComponentes.componentes">
+					<articulo-componente-nodo [componente]="componente"></articulo-componente-nodo>
+				</ng-container>
+			</div>
+		</ng-container>
+
+		<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+			<pixvs-mat-select [matSelectCtrl]="localidadControl" [datos]="localidades"
+				[appearance]="'outline'"
+				[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+				[campoValor]="'codigoLocalidad'" [label]="'Localidad'" [required]="isRequired('localidad')"
+				fxFlex="1 0 auto">
+			</pixvs-mat-select>
+
+			<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+				<mat-label>Cantidad requerida</mat-label>
+				<input matInput name="requerida" formControlName="requerida"
+					required="{{ isRequired('requerida') }}"
+					mask="separator.4" thousandSeparator="," [readonly]="true">
+				<mat-error *ngIf="(!!form.get('requerida').errors)">
+					{{validatorService.getMessage(form.get('requerida'))}}
+				</mat-error>
+			</mat-form-field>
+
+			<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+				<mat-label>Cantidad a surtir</mat-label>
+				<input matInput name="surtir" formControlName="surtir"
+					required="{{ isRequired('surtir') }}"
+					mask="separator.4" thousandSeparator=",">
+				<mat-error *ngIf="(!!form.get('surtir').errors)">
+					{{validatorService.getMessage(form.get('surtir'))}}
+				</mat-error>
+			</mat-form-field>
+		</div>
+
+		<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+			<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+				<mat-label>Comentario</mat-label>
+				<input matInput name="comentario" formControlName="comentario"
+					required="{{ isRequired('comentario') }}">
+				<mat-error *ngIf="(!!form.get('comentario').errors)">
+					{{validatorService.getMessage(form.get('comentario'))}}
+				</mat-error>
+			</mat-form-field>
+		</div>
+	</form>
+</div>
+<div mat-dialog-actions dir="rtl">
+	<button mat-button (click)="cancelar()">{{ 'CANCELAR' | translate }}</button>
+	<button mat-button (click)="aceptar()">{{ 'ACEPTAR' | translate }}</button>
+</div>

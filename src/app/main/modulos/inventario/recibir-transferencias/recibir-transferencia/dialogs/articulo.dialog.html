@@ -1,0 +1,7 @@
+<div mat-dialog-content>
+	<pixvs-dynamic-components #camposDinamicos [regConfig]="camposListado"></pixvs-dynamic-components>
+</div>
+<div mat-dialog-actions>
+	<button mat-button (click)="cancelar()">{{ 'CANCELAR' | translate }}</button>
+	<button mat-button (click)="aceptar()" [disabled]="!cantidadValida()">{{ 'ACEPTAR' | translate }}</button>
+</div>

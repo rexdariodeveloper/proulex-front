@@ -1,0 +1,27 @@
+<div id="validacion-boletas" class="page-layout blank">
+
+    <div class="content-card" fxLayout="row" fxLayoutAlign="center center" fxFlex>
+
+        <div class="card">
+            
+            <form focusInvalidInput name="form" id="form" [formGroup]="form" class="product w-100-p" fxLayout="column" fxLayoutGap="10px grid" fxFlex>
+                <div fxLayout="row wrap mb-10" fxLayoutAlign="center center">
+                    <span class="mat-title p-0">Captura de Alumno</span>
+                </div>
+                <div fxLayout="row wrap" fxLayoutAlign="start center">
+                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                        <mat-label>Código</mat-label>
+                        <input type="text" matInput name="codigo" formControlName="codigo"
+                            required="{{ isRequired('codigo', form) }}">
+                        <mat-error *ngIf="(!!form.get('codigo').errors)">
+                            {{_validatorService.getMessage(form.get('codigo'))}}
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div fxLayout="row wrap" fxLayoutAlign="center center">
+                    <button mat-raised-button type="button" color="accent" class="p-0" (click)="buscar()">Buscar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

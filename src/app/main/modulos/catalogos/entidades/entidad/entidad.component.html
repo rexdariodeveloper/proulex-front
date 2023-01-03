@@ -1,0 +1,196 @@
+<div id="ficha-entidad" class="pixvs-theme-listado page-layout carded fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <ficha-crud *ngIf="config" [config]="config" [isGuardadoPersonalizado]="true" (output)="guardar()" [mostrarBorrar]="entidad?.activo " [mostrarEditar]="entidad?.activo " [titulo]="titulo" [subTituloTraduccion]="pageType" [form]="form" [currentId]="currentId"
+            [pageType]="pageType" [dataService]="_entidadService" class="header accent" fxLayout="column" fxLayoutAlign="center center" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center">
+        </ficha-crud>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <mat-progress-bar *ngIf="_entidadService?.cargando" [color]="'primary'" [mode]="'query'">
+            </mat-progress-bar>
+
+            <div style="height: 0px;">
+                <button debounceClick mat-mini-fab class="boton-refresh" (debounceClick)="recargar()" matTooltip="{{ 'INTERFAZ.RECARGAR' | translate  }}">
+                    <mat-icon class="s-16">refresh</mat-icon>
+                </button>
+            </div>
+
+            <!-- CONTENT -->
+            <div class="content">
+                <form focusInvalidInput name="form" id="form" [formGroup]="form" class="product w-100-p" fxLayout="column" fxFlex>
+                    <mat-tab-group>
+                        <mat-tab label="Datos Generales">
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                    <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Código entidad</mat-label>
+                                                <input type="text" matInput name="codigo" formControlName="codigo" required="{{ isRequired('codigo', form) }}">
+                                                <mat-error *ngIf="(!!form.get('codigo').errors)">
+                                                    {{validatorService.getMessage(form.get('codigo'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Prefijo</mat-label>
+                                                <input type="text" matInput name="prefijo" formControlName="prefijo" required="{{ isRequired('prefijo', form) }}">
+                                                <mat-error *ngIf="(!!form.get('prefijo').errors)">
+                                                    {{validatorService.getMessage(form.get('prefijo'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Nombre entidad</mat-label>
+                                                <input type="text" matInput name="nombre" formControlName="nombre" required="{{ isRequired('nombre', form) }}">
+                                                <mat-error *ngIf="(!!form.get('nombre').errors)">
+                                                    {{validatorService.getMessage(form.get('nombre'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                        </div>
+
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Calle y número</mat-label>
+                                                <input type="text" matInput name="domicilio" formControlName="domicilio" required="{{ isRequired('domicilio', form) }}">
+                                                <mat-error *ngIf="(!!form.get('domicilio').errors)">
+                                                    {{validatorService.getMessage(form.get('domicilio'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Código Postal</mat-label>
+                                                <input type="text" matInput name="cp" formControlName="cp" required="{{ isRequired('cp', form) }}">
+                                                <mat-error *ngIf="(!!form.get('cp').errors)">
+                                                    {{validatorService.getMessage(form.get('cp'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Colonia</mat-label>
+                                                <input type="text" matInput name="colonia" formControlName="colonia" required="{{ isRequired('colonia', form) }}">
+                                                <mat-error *ngIf="(!!form.get('colonia').errors)">
+                                                    {{validatorService.getMessage(form.get('colonia'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                        </div>
+
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <pixvs-mat-select [matSelectCtrl]="entidadIndependienteControl" [datos]="entidades" [appearance]="'outline'" [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate" [campoValor]="'nombre'" [label]="'Dependiente de entidad'" [required]="isRequired('entidadIndependiente',form)"
+                                                fxFlex="1 0 auto">
+                                            </pixvs-mat-select>
+
+                                            <pixvs-mat-select [matSelectCtrl]="directorControl" [datos]="empleados" [appearance]="'outline'" [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate" [campoValor]="'nombreCompleto'" [label]="'Director'" [required]="isRequired('director',form)" fxFlex="1 0 auto">
+                                            </pixvs-mat-select>
+                                        </div>
+
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px empleados">
+                                            <pixvs-mat-select [matSelectCtrl]="coordinadorControl" [datos]="empleados" [appearance]="'outline'" [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate" [campoValor]="'nombreCompleto'" [label]="'Coordinador'" [required]="isRequired('coordinador',form)"
+                                                fxFlex="1 0 auto">
+                                            </pixvs-mat-select>
+
+                                            <pixvs-mat-select [matSelectCtrl]="jefeUnidadAFControl" [datos]="empleados" [appearance]="'outline'" [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate" [campoValor]="'nombreCompleto'" [label]="'Jefe de unidad AF'" [required]="isRequired('jefeUnidadAF',form)"
+                                                fxFlex="1 0 auto">
+                                            </pixvs-mat-select>
+                                        </div>
+
+                                        <div fxLayout="row" fxLayoutAlign="start center" class="divisor" style="width:100%">
+                                            <mat-icon class="m-0 mr-16 secondary-text">local_atm</mat-icon>
+                                            <div class="h2 secondary-text">Dirección</div>
+                                        </div>
+
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <pixvs-mat-select [matSelectCtrl]="paisControl" [datos]="paises" [appearance]="'outline'" [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate" [campoValor]="'nombre'" [label]="'Pais'" [required]="isRequired('pais',form)" fxFlex="1 0 auto">
+                                            </pixvs-mat-select>
+
+                                            <pixvs-mat-select #estadoSelect [matSelectCtrl]="estadoControl" [datos]="estados" [appearance]="'outline'" [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate" [campoValor]="'nombre'" [label]="'Estado'" [required]="isRequired('estado',form)" fxFlex="1 0 auto">
+                                            </pixvs-mat-select>
+
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>Ciudad</mat-label>
+                                                <input type="text" matInput name="ciudad" formControlName="ciudad" required="{{ isRequired('ciudad', form) }}">
+                                                <mat-error *ngIf="(!!form.get('ciudad').errors)">
+                                                    {{validatorService.getMessage(form.get('ciudad'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                        </div>
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <div fxLayout="row" fxLayoutAlign="center center" class="mb-20">
+                                                <mat-checkbox color="primary" name="aplicaSedes" formControlName="aplicaSedes">
+                                                    Aplica Sedes
+                                                </mat-checkbox>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-tab>
+
+                        <mat-tab label="Plantilla Contratos" style="display: none;">
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <button type="button" class="btn-nuevo" *ngIf="!contratoEnEdicion" mat-mini-fab color="primary" (click)="newContrato()">
+									<mat-icon>add</mat-icon>
+								</button>
+
+                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                    <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="45" fxFlex.gt-md="35" class="list-clickable">
+                                        <div class="clickable my-8 py-4 px-12" fxLayout="row" fxLayoutAlign="start-center" *ngFor="let contrato of contratos.controls; let index=index;" (click)="editarContrato(contrato,index)">
+                                            <div class="info" fxFlex fxLayout="column">
+                                                <div class="title" *ngIf="contrato.get('tipoContrato').value">
+                                                    <b>Tipo de contrato: </b>{{ contrato.get('tipoContrato').value.valor}}
+                                                </div>
+
+                                                <div class="notes">
+                                                    <b *ngIf="contrato.get('documentoContrato').value || contrato.get('adendumContrato').value">Archivos: </b><br>
+                                                    <button *ngIf="contrato.get('documentoContrato').value" mat-stroked-button color="accent" (click)="descargarPDF(contrato.get('documentoContrato').value)">{{contrato.get('documentoContrato').value.nombreOriginal}}</button>                                                    &nbsp; &nbsp; &nbsp;
+                                                    <button *ngIf="contrato.get('adendumContrato').value" mat-stroked-button color="accent" (click)="descargarPDF(contrato.get('adendumContrato').value)">{{contrato.get('adendumContrato').value.nombreOriginal}}</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div *ngIf="contratos.controls.length && contratoEnEdicion" [formGroup]="contratoGroup" fxLayout="column" fxFlex="100" fxFlex.gt-sm="55" fxFlex.gt-md="65">
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <pixvs-mat-select #sucursalSelect [matSelectCtrl]="contratoGroup.get('tipoContrato')" [datos]="tiposContratos" [appearance]="'outline'" [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate" [campoValor]="'valor'" [label]="'Tipo de contrato'" [required]="isRequired('tipoContrato',contratoGroup)"
+                                                [seleccionarUnicaOpcion]="contratoGroupIndex == null" fxFlex="1 0 auto">
+                                            </pixvs-mat-select>
+                                        </div>
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <button mat-stroked-button color="accent" (click)="pdf.click(); $event.preventDefault()" fxFlex="1 0 calc(25% - 10px)" class="mb-32">{{ !!contratoGroup.get('documentoContrato').value ? contratoGroup.get('documentoContrato').value?.nombreOriginal : 'Subir Contrato'}}</button>
+                                            <input #pdf type="file" accept=".pdf" (change)="pdfChangeEvent($event,contratoGroup)" style="display:none;" /> &nbsp; &nbsp; &nbsp;
+                                            <button mat-stroked-button color="accent" (click)="pdf2.click(); $event.preventDefault()" fxFlex="1 0 calc(25% - 10px)" class="mb-32">{{ !!contratoGroup.get('adendumContrato').value ? contratoGroup.get('adendumContrato').value?.nombreOriginal : 'Subir Adendum'}}</button>
+                                            <input #pdf2 type="file" accept=".pdf" (change)="pdfChangeEventAdedum($event,contratoGroup)" style="display:none;" />
+                                        </div>
+
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid" style="padding-bottom: 20px;">
+                                            <mat-checkbox color="primary" name="Activo" formControlName="activo" fxFlex="1 0 auto">
+                                                Activo
+                                            </mat-checkbox>
+                                        </div>
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" dir="rtl" fxLayoutGap="20px" style="padding-bottom: 20px;">
+                                            <button type="button" class="boton-guardar mt-12" style="padding: 0px !important; max-width: 150px;" mat-raised-button color="primary" (click)="addContrato()" fxFlex="1 0 auto" [disabled]="!form?.enabled">Guardar</button>
+
+                                            <button type="button" class="boton-cancelar mt-12" style="padding: 0px !important; max-width: 150px;" mat-raised-button color="primary" (click)="cancelarContrato(contratoGroup)" fxFlex="1 0 auto" [disabled]="!form?.enabled">Cancelar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-tab>
+                    </mat-tab-group>
+                </form>
+            </div>
+            <!-- / CONTENT -->
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

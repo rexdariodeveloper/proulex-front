@@ -1,0 +1,58 @@
+<div id="about" class="p-24" fxLayout="row wrap">
+
+    <div class="w-100-p" fxLayout="row wrap" fxLayoutGap="20px grid">
+        <div class="about-content" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="65">
+
+            <div class="perfil-box info-box general" fxLayout="column">
+
+                <header class="accent">
+                    <div class="title">{{'INFORMATION.GENERAL' | translate}}</div>
+                </header>
+
+                <div class="content">
+                    <div class="info-line">
+                        <div class="title">{{'INFORMATION.EMAIL' | translate}}</div>
+                        <div class="info">{{usuarioActual?.correoElectronico}}</div>
+                    </div>
+
+                    <div class="info-line">
+                        <div class="title">{{'INFORMATION.ROL' | translate}}</div>
+                        <div class="info">{{usuarioActual?.rol?.nombre}}</div>
+                    </div>
+
+                    <div class="info-line">
+                        <div class="title">{{'INFORMATION.FECHA_CREACION' | translate}}</div>
+                        <div class="info">
+                            {{usuarioActual?.fechaCreacion | dateLocale:'MMMM D YYYY, h:mm:ss a'  | capitalizeFirst}}
+                        </div>
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+        <div class="about-content" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="35">
+
+            <div class="perfil-box info-box general" fxLayout="column">
+
+                <header class="accent">
+                    <div class="title">{{'INFORMATION.SEGURIDAD' | translate}}</div>
+                </header>
+
+                <div class="content">
+                    <div class="info-line">
+                        <button mat-raised-button class="boton-nuevo"
+                            (click)="cambiarPassword()">{{'INFORMATION.CAMBIAR_CONTRASEÑA' | translate}}</button>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>

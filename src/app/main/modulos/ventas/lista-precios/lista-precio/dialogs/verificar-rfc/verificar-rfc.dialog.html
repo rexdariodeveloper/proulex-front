@@ -1,0 +1,59 @@
+<mat-toolbar color="primary">
+	<mat-toolbar-row>
+		<span class="title dialog-title">Agregar artículo</span>
+	</mat-toolbar-row>
+</mat-toolbar>
+<div mat-dialog-content>
+	<div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+		<div fxLayout="row wrap" style="padding: 20px 20px 20px 20px;">
+			<pixvs-mat-select [matSelectCtrl]="articuloControl" [datos]="articulos"
+            [appearance]="'outline'"
+            [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+            [campoValor]="'nombreArticulo'" [label]="'Articulos'"
+            fxFlex="1 0 auto">
+            </pixvs-mat-select>
+		</div>
+		<div fxLayout="row wrap" style="padding: 20px 20px 20px 20px;" *ngIf="articulo">
+            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                <mat-label>Código</mat-label>
+                <input type="text" matInput name="codigoArticulo" [(ngModel)]="articulo.codigoArticulo" [readonly]="true">
+            </mat-form-field>
+            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                <mat-label>Nombre</mat-label>
+                <input type="text" matInput name="nombreArticulo" [(ngModel)]="articulo.nombreArticulo"  [readonly]="true">
+            </mat-form-field>
+            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                <mat-label>Unidad de medida (Inventario)</mat-label>
+                <input type="text" matInput name="nombreArticulo" [(ngModel)]="articulo.unidadMedidaInventario.nombre" [readonly]="true">
+            </mat-form-field>
+            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                <mat-label>Precio venta</mat-label>
+                <input type="text" matInput name="nombreArticulo" [(ngModel)]="articulo.precioVenta" (change)="actualizarDatos()">
+            </mat-form-field>
+        </div>
+        <div fxLayout="row wrap" style="padding: 20px 20px 20px 20px;" *ngIf="articulo">
+            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                <mat-label>Precio unitario</mat-label>
+                <input type="text" matInput name="nombreArticulo" value="{{redondeo2Decimales(articulo.precioVenta/(1+articulo.iva+articulo.ieps))}}"  [readonly]="true">
+            </mat-form-field>
+            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                <mat-label>Importe IVA</mat-label>
+                <input type="text" matInput name="nombreArticulo" value="{{redondeo2Decimales((articulo.precioVenta/(1+articulo.iva+articulo.ieps))*articulo.iva)}}" [readonly]="true">
+            </mat-form-field>
+            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                <mat-label>Importe IEPS</mat-label>
+                <input type="text" matInput name="nombreArticulo" value="{{redondeo2Decimales((articulo.precioVenta/(1+articulo.iva+articulo.ieps))*articulo.ieps)}}" [readonly]="true">
+            </mat-form-field>
+        </div>
+	</div>
+</div>
+<div mat-dialog-actions align="end">
+	<button
+		mat-button
+		(click)="cancelar()"
+	>Cerrar</button>
+	<button
+		mat-raised-button class="mat-accent mr-16"
+		(click)="aceptar()"
+	>Aceptar</button>
+</div>

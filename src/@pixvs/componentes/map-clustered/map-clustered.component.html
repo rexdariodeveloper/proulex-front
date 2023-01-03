@@ -1,0 +1,27 @@
+<agm-map 
+  [latitude]="mapDefaults.latitude"
+  [longitude]="mapDefaults.longitude"
+  [zoom]="mapDefaults.zoom"
+  [fullscreenControl]="mapDefaults.fullscreen"
+  [maxZoom]="mapDefaults.maxZoom"
+  [minZoom]="mapDefaults.minZoom"
+  [zoomControl]="mapDefaults.zoomControl"
+  [disableDefaultUI]="true"
+>
+  <agm-marker-cluster imagePath = 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'>
+    <agm-marker 
+        *ngFor="let m of mapData"
+        [latitude]="m.latitude"
+        [longitude]="m.longitude"
+        [label]="m.label"
+        [title]="m.title"
+        [markerDraggable]="m.draggable"
+        [markerClickable]="m.clickable"
+        [iconUrl]="{url: m.iconUrl | mapIcon , scaledSize: {height: 32, width: 32}}"
+    >    
+      <agm-info-window *ngIf="m.info">
+        <strong>{{ m.info }}</strong>
+      </agm-info-window>
+    </agm-marker>
+  </agm-marker-cluster>
+</agm-map>

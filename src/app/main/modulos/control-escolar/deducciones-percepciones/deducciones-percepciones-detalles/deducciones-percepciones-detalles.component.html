@@ -1,0 +1,135 @@
+<div id="ficha-curso" class="pixvs-theme-listado page-layout carded fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <ficha-crud *ngIf="config" [config]="config" [isGuardadoPersonalizado]="true" (output)="guardar()"
+            [mostrarBorrar]="deduccionPercepcion?.activo" [mostrarEditar]="false" [titulo]="titulo"
+            [subTituloTraduccion]="pageType" [form]="form" [currentId]="currentId" [pageType]="pageType"
+            [dataService]="_deduccionesPercepcionesService" class="header accent" fxLayout="column" fxLayoutAlign="center center" [etiquetaBotonEliminar]="'Cancelar'"
+            fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center" (outputDesHabilitarCampos)="deshabilitarCampos()" [isDesHabilitarPersonalizado]="true">
+        </ficha-crud>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <mat-progress-bar *ngIf="_deduccionesPercepcionesService?.cargando" [color]="'primary'" [mode]="'query'">
+            </mat-progress-bar>
+
+            <div style="height: 0px;">
+                <button debounceClick mat-mini-fab class="boton-refresh" (debounceClick)="recargar()"
+                    matTooltip="{{ 'INTERFAZ.RECARGAR' | translate  }}">
+                    <mat-icon class="s-16">refresh</mat-icon>
+                </button>
+            </div>
+
+            <!-- CONTENT -->
+            <div class="content h-100-p" *ngIf="form">
+
+                <form focusInvalidInput name="form" id="form" [formGroup]="form" class="product w-100-p h-100-p"
+                    fxLayout="column" fxFlex>
+
+                    <mat-tab-group class="h-100-p">
+
+                        <mat-tab label="Datos Generales">
+
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                        <mat-label>Empleado</mat-label>
+                                        <input type="text" matInput name="empleado" formControlName="empleado"
+                                            required="{{ isRequired('empleado', form) }}">
+                                        <mat-error *ngIf="(!!form.get('empleado').errors)">
+                                            {{validatorService.getMessage(form.get('empleado'))}}
+                                        </mat-error>
+                                    </mat-form-field>
+                                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                        <mat-label>Fecha de movimiento</mat-label>
+                                        <input type="text" matInput name="fecha" formControlName="fecha"
+                                            required="{{ isRequired('fecha', form) }}">
+                                        <mat-error *ngIf="(!!form.get('fecha').errors)">
+                                            {{validatorService.getMessage(form.get('fecha'))}}
+                                        </mat-error>
+                                    </mat-form-field>
+                                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                        <mat-label>Tipo de movimiento</mat-label>
+                                        <input type="text" matInput name="tipoMovimiento" formControlName="tipoMovimiento"
+                                            required="{{ isRequired('tipoMovimiento', form) }}">
+                                        <mat-error *ngIf="(!!form.get('tipoMovimiento').errors)">
+                                            {{validatorService.getMessage(form.get('tipoMovimiento'))}}
+                                        </mat-error>
+                                    </mat-form-field>
+                                </div>
+                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                        <mat-label>Concepto</mat-label>
+                                        <input type="text" matInput name="concepto" formControlName="concepto"
+                                            required="{{ isRequired('concepto', form) }}">
+                                        <mat-error *ngIf="(!!form.get('concepto').errors)">
+                                            {{validatorService.getMessage(form.get('concepto'))}}
+                                        </mat-error>
+                                    </mat-form-field>
+                                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                        <mat-label>Valor Fijo</mat-label>
+                                        <input type="text" matInput name="valorFijo" formControlName="valorFijo" prefix="$ " mask="separator.2" thousandSeparator=","
+                                            required="{{ isRequired('valorFijo', form) }}">
+                                        <mat-error *ngIf="(!!form.get('valorFijo').errors)">
+                                            {{validatorService.getMessage(form.get('valorFijo'))}}
+                                        </mat-error>
+                                    </mat-form-field>
+                                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                        <mat-label>Cantidad de horas</mat-label>
+                                        <input type="text" matInput name="cantidadHoras" formControlName="cantidadHoras"
+                                            required="{{ isRequired('cantidadHoras', form) }}">
+                                        <mat-error *ngIf="(!!form.get('cantidadHoras').errors)">
+                                            {{validatorService.getMessage(form.get('cantidadHoras'))}}
+                                        </mat-error>
+                                    </mat-form-field>
+                                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                        <mat-label>Total</mat-label>
+                                        <input type="text" matInput name="total" formControlName="total" prefix="$ " mask="separator.2" thousandSeparator=","
+                                            required="{{ isRequired('total', form) }}">
+                                        <mat-error *ngIf="(!!form.get('total').errors)">
+                                            {{validatorService.getMessage(form.get('total'))}}
+                                        </mat-error>
+                                    </mat-form-field>
+                                </div>
+                                <div *ngIf="archivos?.length > 0" fxLayout="row wrap" fxLayoutAlign="start start" fxLayoutGap="10px grid">
+                                    <h2><b>Archivos adjuntos ({{archivos.length}})</b></h2><br>
+                                </div>
+                                <div *ngIf="archivos?.length > 0" fxLayout="row wrap" fxLayoutAlign="start start" fxLayoutGap="20px grid">
+                                    <!--<button *ngFor="let archivo of archivos" mat-stroked-button color="accent" (click)="descargarPDF(archivo)" fxFlex="1 0 calc(25% - 10px)" class="mb-32 text-truncate">{{archivo?.nombreOriginal}}</button>-->
+                                    <div *ngFor="let archivo of archivos" class="attachment" fxLayout="column" style="max-width: 200px; align-items: center;">
+                                        <button mat-icon-button style="height: 60px !important; margin-right: 35%;" disabled>
+                                            <mat-icon style="font-size: 50px; color: black;">attach_file</mat-icon>
+                                        </button>
+                                        <a (click)="descargarPDF(archivo)" style="cursor: pointer;">{{archivo.nombreOriginal}}</a>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+
+                        </mat-tab>
+                        
+                    </mat-tab-group>
+
+                    
+
+                </form>
+
+
+            </div>
+            <!-- / CONTENT -->
+
+        </div>
+        <!-- / CONTENT CARD -->
+
+
+    </div>
+    <!-- / CENTER -->
+</div>

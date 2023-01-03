@@ -1,0 +1,294 @@
+<div id="ficha-curso" class="pixvs-theme-listado page-layout carded fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <ficha-crud *ngIf="config" [config]="config" [isGuardadoPersonalizado]="true" (output)="guardar()"
+            [mostrarBorrar]="false" [mostrarEditar]="false" [titulo]="titulo"
+            [subTituloTraduccion]="pageType" [form]="form" [currentId]="currentId" [pageType]="pageType"
+            [dataService]="_grupoService" class="header accent" fxLayout="column" fxLayoutAlign="center center"
+            fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center" (outputDesHabilitarCampos)="deshabilitarCampos()" [cargando]="_grupoService?.cargando" [ocultarGuardar]="ocultarGuardar">
+        </ficha-crud>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <mat-progress-bar *ngIf="_grupoService?.cargando" [color]="'primary'" [mode]="'query'">
+            </mat-progress-bar>
+
+            <div style="height: 0px;">
+                <button debounceClick mat-mini-fab class="boton-refresh" (debounceClick)="recargar()"
+                    matTooltip="{{ 'INTERFAZ.RECARGAR' | translate  }}">
+                    <mat-icon class="s-16">refresh</mat-icon>
+                </button>
+            </div>
+
+            <!-- CONTENT -->
+            <div class="content" *ngIf="form">
+
+                <form focusInvalidInput name="form" id="form" [formGroup]="form" class="product w-100-p"
+                    fxLayout="column" fxFlex>
+
+                    <mat-tab-group>
+
+                        <mat-tab label="Datos Generales">
+
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                    <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="70" fxFlex.gt-md="70">
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <pixvs-mat-select [matSelectCtrl]="form.get('sucursal')" [datos]="sucursales"
+                                                [appearance]="'outline'"
+                                                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                                [campoValor]="'nombre'" [label]="'Sedes'" [required]="isRequired('sucursal',form)"
+                                                fxFlex="1 0 auto">
+                                            </pixvs-mat-select>
+
+                                            <pixvs-mat-select #cursoSelect [matSelectCtrl]="form.get('curso')" [datos]="cursos"
+                                                [appearance]="'outline'"
+                                                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                                [campoValor]="'nombre'" [label]="'Cursos'" [required]="isRequired('curso',form)"
+                                                fxFlex="1 0 auto">
+                                            </pixvs-mat-select>
+                                        </div>
+
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <pixvs-mat-select #modalidadSelect [matSelectCtrl]="form.get('modalidad')" [datos]="modalidades"
+                                                [appearance]="'outline'"
+                                                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                                [campoValor]="'nombre'" [label]="'Modalidades'" [required]="isRequired('modalidad',form)"
+                                                fxFlex="1 0 auto" [ngStyle]="{'pointer-events': (modalidades !=null) ? '' : 'none'}">
+                                            </pixvs-mat-select>
+
+                                            <pixvs-mat-select #programacionSelect [matSelectCtrl]="form.get('programacionComercial')" [datos]="programacionesComerciales"
+                                                [appearance]="'outline'"
+                                                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                                [campoValor]="'nombre'" [label]="'Programación comercial'" [required]="isRequired('programacionComercial',form)"
+                                                fxFlex="1 0 auto" *ngIf="!esJobs">
+                                            </pixvs-mat-select>
+                                            <pixvs-mat-select [matSelectCtrl]="form.get('paCiclo')" [datos]="ciclos"
+                                                [appearance]="'outline'"
+                                                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                                [campoValor]="'nombre'" [label]="'Ciclo escolar'" [required]="isRequired('paCiclo',form)"
+                                                fxFlex="1 0 auto" *ngIf="esJobs">
+                                            </pixvs-mat-select>
+                                        </div>
+                                            
+
+
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid" *ngIf="!esJobs">
+                                            <pixvs-mat-select #horaInicioSelect [matSelectCtrl]="form.get('diasInicioControl')" [datos]="diasInicio"
+                                                [appearance]="'outline'"
+                                                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                                [campoValor]="'fechaInicio'" [label]="'Fecha Inicio'" [required]="isRequired('diasInicioControl',form)"
+                                                fxFlex="1 0 auto">
+                                            </pixvs-mat-select>
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 calc(16% - 10px)">
+                                                <mat-label>Fecha Fin</mat-label>
+                                                <input matInput type="text" name="fechaFin" [(ngModel)]="fechaFinFormateada" [ngModelOptions]="{standalone: true}" [readonly]="true">
+                                            </mat-form-field>
+                                        </div>
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid" *ngIf="esJobs">
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 calc(16% - 10px)">
+                                                <mat-label>Fecha Inicio</mat-label>
+                                                <input matInput type="date" name="fechaInicio" formControlName="fechaInicio">
+                                                <mat-error *ngIf="(!!form.get('fechaInicio').errors)">
+                                                    {{validatorService.getMessage(form.get('fechaInicio'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 calc(16% - 10px)">
+                                                <mat-label>Fecha Fin</mat-label>
+                                                <input matInput type="date" name="fechaFin" formControlName="fechaFin">
+                                                <mat-error *ngIf="(!!form.get('fechaFin').errors)">
+                                                    {{validatorService.getMessage(form.get('fechaFin'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                        </div>
+
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                            <pixvs-mat-select #programacionSelect [matSelectCtrl]="form.get('plataforma')" [datos]="plataformas"
+                                                [appearance]="'outline'"
+                                                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                                [campoValor]="'valor'" [label]="'Plataforma'" [required]="isRequired('plataforma',form)"
+                                                fxFlex="1 0 auto" [ngStyle]="{'pointer-events':'none'}">
+                                            </pixvs-mat-select>
+                                        </div>
+
+                                    </div>
+
+                                    <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="30" fxFlex.gt-md="30" class="mat-elevation-z8">
+                                        <div fxLayout="row wrap" fxLayoutGap="20px grid" style="text-align: center;padding: 15px;">
+                                            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                    <b>Días</b>
+                                                </div>
+                                            </div>
+                                            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                    <b>Horas</b>
+                                                </div>
+                                            </div>
+                                            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                    Lunes
+                                                </div>
+                                            </div>
+                                            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                    {{modalidadControl?.value?.lunes? modalidadControl.value.horasPorDia: '0'}}
+                                                </div>
+                                            </div>
+                                            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                    Martes
+                                                </div>
+                                            </div>
+                                            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                    {{modalidadControl?.value?.martes? modalidadControl.value.horasPorDia: '0'}}
+                                                </div>
+                                            </div>
+                                            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                    Miércoles
+                                                </div>
+                                            </div>
+                                            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                    {{modalidadControl?.value?.miercoles? modalidadControl.value.horasPorDia: '0'}}
+                                                </div>
+                                            </div>
+                                            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                    Jueves
+                                                </div>
+                                            </div>
+                                            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                    {{modalidadControl?.value?.jueves? modalidadControl.value.horasPorDia: '0'}}
+                                                </div>
+                                            </div>
+                                            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                    Viernes
+                                                </div>
+                                            </div>
+                                            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                    {{modalidadControl?.value?.viernes? modalidadControl.value.horasPorDia: '0'}}
+                                                </div>
+                                            </div>
+                                            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                    Sábado
+                                                </div>
+                                            </div>
+                                            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                    {{modalidadControl?.value?.sabado? modalidadControl.value.horasPorDia: '0'}}
+                                                </div>
+                                            </div>
+                                            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                    Domingo
+                                                </div>
+                                            </div>
+                                            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+                                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                                    {{modalidadControl?.value?.domingo? modalidadControl.value.horasPorDia: '0'}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+
+                                    <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+                                        <div fxlayout="row" fxlayoutalign="start center" class="my-20" style="display: flex;">
+                                            <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font">account_circle</mat-icon>
+                                            <div class="h2 secondary-text ng-tns-c345-79" style="width: 100%;">Datos del grupo</div>
+                                            <!--<div style="width: 100%">
+                                                <button mat-fab color="primary" (click)="abrirModal()" style="float: right;" [disabled]="!deshabilitarBotones">
+                                                    <mat-icon>add</mat-icon>
+                                                </button> 
+                                            </div>-->
+                                        </div>
+                                            
+
+                                        <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                            
+                                            <table mat-table [dataSource]="grupos.value" style="width: 100%">
+                                                <ng-container matColumnDef="codigoGrupo">
+                                                    <th mat-header-cell *matHeaderCellDef> Código grupo </th>
+                                                    <td mat-cell *matCellDef="let element"> {{element.codigoGrupo}} </td>
+                                                </ng-container>
+                                                <ng-container matColumnDef="nivel">
+                                                    <th mat-header-cell *matHeaderCellDef> Nivel </th>
+                                                    <td mat-cell *matCellDef="let element"> {{element.nivel}} </td>
+                                                </ng-container>
+                                                <ng-container matColumnDef="grupo">
+                                                    <th mat-header-cell *matHeaderCellDef> Grupo </th>
+                                                    <td mat-cell *matCellDef="let element"> {{element.grupo}} </td>
+                                                </ng-container>
+                                                <ng-container matColumnDef="modalidadHorario.nombre">
+                                                    <th mat-header-cell *matHeaderCellDef> Horario </th>
+                                                    <td mat-cell *matCellDef="let element"> {{element.modalidadHorario.nombre}} </td>
+                                                </ng-container>
+                                                <ng-container matColumnDef="tipoGrupo.valor">
+                                                    <th mat-header-cell *matHeaderCellDef> Tipo grupo </th>
+                                                    <td mat-cell *matCellDef="let element"> {{element.tipoGrupo.valor}} </td>
+                                                </ng-container>
+                                                <ng-container matColumnDef="borrar">
+                                                    <th mat-header-cell *matHeaderCellDef></th>
+                                                    <td mat-cell *matCellDef="let element; let i = index">
+                                                        <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font" (click)="borrarGrupo(i)" style="cursor: pointer; color: red" [ngStyle]="{'pointer-events': (!deshabilitarBotones) ? 'none' : ''}">delete</mat-icon> 
+                                                     </td>
+                                                </ng-container>
+                                                <ng-container matColumnDef="boton">
+                                                    <th mat-header-cell *matHeaderCellDef> 
+                                                        <button mat-fab color="primary" (click)="abrirModal()" style="float: right;" [disabled]="!deshabilitarBotones">
+                                                            <mat-icon>add</mat-icon>
+                                                        </button>  
+                                                    </th>
+                                                    <td mat-cell *matCellDef="let element"></td>
+                                                </ng-container>
+                                                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                                                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                                            </table>
+                                        </div>
+                                        
+                                                    
+                                    </div>
+
+
+
+                                </div>
+
+
+                            </div>
+
+                        </mat-tab>
+
+                        
+
+                    </mat-tab-group>
+
+                    
+
+                </form>
+
+
+            </div>
+            <!-- / CONTENT -->
+
+        </div>
+        <!-- / CONTENT CARD -->
+
+
+    </div>
+    <!-- / CENTER -->
+</div>

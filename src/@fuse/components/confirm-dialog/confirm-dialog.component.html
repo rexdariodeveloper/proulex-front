@@ -1,0 +1,6 @@
+<h1 matDialogTitle>{{ data?.titulo ? data?.titulo : 'INTERFAZ.CONFIRMACION' | translate }}</h1>
+<div mat-dialog-content>{{data?.mensaje}}</div>
+<div mat-dialog-actions class="pt-24" style="float: right;">    
+    <button mat-button (click)="dialogRef.close(false)">{{ data?.cancelar ? data?.cancelar : 'INTERFAZ.CANCELAR' | translate }}</button>
+    <button mat-raised-button class="mat-accent mr-16" (click)="dialogRef.close(true)">{{ data?.aceptar ? data?.aceptar : 'INTERFAZ.CONFIRMAR' | translate }}</button>
+</div>

@@ -1,0 +1,175 @@
+<invoice-print></invoice-print>
+<div id="ficha-CRUD" class="pixvs-theme-listado page-layout carded fullwidth inner-scroll">
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+        <!-- HEADER -->
+        <ficha-crud *ngIf="config" [cargando]="_transferenciaService?.cargando" [config]="config" [titulo]="titulo" [subTituloTraduccion]="pageType == 'nuevo' ? pageType : null" [currentId]="currentId" [pageType]="pageType" [form]="form" [dataService]="_transferenciaService"
+            [mostrarBorrar]="false" [mostrarEditar]="false" [mostrarImprimir]="pageType != 'nuevo'" [isGuardadoPersonalizado]="true" [historial]="historial" (output)="guardar()" (outputImprimir)="onPrint()" class="header accent" fxLayout="column" fxLayoutAlign="center center"
+            fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center">
+        </ficha-crud>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <mat-progress-bar *ngIf="_transferenciaService?.cargando" [color]="'primary'" [mode]="'query'">
+            </mat-progress-bar>
+            <!-- CONTENT -->
+            <div class="content">
+                <form name="form" id="form" [formGroup]="form" class="product w-100-p" fxLayout="column" fxFlex>
+                    <mat-tab-group>
+                        <mat-tab label="{{ 'DATOS' | translate }}">
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <div fxLayout="column">
+                                    <div fxLayout="row">
+                                        <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+                                            <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                                <pixvs-mat-select required [matSelectCtrl]="almacenOrigenControl" [datos]="listadoAlmacenesOrigen" [appearance]="'outline'" [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate" [campoValor]="['codigoAlmacen', 'nombre']" [label]="'ALMACEN_ORIGEN' | translate"
+                                                    fxFlex="3 0 auto">
+                                                </pixvs-mat-select>
+
+                                                <pixvs-mat-select *ngIf="listadoLocalidadesOrigen.length > 0" required #localidadOrigenSelect [matSelectCtrl]="localidadOrigenControl" [datos]="listadoLocalidadesOrigen" [appearance]="'outline'" [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                                    [campoValor]="['codigoLocalidad', 'nombre']" [label]="'LOCALIDAD_ORIGEN' | translate" fxFlex="3 0 auto">
+                                                </pixvs-mat-select>
+
+                                                <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                        <mat-label>{{ 'FECHA' | translate }}</mat-label>
+                                                        <input matInput type="date" max="{{ maxDatePicker }}" name="fecha" formControlName="fecha" required>
+                                                        <mat-error *ngIf="(!!form.get('fecha').errors)">
+                                                            {{validatorService.getMessage(form.get('fecha'))}}
+                                                        </mat-error>
+                                                    </mat-form-field>
+                                                </div>
+                                            </div>
+
+                                            <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                                <pixvs-mat-select required [matSelectCtrl]="almacenDestinoControl" [datos]="listadoAlmacenesDestino" [appearance]="'outline'" [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate" [campoValor]="['codigoAlmacen', 'nombre']" [label]="'ALMACEN_DESTINO' | translate"
+                                                    fxFlex="3 0 auto">
+                                                </pixvs-mat-select>
+
+                                                <pixvs-mat-select *ngIf="listadoLocalidadesDestino.length > 0" required #localidadDestinoSelect [matSelectCtrl]="localidadDestinoControl" [datos]="listadoLocalidadesDestino" [appearance]="'outline'" [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                                    [campoValor]="['codigoLocalidad', 'nombre']" [label]="'LOCALIDAD_DESTINO' | translate" fxFlex="3 0 auto">
+                                                </pixvs-mat-select>
+
+                                                <div *ngIf="pageType == 'ver'" fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                                    <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                        <mat-label>{{ 'ESTATUS' | translate }}</mat-label>
+                                                        <input matInput name="estatus" formControlName="estatus">
+                                                        <mat-error *ngIf="(!!form.get('estatus').errors)">
+                                                            {{validatorService.getMessage(form.get('estatus'))}}
+                                                        </mat-error>
+                                                    </mat-form-field>
+                                                </div>
+                                            </div>
+
+                                            <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                                                <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                    <mat-label>{{ 'COMENTARIO' | translate }}</mat-label>
+                                                    <input matInput name="comentario" formControlName="comentario">
+                                                    <mat-error *ngIf="(!!form.get('comentario').errors)">
+                                                        {{validatorService.getMessage(form.get('comentario'))}}
+                                                    </mat-error>
+                                                </mat-form-field>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div fxlayout="row" fxlayoutalign="start center" class="pb-4 mx-28" style="display: flex; border-bottom: solid 1px lightgray;">
+                                        <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font">free_breakfast</mat-icon>
+                                        <div class="h2 secondary-text ng-tns-c345-79">Artículos</div>
+                                    </div>
+
+                                    <div fxLayout="row">
+                                        <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+                                            <button mat-mini-fab class="btn-nuevo" *ngIf="pageType != 'ver'" (click)="agregarArticulo()" [disabled]="!localidadOrigenControl.value || !localidadDestinoControl.value">
+                                                <mat-icon>add</mat-icon>
+                                            </button>
+
+                                            <div fxLayout="row" fxLayoutAlign="space-between start" class="h-100-p">
+                                                <div fxFlex="100" class="h-100-p">
+                                                    <pixvs-tabla-simple #tablaArticulos [service]="_detallesService" [localeEN]="localeEN" [localeES]="localeES" [columnas]="columnasTabla" [columnasFechas]="columnasFechas" [displayedColumns]="displayedColumns" [reordenamiento]="false" [columnaId]="'id'"
+                                                        (onSeleccionarRegistro)="onEditar($event)"></pixvs-tabla-simple>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-tab>
+
+                        <mat-tab label="Movimientos" *ngIf="movimientos?.length">
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <mat-table fxFlex="fill" [dataSource]="dataSourceMovimientos" matSort [@animateStagger]="{value:'50'}" id="tableMovimientos" fusePerfectScrollbar>
+                                    <ng-container matColumnDef="fecha">
+                                        <mat-header-cell *matHeaderCellDef> Fecha y hora </mat-header-cell>
+                                        <mat-cell *matCellDef="let movimiento"> {{ movimiento.fecha | date:'dd/MM/yyyy hh:mm a' }} </mat-cell>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="codigoArticulo">
+                                        <mat-header-cell *matHeaderCellDef> Código artículo </mat-header-cell>
+                                        <mat-cell *matCellDef="let movimiento"> {{ movimiento.codigoArticulo }} </mat-cell>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="nombreArticulo">
+                                        <mat-header-cell *matHeaderCellDef> Nombre artículo </mat-header-cell>
+                                        <mat-cell *matCellDef="let movimiento"> {{ movimiento.nombreArticulo }} </mat-cell>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="um">
+                                        <mat-header-cell *matHeaderCellDef> UM </mat-header-cell>
+                                        <mat-cell *matCellDef="let movimiento"> {{ movimiento.um }} </mat-cell>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="cantidadEnviada">
+                                        <mat-header-cell *matHeaderCellDef> Cantidad Enviada</mat-header-cell>
+                                        <mat-cell *matCellDef="let movimiento"> {{ movimiento.cantidadEnviada }} </mat-cell>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="cantidadTransferida">
+                                        <mat-header-cell *matHeaderCellDef> Cantidad Transferida</mat-header-cell>
+                                        <mat-cell *matCellDef="let movimiento"> {{ movimiento.cantidadTransferida }} </mat-cell>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="cantidadDevuelta">
+                                        <mat-header-cell *matHeaderCellDef> Cantidad Devuelta</mat-header-cell>
+                                        <mat-cell *matCellDef="let movimiento"> {{ movimiento.cantidadDevuelta }} </mat-cell>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="cantidadAjuste">
+                                        <mat-header-cell *matHeaderCellDef> Cantidad Ajuste</mat-header-cell>
+                                        <mat-cell *matCellDef="let movimiento"> {{ movimiento.cantidadAjuste }} </mat-cell>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="almacenOrigen">
+                                        <mat-header-cell *matHeaderCellDef> Almacén Origen </mat-header-cell>
+                                        <mat-cell *matCellDef="let movimiento"> {{ movimiento.almacenOrigen }} </mat-cell>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="almacenDestino">
+                                        <mat-header-cell *matHeaderCellDef> Almacén Destino </mat-header-cell>
+                                        <mat-cell *matCellDef="let movimiento"> {{ movimiento.almacenDestino }} </mat-cell>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="usuario">
+                                        <mat-header-cell *matHeaderCellDef> Usuario </mat-header-cell>
+                                        <mat-cell *matCellDef="let movimiento"> {{ movimiento.usuario }} </mat-cell>
+                                    </ng-container>
+
+                                    <mat-header-row *matHeaderRowDef="displayedColumnsMovimientos; sticky:true"></mat-header-row>
+                                    <mat-row *matRowDef="let row; columns: displayedColumnsMovimientos;"></mat-row>
+                                </mat-table>
+                            </div>
+                        </mat-tab>
+                    </mat-tab-group>
+                </form>
+            </div>
+            <!-- / CONTENT -->
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

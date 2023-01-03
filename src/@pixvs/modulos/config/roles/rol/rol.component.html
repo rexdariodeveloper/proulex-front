@@ -1,0 +1,101 @@
+<div id="ficha-CRUD" class="pixvs-theme-listado page-layout carded fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <ficha-crud *ngIf="config" [config]="config" [cargando]="_rolService?.cargando" [isGuardadoPersonalizado]="true"
+            (output)="guardar()" [mostrarBorrar]="false" [mostrarEditar]="true" [titulo]="titulo"
+            [subTituloTraduccion]="pageType" [form]="form" [currentId]="currentId" [pageType]="pageType"
+            [dataService]="_rolService" class="header accent" fxLayout="column" fxLayoutAlign="center center"
+            fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center">
+        </ficha-crud>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <mat-progress-bar *ngIf="_rolService?.cargando" [color]="'primary'" [mode]="'query'">
+            </mat-progress-bar>
+            <!-- CONTENT -->
+            <div class="content">
+
+                <form name="form" id="form" [formGroup]="form" class="product w-100-p" fxLayout="column" fxFlex>
+
+                    <mat-tab-group>
+
+                        <mat-tab label="Datos Generales">
+
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+
+                                <div fxLayout="row wrap" fxLayoutGap="20px grid">
+                                    <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+
+                                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                                <mat-label>{{'NAME' | translate}}</mat-label>
+                                                <input matInput name="nombre" formControlName="nombre"
+                                                    required="{{ isRequired('nombre') }}">
+                                                <mat-error *ngIf="(!!form.get('nombre').errors)">
+                                                    {{validatorService.getMessage(form.get('nombre'))}}
+                                                </mat-error>
+                                            </mat-form-field>
+
+                                        </div>
+
+                                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+
+                                            <mat-checkbox fxFlex="1 0 auto" class="example-margin"
+                                                formControlName="activo">{{'ACTIVE' | translate}}</mat-checkbox>
+
+                                        </div>
+
+
+                                    </div>
+                                    <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="50">
+
+                                        <mat-card fxLayout="column">
+                                            <mat-card-header>
+                                                <mat-card-title>
+                                                    {{ 'MENU' | translate }}
+                                                </mat-card-title>
+                                                <mat-card-subtitle fxLayoutAlign="start">
+                                                </mat-card-subtitle>
+                                            </mat-card-header>
+
+                                            <mat-card-content class="h-100-p">
+                                                <pixvs-mat-tree #tree [isDisabled]="form?.disabled"></pixvs-mat-tree>
+                                            </mat-card-content>
+                                            <mat-card-actions>
+                                            </mat-card-actions>
+                                        </mat-card>
+                                    </div>
+
+
+                                </div>
+
+
+                            </div>
+
+                        </mat-tab>
+
+
+                    </mat-tab-group>
+
+                </form>
+
+
+            </div>
+            <!-- / CONTENT -->
+
+        </div>
+        <!-- / CONTENT CARD -->
+
+
+    </div>
+    <!-- / CENTER -->
+</div>

@@ -1,0 +1,49 @@
+<mat-toolbar color="primary">
+	<mat-toolbar-row>
+		<span class="title dialog-title">Agregar curso</span>
+	</mat-toolbar-row>
+</mat-toolbar>
+<div mat-dialog-content>
+	<div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100" style="height: auto; margin-top: 5%;">
+		<div fxLayout="row wrap" fxLayoutGap="20px grid">
+			<pixvs-mat-select [matSelectCtrl]="programaControl" [datos]="programas"
+            [appearance]="'outline'"
+            [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+            [campoValor]="'nombre'" [label]="'Programa'"
+            fxFlex="1 0 auto">
+            </pixvs-mat-select>
+            <pixvs-mat-select #cursoSelect [matSelectCtrl]="cursoControl" [datos]="cursos"
+            [appearance]="'outline'"
+            [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+            [campoValor]="'nombre'" [label]="'Idioma'"
+            fxFlex="1 0 auto">
+            </pixvs-mat-select>
+		</div>
+		<div fxLayout="row wrap">
+			<pixvs-mat-select #modalidadSelect [matSelectCtrl]="modalidadesControl" [datos]="modalidades"
+            [appearance]="'outline'"
+            [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+            [campoValor]="'nombre'" [label]="'Modalidad'"
+            fxFlex="1 0 auto">
+            </pixvs-mat-select>
+		</div>
+		<div fxLayout="row wrap">
+			<pixvs-mat-select #modalidadHorarioSelect [matSelectCtrl]="modalidadHorarioControl" [datos]="modalidades"
+            [appearance]="'outline'"
+            [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+            [campoValor]="'nombre'" [label]="'Horario'" [multiple]="true"
+            fxFlex="1 0 auto" [showToggleAllCheckbox]="true">
+            </pixvs-mat-select>
+		</div>
+	</div>
+</div>
+<div mat-dialog-actions align="end">
+	<button
+		mat-button
+		(click)="cancelar()"
+	>Cerrar</button>
+	<button
+		mat-raised-button class="mat-accent mr-16"
+		(click)="aceptar()"
+	>Aceptar</button>
+</div>

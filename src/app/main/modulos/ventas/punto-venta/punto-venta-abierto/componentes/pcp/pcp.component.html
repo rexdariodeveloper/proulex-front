@@ -1,0 +1,170 @@
+<div class="w-100-p h-100-p" fxLayout="column">
+    <div fxFlex="0 0 7%" fxLayout="row" fxLayoutAlign="space-between start">
+        <span class="titulo-navegador accent-fg">
+            <mat-icon class="clickable mr-12" (click)="onVistaAtras()">arrow_back</mat-icon> Cancelar
+        </span>
+        <div class="search-wrapper mx-32 mx-md-0">
+            <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                <mat-icon>search</mat-icon>
+                <input placeholder="{{ 'INTERFAZ.BUSCAR' | translate  }}..." [formControl]="filtroControl" [readonly]="_puntoVentaAbiertoService.cargando">
+            </div>
+        </div>
+    </div>
+
+    <div fxFlex="0 0 93%" fxLayout="column" class="fuse-white-bg">
+        <div fxFlex="0 0 10%" fxLayout="row" fxLayoutAlign="space-between center" class="py-8 px-16">
+            <span class="font-weight-600 font-size-20">PCP</span>
+            <span class="tag blue-bg">{{ dataSourceAlumnos?.filteredData?.length }} alumno(s)</span>
+        </div>
+        <div fxFlex="0 0 90%" fxLayout="row">
+            <mat-table
+                fxFlex="100" style="max-height: 100%;"
+                class="tabla-alumnos ficha-table h-100-p"
+                #tablaAlumnos
+                [dataSource]="dataSourceAlumnos"
+                matSort
+                [@animateStagger]="{value:'50'}"
+                cdkDropList
+                id="tablaAlumnos"
+                cdkVirtualFor
+                (scroll)="onScrollDownAlumnos($event)"
+            >
+                <ng-container matColumnDef="codigo">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Código alumno</mat-header-cell>
+                    <mat-cell *matCellDef="let alumno" >
+                        <p>{{ alumno.codigo }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="folio">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Folio</mat-header-cell>
+                    <mat-cell *matCellDef="let alumno" >
+                        <p>{{ alumno.folio }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="primerApellido">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Primer apellido</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let alumno"
+                    >
+                        <p>{{ alumno.primerApellido }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="segundoApellido">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Segundo apellido</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let alumno"
+                    >
+                        <p>{{ alumno.segundoApellido }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="nombre">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Nombre</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let alumno"
+                    >
+                        <p>{{ alumno.nombre }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="dependencia">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Dependencia</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let alumno"
+                    >
+                        <p>{{ alumno.dependencia }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="curso">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Curso</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let alumno"
+                    >
+                        <p>{{ alumno.curso }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="grupo">
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                    >Grupo</mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let alumno"
+                    >
+                        <p>{{ alumno.grupo }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="check" stickyEnd>
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                        fxLayout="row" fxLayoutAlign="end center" class="text-center"
+                    >
+                        <mat-checkbox
+                            [checked]="alumnosSeleccionadosTodos"
+                            [indeterminate]="!alumnosSeleccionadosTodos && alumnosSeleccionadosCont > 0"
+                            (change)="setAlumnosEstatus($event.checked)"
+                        >
+                        </mat-checkbox>
+                    </mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let alumno"
+                        fxLayout="row" fxLayoutAlign="center center" class="text-center"
+                    >
+                        <mat-checkbox *ngIf="!alumno.esCandidato" id="{{ alumno.id }}-{{ alumno.grupoId }}" [(ngModel)]="alumnosSeleccionados[alumno.id][alumno.grupoId]" (ngModelChange)="actualizarAlumnoEstatus()"></mat-checkbox>
+                        <button *ngIf="alumno.esCandidato" mat-icon-button type="button" matTooltip="Terminar formulario" (click)="onEditarAlumnoCandidato(alumno)">
+                            <mat-icon>edit</mat-icon>
+                        </button>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="agregar" stickyEnd>
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                        fxLayout="row" fxLayoutAlign="center center" class="text-center"
+                    >
+                        <button *ngIf="alumnosSeleccionadosCont > 0" mat-icon-button type="button" (click)="onAgregarAlumnos()">
+                            <mat-icon>add</mat-icon>
+                        </button>
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let alumno"></mat-cell>
+                </ng-container>
+
+                <mat-header-row *matHeaderRowDef="displayedColumnsAlumnos; sticky:true"></mat-header-row>
+                <mat-row
+                    *matRowDef="let row; columns: displayedColumnsAlumnos;"
+                    class="element"
+                >
+                </mat-row>
+            </mat-table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,136 @@
+<div id="ficha-curso" class="pixvs-theme-listado page-layout carded fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <ficha-crud *ngIf="config" [config]="config" [titulo]="titulo"
+            [subTitulo]="'Tipo: Inscripcion Multisede'" [form]="form" [currentId]="currentId" [pageType]="'ver'"
+            [mostrarEditar]="false" 
+			[mostrarAprobar]="pageType == 'autorizacion'" 
+			[mostrarRechazar]="pageType == 'autorizacion'"
+            [dataService]="_grupoAlertaService" class="header accent" fxLayout="column" fxLayoutAlign="center center" [etiquetaBotonEliminar]="'Cancelar'"
+            fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center">
+        </ficha-crud>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <mat-progress-bar *ngIf="_grupoAlertaService?.cargando" [color]="'primary'" [mode]="'query'">
+            </mat-progress-bar>
+
+            <!-- CONTENT -->
+            <div class="content h-100-p">
+                <mat-tab-group class="h-100-p">
+                    <mat-tab label="Datos Generales">
+                        <div class="tab-content p-24" fusePerfectScrollbar>
+								<div fxLayout="row wrap" fxLayoutGap="20px grid">
+									<div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+										<div fxLayout="row" fxLayoutAlign="start center" class="pb-16">
+											<mat-icon class="m-0 mr-16">account_circle</mat-icon>
+											<div class="h2 secondary-text">Detalles generales</div>
+										</div>
+										<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+											<table fxFlex="100%" class="tabla-encabezado">
+												<thead>
+													<tr>
+														<td>
+															<span class="h3 secondary-text">Nota de venta</span>
+														</td>
+														<td>
+															<span class="h3 secondary-text">Fecha</span>
+														</td>
+														<td>
+															<span class="h3 secondary-text">Sede origen</span>
+														</td>
+														<td>
+															<span class="h3 secondary-text">Enviado por</span>
+														</td>
+													</tr>
+												</thead>
+												<tbody>
+													<tr>
+														<td>
+															<span>{{ nota }}</span>
+														</td>
+														<td>
+															<span>{{ fecha | date : 'dd/MM/yyyy' }}</span>
+														</td>
+														<td>
+															<span>{{ sede }}</span>
+														</td>
+														<td>
+															<span>{{ usuario }}</span>
+														</td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+
+										<div fxLayout="row" fxLayoutAlign="start center" class="pb-16 pt-80">
+											<mat-icon class="m-0 mr-16">insert_drive_file</mat-icon>
+											<div class="h2 secondary-text">Detalles de la inscripción</div>
+										</div>
+
+										<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+											<table fxFlex="100%" class="tabla-alumnos" *ngFor="let alumno of alumnos">
+												<thead>
+													<tr>
+														<td colspan="9">
+															<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+																<div fxFlex="auto">
+																	<span class="h3 secondary-text font-weight-900">{{ alumno.codigo }} - {{ alumno.nombre }} {{ alumno.primerApellido }} {{ alumno.segundoApellido }}</span>
+																</div>
+															</div>
+														</td>
+													</tr>
+													<tr>
+														<td>
+															<span class="h3 secondary-text">Grupo</span>
+														</td>
+														<td>
+															<span class="h3 secondary-text">Curso</span>
+														</td>
+														<td>
+															<span class="h3 secondary-text">Modalidad</span>
+														</td>
+														<td>
+															<span class="h3 secondary-text">Nivel</span>
+														</td>
+														<td>
+															<span class="h3 secondary-text">Horario</span>
+														</td>
+														<td>
+															<span class="h3 secondary-text">Fecha de inicio</span>
+														</td>
+													</tr>
+												</thead>
+												<tbody>
+													<tr></tr>
+                                                    <tr *ngFor="let inscripcion of inscripciones[alumno.id]">
+                                                        <td><span>{{inscripcion.grupo.codigo}}</span></td>
+                                                        <td><span>{{inscripcion.grupo.programaCodigo}} {{inscripcion.grupo.idioma}}</span></td>
+                                                        <td><span>{{inscripcion.grupo.modalidad}}</span></td>
+                                                        <td><span>{{inscripcion.grupo.nivel}}</span></td>
+                                                        <td><span>{{inscripcion.grupo.horario}}</span></td>
+                                                        <td><span>{{inscripcion.grupo.fechaInicio}}</span></td>
+                                                    </tr>
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</div>
+							</div>
+                    </mat-tab>
+                </mat-tab-group>
+            </div>
+            <!-- / CONTENT -->
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

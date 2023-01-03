@@ -1,0 +1,151 @@
+<div id="ficha-CRUD" class="pixvs-theme-listado page-layout carded fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <ficha-crud *ngIf="config" [config]="config" [cargando]="_pagoService?.cargando"
+            [isGuardadoPersonalizado]="true" (output)="guardar()" [mostrarBorrar]="false"
+            [mostrarEditar]="false" [titulo]="titulo" [subTituloTraduccion]="pageType" [form]="form"
+            [currentId]="currentId" [pageType]="pageType" [dataService]="_pagoService" class="header accent"
+            fxLayout="column" fxLayoutAlign="center center" fxLayout.gt-sm="row"
+            fxLayoutAlign.gt-sm="space-between center">
+        </ficha-crud>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <mat-progress-bar *ngIf="_pagoService?.cargando" [color]="'primary'" [mode]="'query'">
+            </mat-progress-bar>
+
+            <div style="height: 0px;">
+                <button debounceClick mat-mini-fab class="boton-refresh" (debounceClick)="recargar()"
+                    matTooltip="{{ 'INTERFAZ.RECARGAR' | translate  }}">
+                    <mat-icon class="s-16">refresh</mat-icon>
+                </button>
+            </div>
+
+            <!-- CONTENT -->
+            <div class="content">
+                <form name="form" id="form" [formGroup]="form" class="product w-100-p" fxLayout="column" fxFlex>
+                    <div class="tab-content p-24" fusePerfectScrollbar>
+                        <div fxLayout="row" fxLayoutAlign="center center" class="py-20 font-weight-900">
+                            {{ saldo.codigo + ' - ' + saldo.nombre }}
+                        </div>
+
+                        <div fxLayout="row" fxLayoutAlign="center center" class="mb-20">
+                            <div fxFlex="1 0 auto" fxLayoutAlign="center center">
+                                <span><span class="font-weight-900">Balance: </span>{{ getBalance() | NumeroFormatoPipe }}</span>
+                            </div>
+                            <div fxFlex="1 0 auto" fxLayoutAlign="center center">
+                                <span><span class="font-weight-900">Saldo total: </span>{{ saldo.saldo | NumeroFormatoPipe }}</span>
+                            </div>
+                        </div>
+
+                        <div fxLayout="row" fxLayoutAlign="start center" class="mb-20">
+                            <mat-checkbox formControlName="timbrar">Timbrar complemento</mat-checkbox>
+                        </div>
+
+                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                            <pixvs-mat-select [matSelectCtrl]="cuentaBancariaControl" [datos]="listCuentasBancarias"
+                                [appearance]="'outline'"
+                                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                [campoValor]="['codigo', 'descripcion']" [label]="'Cuenta bancaria'"
+                                [required]="isRequired('cuentaBancaria')" fxFlex="1 0 auto">
+                            </pixvs-mat-select>
+
+                            <pixvs-mat-select [matSelectCtrl]="formaPagoControl" [datos]="listFormaPago"
+                                [appearance]="'outline'"
+                                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                [campoValor]="'valor'" [label]="'Forma de pago'"
+                                [required]="isRequired('formaPago')" fxFlex="1 0 auto">
+                            </pixvs-mat-select>
+                        </div>
+
+                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                <mat-label>Fecha</mat-label>
+                                <input matInput type="date" name="fecha" formControlName="fecha" required="{{ isRequired('fecha') }}">
+                                <mat-error *ngIf="(!!form.get('fecha').errors)">
+                                    {{validatorService.getMessage(form.get('fecha'))}}
+                                </mat-error>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                <mat-label>Número de Operación</mat-label>
+                                <input matInput name="numeroOperacion" formControlName="numeroOperacion" 
+                                    required="{{ isRequired('numeroOperacion') }}">
+                                <mat-error *ngIf="(!!form.get('numeroOperacion').errors)">
+                                    {{validatorService.getMessage(form.get('numeroOperacion'))}}
+                                </mat-error>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                <mat-label>Monto</mat-label>
+                                <input matInput name="monto" formControlName="monto"
+                                    required="{{ isRequired('monto') }}" 
+                                    prefix="$ " mask="separator.2" thousandSeparator=",">
+                                <mat-error *ngIf="(!!form.get('monto').errors)">
+                                    {{validatorService.getMessage(form.get('monto'))}}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+
+                        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+                            <pixvs-mat-select [matSelectCtrl]="cuentaEmisorControl" [datos]="listClienteCuentasBancarias"
+                                [appearance]="'outline'"
+                                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                [campoValor]="['cuenta', 'banco.nombre']" [label]="'Cuenta del emisor'"
+                                [required]="isRequired('cuentaEmisor')" fxFlex="1 0 auto">
+                            </pixvs-mat-select>
+
+                            <pixvs-mat-select [matSelectCtrl]="monedaControl" [datos]="listMoneda"
+                                [appearance]="'outline'"
+                                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                                [campoValor]="'nombre'" [label]="'Moneda'"
+                                [required]="isRequired('moneda')" fxFlex="1 0 auto">
+                            </pixvs-mat-select>
+
+                            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                                <mat-label>Tipo de cambio</mat-label>
+                                <input matInput name="tipoCambio" formControlName="tipoCambio"
+                                    required="{{ isRequired('tipoCambio') }}" 
+                                    mask="separator.4" thousandSeparator=",">
+                                <mat-error *ngIf="(!!form.get('tipoCambio').errors)">
+                                    {{validatorService.getMessage(form.get('tipoCambio'))}}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+
+                        <div fxLayout="row">
+                            <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+                                <div fxLayout="row" fxLayoutAlign="space-between start" class="h-100-p">
+                                    <div fxFlex="100" class="h-100-p">
+                                        <pixvs-tabla-simple #tablaFacturas
+                                            [columnaId]="'facturaId'"
+                                            [service]="_facturasService"
+                                            [localeEN]="localeEN" [localeES]="localeES"
+                                            [columnas]="columnasTabla" 
+                                            [columnasFechas]="columnasFechas" 
+                                            [displayedColumns]="displayedColumns" 
+                                            [reordenamiento]="false"
+                                            (onSelectionChange)="onSelecionar($event)"
+                                            (onCellValueChange)="onCellValueChange($event)">
+                                        </pixvs-tabla-simple>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!-- / CONTENT -->
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

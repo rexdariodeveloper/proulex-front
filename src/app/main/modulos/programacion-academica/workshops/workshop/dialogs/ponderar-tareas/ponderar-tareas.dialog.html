@@ -1,0 +1,30 @@
+
+<mat-toolbar color="primary">
+	<mat-toolbar-row>
+		<span style="text-align: center;width: 100%">Ponderación de grupos de tareas</span>
+	</mat-toolbar-row>
+</mat-toolbar>
+
+<div mat-dialog-content>
+	<ng-container *ngFor="let examen of examenes; let i = index;">
+        <div style="display: table;">
+            <span style="width: 20%;margin-right: 15%; display: flex; align-items: center; justify-content: center;">{{examen.nombre}}</span>
+            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+                <mat-label>Porcentaje</mat-label>
+                <input type="text" matInput name="porcentaje" [(ngModel)]="examen.porcentaje"><span matSuffix>%</span>
+            </mat-form-field>
+        </div>
+    </ng-container>
+    <div style="width: 100%; text-align: right;margin-right: 1%"><mat-label style="margin-right: 1%;
+    font-size: 16px;"><b>Total: </b>{{total()}}%</mat-label></div>
+</div>
+<div mat-dialog-actions align="end">
+	<button
+		mat-button
+		(click)="cancelar()"
+	>Cerrar</button>
+	<button
+		mat-raised-button class="mat-accent mr-16"
+		(click)="aceptar()"
+	>Aceptar</button>
+</div>

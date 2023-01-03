@@ -1,0 +1,82 @@
+@mixin pixvs-stepper-vertical-theme($theme) {
+
+    $background: map-get($theme, background);
+    $foreground: map-get($theme, foreground);
+    $accent: map-get($theme, accent);
+    $is-dark: map-get($theme, is-dark);
+
+    pixvs-stepper-vertical {
+
+        .sidebar {
+
+            .steps {
+
+                .step {
+                    color: map-get($foreground, secondary-text);
+
+                    &.current {
+                        @if ($is-dark) {
+                            background: map-get($background, app-bar);
+                            color: map-get($foreground, text);
+                        } @else {
+                            background: map-get($accent, 50);
+                            color: map-get($accent, '50-contrast');
+                        }
+
+                        .index {
+
+                            span {
+                                @if ($is-dark) {
+                                    background: map-get($background, app-bar);
+                                    border-color: map-get($accent, default);
+                                } @else {
+                                    background: map-get($background, background);
+                                    border-color: map-get($accent, default);
+                                }
+                            }
+                        }
+                    }
+
+                    &.completed {
+                        color: map-get($foreground, text);
+
+                        .index {
+
+                            span {
+                                border-color: map-get($accent, default);
+                            }
+
+                            &:after {
+                                border-left-color: map-get($accent, default);
+                            }
+                        }
+
+                        + .step {
+
+                            .index {
+
+                                &:before {
+                                    border-left-color: map-get($accent, default);
+                                }
+                            }
+                        }
+                    }
+
+                    .index {
+
+                        &:before,
+                        &:after {
+                            border-left-color: map-get($foreground, divider);
+                        }
+
+                        span {
+                            background: map-get($background, background);
+                            border-color: map-get($foreground, divider);
+                        }
+                    }
+                }
+            }
+        }
+    
+    }
+}

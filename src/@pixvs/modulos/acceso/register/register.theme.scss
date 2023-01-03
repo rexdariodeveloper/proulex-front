@@ -1,0 +1,35 @@
+@mixin register-theme($theme) {
+    $background: map-get($theme, background);
+    $foreground: map-get($theme, foreground);
+    $is-dark: map-get($theme, is-dark);
+    $accent: map-get($theme, accent);
+
+    register {
+        background: linear-gradient(0deg, mat-color($accent, 600, 0.7), mat-color($accent, 900, 0.9)) 0% 0% / cover,
+            url("/assets/images/backgrounds/light-material-bg.jpg") no-repeat;
+        background-size: cover;
+
+        #register {
+            #register-form-wrapper {
+                #register-form {
+                    @if ($is-dark) {
+                        background: mat-color($fuse-navy, 600);
+                    } @else {
+                        background: map-get($background, card);
+                    }
+
+                    .separator {
+                        color: map-get($foreground, divider);
+
+                        .text {
+                            &:before,
+                            &:after {
+                                border-top-color: map-get($foreground, divider);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,745 @@
+<div
+	id="articulo"
+	class="page-layout carded left-sidebar fullwidth inner-scroll"
+>
+
+	<!-- TOP BACKGROUND -->
+	<div class="top-bg accent"></div>
+	<!-- / TOP BACKGROUND -->
+
+	<!-- CENTER -->
+	<div class="center layout-pad0">
+
+		<!-- HEADER -->
+		<ficha-crud
+			*ngIf="config"
+			[config]="config"
+			[cargando]="_articuloService?.cargando"
+			[isGuardadoPersonalizado]="true"
+			(output)="guardar()"
+			[isDesHabilitarPersonalizado]="true"
+			(outputDesHabilitarCampos)="deshabilitarCampos()"
+			[mostrarBorrar]="false"
+			[mostrarEditar]="true"
+			[titulo]="titulo"
+			[subTituloTraduccion]="pageType"
+			[form]="[formDG,formP,formPV,formC,formCom]"
+			[currentId]="currentId"
+			[pageType]="pageType"
+			[dataService]="_articuloService"
+			class="header accent"
+			fxLayout="column"
+			fxLayoutAlign="center center"
+			fxLayout.gt-sm="row"
+			fxLayoutAlign.gt-sm="space-between center"
+		>
+		</ficha-crud>
+		<!-- / HEADER -->
+
+		<!-- CONTENT CARD -->
+		<div class="content-card p-0">
+			<mat-tab-group #tabs class="h-100-p">
+				<mat-tab label="Datos Generales">
+					<div
+						class="tab-content p-24"
+						fusePerfectScrollbar
+					>
+						<form
+							*ngIf="!!formDG"
+							name="formDG"
+							id="formDG"
+							[formGroup]="formDG"
+							class="product w-100-p"
+							fxLayout="column"
+							fxFlex
+						>
+							<div
+								fxLayout="row wrap"
+								fxLayoutGap="20px grid"
+							>
+								<div
+									fxLayout="column"
+									fxFlex="100"
+									fxFlex.gt-sm="55"
+									fxFlex.gt-md="65"
+								>
+									<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+										<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+											<mat-label>Código alterno</mat-label>
+											<input matInput name="codigoAlterno" formControlName="codigoAlterno"
+												required="{{ isRequired(formDG,'codigoAlterno') }}">
+											<mat-error *ngIf="(!!formDG.get('codigoAlterno').errors)">
+												{{validatorService.getMessage(formDG.get('codigoAlterno'))}}
+											</mat-error>
+										</mat-form-field>
+									</div>
+
+									<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+										<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+											<mat-label>Nombre</mat-label>
+											<input matInput name="nombreArticulo" formControlName="nombreArticulo"
+												required="{{ isRequired(formDG,'nombreArticulo') }}">
+											<mat-error *ngIf="(!!formDG.get('nombreArticulo').errors)">
+												{{validatorService.getMessage(formDG.get('nombreArticulo'))}}
+											</mat-error>
+										</mat-form-field>
+									</div>
+
+									<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+										<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+											<mat-label>Nombre alterno</mat-label>
+											<input matInput name="nombreAlterno" formControlName="nombreAlterno"
+												required="{{ isRequired(formDG,'nombreAlterno') }}">
+											<mat-error *ngIf="(!!formDG.get('nombreAlterno').errors)">
+												{{validatorService.getMessage(formDG.get('nombreAlterno'))}}
+											</mat-error>
+										</mat-form-field>
+									</div>
+
+									<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+										<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+											<mat-label>Código de barras</mat-label>
+											<input matInput name="codigoBarras" formControlName="codigoBarras"
+												required="{{ isRequired(formDG,'codigoBarras') }}">
+											<mat-error *ngIf="(!!formDG.get('codigoBarras').errors)">
+												{{validatorService.getMessage(formDG.get('codigoBarras'))}}
+											</mat-error>
+										</mat-form-field>
+									</div>
+								</div>
+								<div
+									fxLayout="column"
+									fxFlex="100"
+									fxFlex.gt-sm="45"
+									fxFlex.gt-md="35"
+								>
+									<mat-card
+										fxLayout="column"
+										style="min-height: 330px;"
+									>
+										<mat-card-header fxLayoutAlign="center">
+											<mat-card-title
+												fxLayoutAlign="center"
+												style="text-align: center;"
+											>
+												Imagen
+											</mat-card-title>
+											<mat-card-subtitle
+												fxLayoutAlign="center"
+												style="text-align: center; display: block; margin-left: auto;margin-right: auto;"
+											>
+												<div
+													*ngIf="croppedImage"
+													mat-card-avatar
+													[ngStyle]="{'background-image': 'url('+croppedImage+')'}"
+													style="background-size: cover;"
+													class="example-header-image"
+												>
+												</div>
+											</mat-card-subtitle>
+										</mat-card-header>
+										<mat-card-content class="h-200">
+											<image-cropper
+												style="height: 100%;"
+												*ngIf="imageChangedEvent"
+												[imageChangedEvent]="imageChangedEvent"
+												[backgroundColor]="'#148999'"
+												[maintainAspectRatio]="true"
+												[aspectRatio]="4 / 4"
+												[resizeToWidth]="100"
+												[cropperMinWidth]="100"
+												format="png"
+												(imageCropped)="imageCropped($event)"
+											>
+											</image-cropper>
+
+											<img
+												*ngIf="!imageChangedEvent"
+												style="display: block; margin-left: auto; margin-right: auto; height: 60%;"
+												src="{{articulo?.imagenId != null ? apiUrl + '/v1/archivo/' + (articulo.imagenId | hashId) : 'assets/images/no-image-icon.png' }}"
+											/>
+										</mat-card-content>
+										<mat-card-actions>
+											<div
+												class="px-16"
+												fxLayout="row"
+												fxLayoutAlign="space-between center"
+											>
+
+												<div></div>
+
+												<a
+													*ngIf="formDG.enabled"
+													(click)="fileInput.click()"
+													mat-button
+													color="accent"
+													style="width: 100%;"
+												>
+													<mat-icon class="s-16">add_a_photo</mat-icon>
+													<span> Cambiar </span>
+													<input
+														#fileInput
+														type="file"
+														(change)="fileChangeEvent($event)"
+														style="display:none;"
+													/>
+												</a>
+											</div>
+										</mat-card-actions>
+									</mat-card>
+								</div>
+							</div>
+
+							<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+								<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+									<mat-label>Descripción</mat-label>
+									<textarea matInput name="descripcion" formControlName="descripcion"
+										required="{{ isRequired(formDG,'descripcion') }}"></textarea>
+									<mat-error *ngIf="(!!formDG.get('descripcion').errors)">
+										{{validatorService.getMessage(formDG.get('descripcion'))}}
+									</mat-error>
+								</mat-form-field>
+							</div>
+
+							<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+								<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+									<mat-label>Descripción corta</mat-label>
+									<input matInput name="descripcionCorta" formControlName="descripcionCorta"
+										required="{{ isRequired(formDG,'descripcionCorta') }}">
+									<mat-error *ngIf="(!!formDG.get('descripcionCorta').errors)">
+										{{validatorService.getMessage(formDG.get('descripcionCorta'))}}
+									</mat-error>
+								</mat-form-field>
+							</div>
+
+							<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+								<pixvs-mat-select [matSelectCtrl]="articuloTipoControl" [datos]="articulosTipos"
+									[appearance]="'outline'"
+									[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+									[campoValor]="'descripcion'" [label]="'Tipo de artículo'" [required]="isRequired(formDG,'tipoArticulo')"
+									[seleccionarUnicaOpcion]="!articulo?.id"
+									fxFlex="1 0 auto">
+								</pixvs-mat-select>
+
+								<pixvs-mat-select #articuloSubtipoSelect [matSelectCtrl]="articuloSubtipoControl" [datos]="articulosSubtipos"
+									[appearance]="'outline'"
+									[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+									[campoValor]="'descripcion'" [label]="'Subtipo de artículo'" [required]="isRequired(formDG,'articuloSubtipo')"
+									[seleccionarUnicaOpcion]="!articulo?.id"
+									fxFlex="1 0 auto">
+								</pixvs-mat-select>
+
+								<pixvs-mat-select *ngIf="articuloSubtipoControl?.value?.id == ArticulosSubtipos.CERTIFICACION || articuloSubtipoControl?.value?.id == ArticulosSubtipos.EXAMEN" 
+									[matSelectCtrl]="formDG.controls['idioma']" 
+									[datos]="idiomas"
+									[appearance]="'outline'"
+									[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+									[campoValor]="'valor'" [label]="'Idioma'" [required]="isRequired(formDG,'idioma')"
+									[seleccionarUnicaOpcion]="!articulo?.id"
+									fxFlex="1 0 auto">
+								</pixvs-mat-select>
+
+								<div *ngIf="articuloSubtipoControl?.value?.id == ArticulosSubtipos.TUTORIA" fxFlex="1 0 auto" fxLayout="row" fxLayoutAlign="center center" class="mb-20">
+									<mat-checkbox color="primary" name="pedirCantidadPV" formControlName="pedirCantidadPV">
+										Pedir cantidad en PV
+									</mat-checkbox>
+								</div>
+							</div>
+
+							<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+								<pixvs-mat-select [matSelectCtrl]="umInventarioControl" [datos]="unidadesMedida"
+									[appearance]="'outline'"
+									[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+									[campoValor]="'nombre'" [label]="'Unidad de medida (Inventario)'" [required]="isRequired(formDG,'unidadMedidaInventario')"
+									[seleccionarUnicaOpcion]="!articulo?.id"
+									fxFlex="1 0 auto">
+								</pixvs-mat-select>
+
+								<pixvs-mat-select 
+									[matSelectCtrl]="objetoImpuestoSATControl" 
+									[datos]="objetosImpuestoSAT"
+									[appearance]="'outline'"
+									[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+									[campoValor]="'valor'" 
+									[label]="'Objeto Impuesto SAT'" 
+									[required]="isRequired(formDG,'objetoImpuesto')"
+									[seleccionarUnicaOpcion]="!articulo?.id"
+									fxFlex="1 0 auto">
+								</pixvs-mat-select>
+
+								<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+									<mat-label>Clave de producto SAT</mat-label>
+									<input matInput name="claveProductoSAT" formControlName="claveProductoSAT"
+										required="{{ isRequired(formDG,'claveProductoSAT') }}">
+									<mat-error *ngIf="(!!formDG.get('claveProductoSAT').errors)">
+										{{validatorService.getMessage(formDG.get('claveProductoSAT'))}}
+									</mat-error>
+								</mat-form-field>
+							</div>
+
+							<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+								<pixvs-mat-select #familiaSelect [matSelectCtrl]="familiaControl" [datos]="familias"
+									[appearance]="'outline'"
+									[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+									[campoValor]="'nombre'" [label]="'Familia'" [required]="isRequired(formDG,'familia')"
+									[seleccionarUnicaOpcion]="!articulo?.id"
+									fxFlex="1 0 auto">
+								</pixvs-mat-select>
+
+								<pixvs-mat-select #categoriaSelect [matSelectCtrl]="categoriaControl"
+									[datos]="categorias" [appearance]="'outline'"
+									[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+									[campoValor]="'nombre'" [label]="'Categoria'"
+									[seleccionarUnicaOpcion]="!articulo?.id"
+									[required]="isRequired(formDG,'categoria')" fxFlex="1 0 auto">
+								</pixvs-mat-select>
+
+								<pixvs-mat-select #subcategoriaSelect [matSelectCtrl]="subcategoriaControl"
+									[datos]="subcategorias" [appearance]="'outline'"
+									[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+									[campoValor]="'nombre'" [label]="'Subcategoria'"
+									[seleccionarUnicaOpcion]="!articulo?.id"
+									[required]="isRequired(formDG,'subcategoria')" fxFlex="1 0 auto">
+								</pixvs-mat-select>
+							</div>
+
+							<ng-container *ngIf="articuloSubtipoControl?.value?.id != ArticulosSubtipos.LIBRO && articuloSubtipoControl?.value?.id != ArticulosSubtipos.PAQUETE_DE_LIBROS && articuloSubtipoControl?.value?.id != ArticulosSubtipos.CERTIFICACION && articuloSubtipoControl?.value?.id != ArticulosSubtipos.EXAMEN">
+								<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+									<pixvs-mat-select [matSelectCtrl]="clasificacion1Control" [datos]="clasificaciones1"
+										[appearance]="'outline'"
+										[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+										[campoValor]="'valor'" [label]="'Clasificación 1'" [required]="isRequired(formDG,'clasificacion1')"
+										[seleccionarUnicaOpcion]="!articulo?.id"
+										fxFlex="1 0 auto">
+									</pixvs-mat-select>
+	
+									<pixvs-mat-select [matSelectCtrl]="clasificacion2Control" [datos]="clasificaciones2"
+										[appearance]="'outline'"
+										[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+										[campoValor]="'valor'" [label]="'Clasificación 2'" [required]="isRequired(formDG,'clasificacion2')"
+										[seleccionarUnicaOpcion]="!articulo?.id"
+										fxFlex="1 0 auto">
+									</pixvs-mat-select>
+	
+									<pixvs-mat-select [matSelectCtrl]="clasificacion3Control" [datos]="clasificaciones3"
+										[appearance]="'outline'"
+										[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+										[campoValor]="'valor'" [label]="'Clasificación 3'" [required]="isRequired(formDG,'clasificacion3')"
+										[seleccionarUnicaOpcion]="!articulo?.id"
+										fxFlex="1 0 auto">
+									</pixvs-mat-select>
+								</div>
+	
+								<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+									<pixvs-mat-select [matSelectCtrl]="clasificacion4Control" [datos]="clasificaciones4"
+										[appearance]="'outline'"
+										[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+										[campoValor]="'valor'" [label]="'Clasificación 4'" [required]="isRequired(formDG,'clasificacion4')"
+										[seleccionarUnicaOpcion]="!articulo?.id"
+										fxFlex="1 0 auto">
+									</pixvs-mat-select>
+	
+									<pixvs-mat-select [matSelectCtrl]="clasificacion5Control" [datos]="clasificaciones5"
+										[appearance]="'outline'"
+										[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+										[campoValor]="'valor'" [label]="'Clasificación 5'" [required]="isRequired(formDG,'clasificacion5')"
+										[seleccionarUnicaOpcion]="!articulo?.id"
+										fxFlex="1 0 auto">
+									</pixvs-mat-select>
+	
+									<pixvs-mat-select [matSelectCtrl]="clasificacion6Control" [datos]="clasificaciones6"
+										[appearance]="'outline'"
+										[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+										[campoValor]="'valor'" [label]="'Clasificación 6'" [required]="isRequired(formDG,'clasificacion6')"
+										[seleccionarUnicaOpcion]="!articulo?.id"
+										fxFlex="1 0 auto">
+									</pixvs-mat-select>
+								</div>
+							</ng-container>
+							
+							<ng-container *ngIf="articuloSubtipoControl?.value?.id == ArticulosSubtipos.LIBRO || articuloSubtipoControl?.value?.id == ArticulosSubtipos.PAQUETE_DE_LIBROS">
+								<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+
+                                    <pixvs-mat-select
+                                        [matSelectCtrl]="clasificacion1Control" [datos]="clasificaciones1"
+										[appearance]="'outline'"
+										[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+										[campoValor]="'valor'" [label]="'Serie'" [required]="isRequired(formDG,'clasificacion1')"
+										[seleccionarUnicaOpcion]="!articulo?.id"
+										fxFlex="1 0 auto">
+									</pixvs-mat-select>
+
+									<pixvs-mat-select [matSelectCtrl]="formDG.controls['idioma']" [datos]="idiomas"
+										[appearance]="'outline'"
+										[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+										[campoValor]="'valor'" [label]="'Idioma'" [required]="isRequired(formDG,'idioma')"
+										[seleccionarUnicaOpcion]="!articulo?.id"
+										fxFlex="1 0 auto">
+									</pixvs-mat-select>
+	
+									<pixvs-mat-select [matSelectCtrl]="formDG.controls['programa']" [datos]="programas"
+										[appearance]="'outline'"
+										[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+										[campoValor]="'codigo'" [label]="'Programa'" [required]="isRequired(formDG,'programa')"
+										[seleccionarUnicaOpcion]="!articulo?.id"
+										fxFlex="1 0 auto">
+									</pixvs-mat-select>
+								</div>
+
+								<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+									<pixvs-mat-select [matSelectCtrl]="formDG.controls['editorial']" [datos]="editoriales"
+										[appearance]="'outline'"
+										[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+										[campoValor]="'valor'" [label]="'Editorial'" [required]="isRequired(formDG,'editorial')"
+										[seleccionarUnicaOpcion]="!articulo?.id"
+										fxFlex="1 0 auto">
+									</pixvs-mat-select>
+
+									<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+										<mat-label>Marco de certificación</mat-label>
+										<input matInput name="marcoCertificacion" formControlName="marcoCertificacion"
+											required="{{ isRequired(formDG,'marcoCertificacion') }}">
+										<mat-error *ngIf="(!!formDG.get('marcoCertificacion').errors)">
+											{{validatorService.getMessage(formDG.get('marcoCertificacion'))}}
+										</mat-error>
+									</mat-form-field>
+								</div>
+							</ng-container>
+
+							<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+								<mat-form-field appearance="outline" floatLabel="auto" fxFlex="100 0 auto">
+									<mat-label>IVA</mat-label>
+									<input matInput name="iva" formControlName="iva"
+										required="{{ isRequired(formDG,'iva') }}" type="number" 
+										[readonly]="formDG.get('ivaExento').value">
+									<mat-error *ngIf="(!!formDG.get('iva').errors)">
+										{{validatorService.getMessage(formDG.get('iva'))}}
+									</mat-error>
+								</mat-form-field>
+
+								<div fxFlex="1 0 auto" fxLayout="row" fxLayoutAlign="center center" class="mb-20">
+									<mat-checkbox color="primary" name="ivaExento" formControlName="ivaExento" (click)="formDG.get('iva').setValue(0)">
+										IVA exento
+									</mat-checkbox>
+								</div>
+								
+								<mat-form-field appearance="outline" floatLabel="auto" fxFlex="100 0 auto" *ngIf="!iepsCuotaFijaCheckControl.value">
+									<mat-label>IEPS</mat-label>
+									<input matInput name="ieps" [formControl]="iepsControl"
+										required="{{ isRequired(formDG,'ieps') }}" [readonly]="formDG.disabled"
+										prefix="% " mask="999">
+									<mat-error *ngIf="(!!formDG.get('ieps').errors)">
+										{{validatorService.getMessage(formDG.get('ieps'))}}
+									</mat-error>
+								</mat-form-field>
+
+								<mat-form-field appearance="outline" floatLabel="auto" fxFlex="100 0 auto" *ngIf="iepsCuotaFijaCheckControl.value">
+									<mat-label>IEPS cuota fija</mat-label>
+									<input matInput name="iepsCuotaFija" [formControl]="iepsCuotaFijaControl"
+										required="{{ isRequired(formDG,'iepsCuotaFija') }}" [readonly]="formDG.disabled"
+										prefix="$ " mask="separator.2" thousandSeparator=",">
+									<mat-error *ngIf="(!!formDG.get('iepsCuotaFija').errors)">
+										{{validatorService.getMessage(formDG.get('iepsCuotaFija'))}}
+									</mat-error>
+								</mat-form-field>
+
+								<div fxFlex="1 0 auto" fxLayout="row" fxLayoutAlign="center center" class="mb-20">
+									<mat-checkbox color="primary" [formControl]="iepsCuotaFijaCheckControl" [disabled]="formDG.disabled">
+										Cuota fija
+									</mat-checkbox>
+								</div>
+							</div>
+
+							<div fxLayout="row wrap" fxLayoutAlign="start start" fxLayoutGap="10px grid">
+								<div fxFlex="1 0 auto" fxLayout="row" fxLayoutAlign="start start" class="mb-20" fxLayoutGap="15px grid">
+									<mat-checkbox color="primary" name="activo" formControlName="activo">
+										Activo
+									</mat-checkbox>
+									<mat-checkbox color="primary" name="inventariable" formControlName="inventariable" [checked]="form?.controls?.inventariable?.value">
+										Inventariable
+									</mat-checkbox>
+									<mat-checkbox color="primary" name="articuloParaVenta" formControlName="articuloParaVenta" [checked]="form?.controls?.articuloParaVenta?.value">
+										Artículo para venta
+									</mat-checkbox>
+								</div>
+							</div>
+						</form>
+					</div>
+				</mat-tab>
+				<mat-tab label="Planeación" *ngIf="articuloSubtipoControl?.value?.id != ArticulosSubtipos.PAQUETE_DE_LIBROS">
+					<div
+						class="tab-content p-24"
+						fusePerfectScrollbar
+					>
+						<form
+							*ngIf="!!formP"
+							name="formP"
+							id="formP"
+							[formGroup]="formP"
+							class="product w-100-p"
+							fxLayout="column"
+							fxFlex
+						>
+							<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+								<pixvs-mat-select [matSelectCtrl]="umConversionVentasControl" [datos]="unidadesMedida"
+									[appearance]="'outline'"
+									[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+									[campoValor]="'nombre'" [label]="'Unidad de medida (Conversión de ventas)'" [required]="isRequired(formP,'unidadMedidaConversionVentas')"
+									[seleccionarUnicaOpcion]="!articulo?.id"
+									fxFlex="1 0 auto">
+								</pixvs-mat-select>
+
+								<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+									<mat-label>Factor de conversión (Ventas)</mat-label>
+									<input matInput name="factorConversionVentas" formControlName="factorConversionVentas"
+										required="{{ isRequired(formP,'factorConversionVentas') }}"
+										mask="separator.6" thousandSeparator=",">
+									<mat-error *ngIf="(!!formP.get('factorConversionVentas').errors)">
+										{{validatorService.getMessage(formP.get('factorConversionVentas'))}}
+									</mat-error>
+								</mat-form-field>
+
+								<pixvs-mat-select [matSelectCtrl]="umConversionComprasControl" [datos]="unidadesMedida"
+									[appearance]="'outline'"
+									[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+									[campoValor]="'nombre'" [label]="'Unidad de medida (Conversión de compras)'" [required]="isRequired(formP,'unidadMedidaConversionCompras')"
+									[seleccionarUnicaOpcion]="!articulo?.id"
+									fxFlex="1 0 auto">
+								</pixvs-mat-select>
+
+								<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+									<mat-label>Factor de conversión (Compras)</mat-label>
+									<input matInput name="factorConversionCompras" formControlName="factorConversionCompras"
+										required="{{ isRequired(formP,'factorConversionCompras') }}"
+										mask="separator.6" thousandSeparator=",">
+									<mat-error *ngIf="(!!formP.get('factorConversionCompras').errors)">
+										{{validatorService.getMessage(formP.get('factorConversionCompras'))}}
+									</mat-error>
+								</mat-form-field>
+							</div>
+
+							<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+								<div fxFlex="1 0 auto" fxLayout="row" fxLayoutAlign="start center" class="mb-20">
+									<mat-checkbox color="primary" name="planeacionTemporadas" formControlName="planeacionTemporadas">
+										Planeación por temporadas
+									</mat-checkbox>
+								</div>
+
+								<mat-form-field  appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+									<mat-label>Máximo por almacén</mat-label>
+									<input matInput name="maximoAlmacen" formControlName="maximoAlmacen"
+										required="{{ isRequired(formP,'maximoAlmacen') }}"
+										mask="separator.2" thousandSeparator=",">
+									<mat-error *ngIf="(!!formP.get('maximoAlmacen').errors)">
+										{{validatorService.getMessage(formP.get('maximoAlmacen'))}}
+									</mat-error>
+								</mat-form-field>
+
+								<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+									<mat-label>Mínimo por almacén</mat-label>
+									<input matInput name="minimoAlmacen" formControlName="minimoAlmacen"
+										required="{{ isRequired(formP,'minimoAlmacen') }}"
+										mask="separator.2" thousandSeparator=",">
+									<mat-error *ngIf="(!!formP.get('minimoAlmacen').errors)">
+										{{validatorService.getMessage(formP.get('minimoAlmacen'))}}
+									</mat-error>
+								</mat-form-field>
+							</div>
+
+							<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+								<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+									<mat-label>Múltiplo para pedido</mat-label>
+									<input matInput name="multiploPedido" formControlName="multiploPedido"
+										required="{{ isRequired(formP,'multiploPedido') }}"
+										mask="separator.2" thousandSeparator=",">
+									<mat-error *ngIf="(!!formP.get('multiploPedido').errors)">
+										{{validatorService.getMessage(formP.get('multiploPedido'))}}
+									</mat-error>
+								</mat-form-field>
+
+								<pixvs-mat-select [matSelectCtrl]="mostrarSucursalesControl" [datos]="sucursales"
+									[appearance]="'outline'"
+									[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+									[campoValor]="'nombre'" [label]="'Mostrar en sedes'" [required]="isRequired(formP,'mostrarSucursales')"
+									[seleccionarUnicaOpcion]="!articulo?.id"
+									[multiple]="true" [showToggleAllCheckbox]="true" fxFlex="1 0 auto">
+								</pixvs-mat-select>
+							</div>
+
+							<div fxLayout="row wrap" fxLayoutAlign="start start" fxLayoutGap="10px grid">
+								<div fxFlex="1 0 auto" fxLayout="row" fxLayoutAlign="start start" class="mb-20">
+									<mat-checkbox color="primary" name="permitirCambioAlmacen" formControlName="permitirCambioAlmacen">
+										Permitir cambio de almacén
+									</mat-checkbox>
+								</div>
+							</div>
+						</form>
+					</div>
+				</mat-tab>
+				<mat-tab label="Puntos de Venta" *ngIf="false">
+					<div
+						class="tab-content p-24"
+						fusePerfectScrollbar
+					>
+						<form
+							*ngIf="!!formPV"
+							name="formPV"
+							id="formPV"
+							[formGroup]="formPV"
+							class="product w-100-p"
+							fxLayout="column"
+							fxFlex
+						>
+							<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+								<pixvs-mat-select [matSelectCtrl]="mostrarSucursalesPVControl" [datos]="sucursales"
+									[appearance]="'outline'"
+									[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+									[campoValor]="'nombre'" [label]="'Mostrar en puntos de venta'" [required]="isRequired(formPV,'mostrarSucursalesPV')"
+									[seleccionarUnicaOpcion]="!articulo?.id"
+									[multiple]="true" [showToggleAllCheckbox]="true" fxFlex="1 0 auto">
+								</pixvs-mat-select>
+							</div>
+						</form>
+					</div>
+				</mat-tab>
+				<mat-tab label="Costeo" *ngIf="articuloSubtipoControl?.value?.id != ArticulosSubtipos.PAQUETE_DE_LIBROS">
+					<div
+						class="tab-content p-24"
+						fusePerfectScrollbar
+					>
+						<form
+							*ngIf="!!formC"
+							name="formC"
+							id="formC"
+							[formGroup]="formC"
+							class="product w-100-p"
+							fxLayout="column"
+							fxFlex
+						>
+							<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+								<pixvs-mat-select [matSelectCtrl]="tipoCostoControl" [datos]="tiposCosto"
+									[appearance]="'outline'"
+									[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+									[campoValor]="'valor'" [label]="'Tipo de costo'" [required]="isRequired(formC,'tipoCosto')"
+									[seleccionarUnicaOpcion]="!articulo?.id"
+									fxFlex="1 0 auto">
+								</pixvs-mat-select>
+							</div>
+							
+							<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+								<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+									<mat-label>Costo último</mat-label>
+									<input matInput name="costoUltimo" formControlName="costoUltimo"
+										required="{{ isRequired(formC,'costoUltimo') }}"
+										prefix="$ " mask="separator.2" thousandSeparator=","
+										[readonly]="pageType != 'nuevo'">
+									<mat-error *ngIf="(!!formC.get('costoUltimo').errors)">
+										{{validatorService.getMessage(formC.get('costoUltimo'))}}
+									</mat-error>
+								</mat-form-field>
+
+								<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+									<mat-label>Costo promedio</mat-label>
+									<input matInput name="costoPromedio" formControlName="costoPromedio"
+										required="{{ isRequired(formC,'costoPromedio') }}"
+										prefix="$ " mask="separator.2" thousandSeparator=","
+										[readonly]="pageType != 'nuevo'">
+									<mat-error *ngIf="(!!formC.get('costoPromedio').errors)">
+										{{validatorService.getMessage(formC.get('costoPromedio'))}}
+									</mat-error>
+								</mat-form-field>
+
+								<mat-form-field appearance="outline" floatLabel="auto" fxFlex="1 0 auto">
+									<mat-label>Costo estandar</mat-label>
+									<input matInput name="costoEstandar" formControlName="costoEstandar"
+										required="{{ isRequired(formC,'costoEstandar') }}"
+										prefix="$ " mask="separator.2" thousandSeparator=",">
+									<mat-error *ngIf="(!!formC.get('costoEstandar').errors)">
+										{{validatorService.getMessage(formC.get('costoEstandar'))}}
+									</mat-error>
+								</mat-form-field>
+							</div>
+						</form>
+					</div>
+				</mat-tab>
+				<mat-tab label="Componente" *ngIf="articuloSubtipoControl?.value?.id == ArticulosSubtipos.PAQUETE_DE_LIBROS">
+					<div
+						class="tab-content p-24"
+						fusePerfectScrollbar
+					>
+						<form
+							*ngIf="!!formCom"
+							name="formCom"
+							id="formCom"
+							[formGroup]="formCom"
+							class="product w-100-p"
+							fxLayout="column"
+							fxFlex
+						>
+							<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+								<pixvs-mat-select [matSelectCtrl]="mostrarSucursalesControl" [datos]="sucursales"
+									[appearance]="'outline'"
+									[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+									[campoValor]="'nombre'" [label]="'Mostrar en sedes'" [required]="isRequired(formP,'mostrarSucursales')"
+									[seleccionarUnicaOpcion]="!articulo?.id"
+									[multiple]="true" [showToggleAllCheckbox]="true" fxFlex="1 0 auto">
+								</pixvs-mat-select>
+							</div>
+
+							<div fxlayout="row" fxlayoutalign="start center" class="pb-4 mx-28" style="display: flex; border-bottom: solid 1px lightgray;">
+                                <mat-icon role="img" class="mat-icon mr-16 secondary-text" aria-hidden="true" data-mat-icon-type="font">free_breakfast</mat-icon>
+                                <div class="h2 secondary-text ng-tns-c345-79">Artículos</div>
+                            </div>
+
+							<div fxLayout="column" style="position: relative; min-height: 200px;">
+								<button mat-mini-fab class="btn-nuevo" (click)="agregarComponente()" [disabled]="formCom?.disabled">
+									<mat-icon>add</mat-icon>
+								</button>
+
+								<mat-table
+									class="w-100-p"
+									fxFlex="fill"
+									[dataSource]="dataSourceComponentes"
+									matSort
+									[@animateStagger]="{value:'50'}"
+									id="tableComponentes"
+									fusePerfectScrollbar
+								>
+									<ng-container matColumnDef="articulo">
+										<mat-header-cell *matHeaderCellDef> Artículo </mat-header-cell>
+										<mat-cell *matCellDef="let componente"> {{ componente.componente?.nombreArticulo }} </mat-cell>
+									</ng-container>
+
+									<ng-container matColumnDef="um">
+										<mat-header-cell *matHeaderCellDef> Unidad de medida </mat-header-cell>
+										<mat-cell *matCellDef="let componente"> {{ componente.componente?.unidadMedidaInventario?.nombre }} </mat-cell>
+									</ng-container>
+
+									<ng-container matColumnDef="cantidadEnsamble">
+										<mat-header-cell *matHeaderCellDef class="text-right"> Cantidad ensamble </mat-header-cell>
+										<mat-cell *matCellDef="let componente" class="text-right"> {{ componente.cantidad }} </mat-cell>
+									</ng-container>
+
+									<ng-container matColumnDef="acciones">
+										<mat-header-cell *matHeaderCellDef> Acciones </mat-header-cell>
+										<mat-cell *matCellDef="let componente">
+											<button type="button" mat-icon-button matTooltip="Eliminar componente"
+												(click)="borrarComponente(componente)">
+												<mat-icon>delete</mat-icon>
+											</button>
+										</mat-cell>
+									</ng-container>
+
+									<mat-header-row *matHeaderRowDef="displayedColumnsComponentes; sticky:true"></mat-header-row>
+									<mat-row *matRowDef="let row; columns: displayedColumnsComponentes;"></mat-row>
+								</mat-table>
+							</div>
+						</form>
+					</div>
+				</mat-tab>
+			</mat-tab-group>
+		</div>
+
+	</div>
+
+</div>

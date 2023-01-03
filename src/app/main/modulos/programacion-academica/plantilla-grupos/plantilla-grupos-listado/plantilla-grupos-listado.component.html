@@ -1,0 +1,3 @@
+<pixvs-bloqueo-pantalla [style.z-index]="10000" *ngIf="!!isLoading || _fichasDataService.cargando"></pixvs-bloqueo-pantalla>
+<ficha-listado #ficha class="page-layout carded fullwidth inner-scroll" [config]="config" [filtros]="regConfig" [filtrosOpciones]="[]" (outputMenu)="getOption($event)"></ficha-listado>
+<input id="fileloader" type="file" accept=".xls,.xlsx" (change)="onLoadFile($event.target.files)" hidden/>

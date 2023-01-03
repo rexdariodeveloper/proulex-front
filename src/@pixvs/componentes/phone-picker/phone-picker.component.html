@@ -1,0 +1,73 @@
+<div class="w-100-p" fxLayout="column" fxLayoutAlign="start start">
+    <div *ngFor="let telefonoControl of telefonoControls ; let i = index" class="w-100-p" fxLayout="row" fxLayoutAlign="start start" fxLayoutGap="10px grid">
+        
+        <ng-container *ngIf="tiposSeleccionados[i] == TiposTelefono.Trabajo && !!telefonoTrabajoExtensionControl">
+            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="45">
+                <mat-label>Teléfono</mat-label>
+                <button matPrefix mat-button type="button" [matMenuTriggerFor]="menu">
+                    <mat-icon>work_outline</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                    <button *ngIf="!!telefonoCasaControl && (tiposSeleccionados[i] == TiposTelefono.Casa || (tiposSeleccionados | PhonePickerTiposPipe : TiposTelefono.Casa))" mat-menu-item (click)="seleccionarTipo(TiposTelefono.Casa,i)">
+                        <mat-icon>home</mat-icon> Casa
+                    </button>
+                    <button *ngIf="!!telefonoMovilControl && (tiposSeleccionados[i] == TiposTelefono.Movil || (tiposSeleccionados | PhonePickerTiposPipe : TiposTelefono.Movil))" mat-menu-item (click)="seleccionarTipo(TiposTelefono.Movil,i)">
+                        <mat-icon>smartphone</mat-icon> Móvil
+                    </button>
+                    <button *ngIf="!!telefonoTrabajoControl && (tiposSeleccionados[i] == TiposTelefono.Trabajo || (tiposSeleccionados | PhonePickerTiposPipe : TiposTelefono.Trabajo))" mat-menu-item (click)="seleccionarTipo(TiposTelefono.Trabajo,i)">
+                        <mat-icon>work_outline</mat-icon> Trabajo
+                    </button>   
+                    <button *ngIf="!!telefonoWhatsappControl && (tiposSeleccionados[i] == TiposTelefono.Whatsapp || (tiposSeleccionados | PhonePickerTiposPipe : TiposTelefono.Whatsapp))" mat-menu-item (click)="seleccionarTipo(TiposTelefono.Whatsapp,i)">
+                        <mat-icon>message</mat-icon> Whatsapp
+                    </button>
+                </mat-menu>
+                <input type="text" matInput  name="telefono" [formControl]="telefonoControl" mask="9999999999">
+            </mat-form-field>
+    
+            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="45">
+                <mat-label>Extensión</mat-label>
+                <input type="text" matInput name="extension" [formControl]="telefonoTrabajoExtensionControl" mask="9999999999">
+            </mat-form-field>
+    
+            <button *ngIf="telefonoControls.length > 1 && telefonoControl.enabled" mat-icon-button type="button" class="pt-12" (click)="eliminarNumero(i)">
+                <mat-icon>delete</mat-icon>
+            </button>
+        </ng-container>
+
+        <ng-container *ngIf="tiposSeleccionados[i] != TiposTelefono.Trabajo || !telefonoTrabajoExtensionControl">
+            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="90">
+                <mat-label>Teléfono</mat-label>
+                <button matPrefix mat-button type="button" [matMenuTriggerFor]="menu">
+                    <mat-icon *ngIf="tiposSeleccionados[i] == TiposTelefono.Casa">home</mat-icon>
+                    <mat-icon *ngIf="tiposSeleccionados[i] == TiposTelefono.Movil">smartphone</mat-icon>
+                    <mat-icon *ngIf="tiposSeleccionados[i] == TiposTelefono.Trabajo">work_outline</mat-icon>
+                    <mat-icon *ngIf="tiposSeleccionados[i] == TiposTelefono.Whatsapp">message</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                    <button *ngIf="!!telefonoCasaControl && (tiposSeleccionados[i] == TiposTelefono.Casa || (tiposSeleccionados | PhonePickerTiposPipe : TiposTelefono.Casa))" mat-menu-item (click)="seleccionarTipo(TiposTelefono.Casa,i)">
+                        <mat-icon>home</mat-icon> Casa
+                    </button>
+                    <button *ngIf="!!telefonoMovilControl && (tiposSeleccionados[i] == TiposTelefono.Movil || (tiposSeleccionados | PhonePickerTiposPipe : TiposTelefono.Movil))" mat-menu-item (click)="seleccionarTipo(TiposTelefono.Movil,i)">
+                        <mat-icon>smartphone</mat-icon> Móvil
+                    </button>
+                    <button *ngIf="!!telefonoTrabajoControl && (tiposSeleccionados[i] == TiposTelefono.Trabajo || (tiposSeleccionados | PhonePickerTiposPipe : TiposTelefono.Trabajo))" mat-menu-item (click)="seleccionarTipo(TiposTelefono.Trabajo,i)">
+                        <mat-icon>work_outline</mat-icon> Trabajo
+                    </button>   
+                    <button *ngIf="!!telefonoWhatsappControl && (tiposSeleccionados[i] == TiposTelefono.Whatsapp || (tiposSeleccionados | PhonePickerTiposPipe : TiposTelefono.Whatsapp))" mat-menu-item (click)="seleccionarTipo(TiposTelefono.Whatsapp,i)">
+                        <mat-icon>message</mat-icon> Whatsapp
+                    </button>
+                </mat-menu>
+                <input type="text" matInput  name="telefono" [formControl]="telefonoControl" mask="9999999999">
+            </mat-form-field>
+    
+            <button *ngIf="telefonoControls.length > 1 && telefonoControl.enabled" mat-icon-button type="button" class="pt-12" (click)="eliminarNumero(i)">
+                <mat-icon>delete</mat-icon>
+            </button>
+        </ng-container>
+        
+
+    </div>
+</div>
+<button *ngIf="telefonoControls.length < maximoNumeros && telefonoControls.length < 4" mat-button type="button" color="primary" class="w-100-p py-4" fxLayout="row" fxLayoutAlign="start center" (click)="onNuevoTelefono()" [ngStyle]="{'pointer-events': (!deshabilitarBoton) ? 'none' : ''}">
+    <mat-icon class="pt-4">add_circle</mat-icon> Agregar número telefónico
+</button>

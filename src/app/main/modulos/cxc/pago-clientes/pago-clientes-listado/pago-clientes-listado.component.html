@@ -1,0 +1,57 @@
+<div id="ficha-CRUD" class="pixvs-theme-listado page-layout carded fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <ficha-crud *ngIf="config" [config]="config" [cargando]="_pagoService?.cargando"
+            [ocultarGuardar]="true" [mostrarBorrar]="false" [mostrarEditar]="false" 
+            [titulo]="titulo" [subTitulo]="subTitulo"
+            [pageType]="pageType" [dataService]="_pagoService" class="header accent"
+            fxLayout="column" fxLayoutAlign="center center" fxLayout.gt-sm="row"
+            fxLayoutAlign.gt-sm="space-between center">
+        </ficha-crud>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <mat-progress-bar *ngIf="_pagoService?.cargando" [color]="'primary'" [mode]="'query'">
+            </mat-progress-bar>
+
+            <div style="height: 0px;">
+                <button debounceClick mat-mini-fab class="boton-refresh" (debounceClick)="recargar()"
+                    matTooltip="{{ 'INTERFAZ.RECARGAR' | translate  }}">
+                    <mat-icon class="s-16">refresh</mat-icon>
+                </button>
+            </div>
+
+            <!-- CONTENT -->
+            <div class="content">
+                <div class="tab-content p-24" fusePerfectScrollbar>
+                    <div fxLayout="row">
+                        <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+                            <div fxLayout="row" fxLayoutAlign="space-between start" class="h-100-p">
+                                <div fxFlex="100" class="h-100-p">
+                                    <pixvs-mat-accordion class="h-100-p" *ngIf="data.length > 0"
+                                        [columnaId]="'alumnoClienteId'"
+                                        [headers]="headers"
+                                        [details]="details"
+                                        [data]="data"
+                                        (onRecargarTabla)="recargarTabla($event)">
+                                    </pixvs-mat-accordion>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- / CONTENT -->
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

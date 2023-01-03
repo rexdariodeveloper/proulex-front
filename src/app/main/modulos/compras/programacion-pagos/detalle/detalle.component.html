@@ -1,0 +1,332 @@
+<div
+	id="ficha-programacion-pagos-detalle"
+	class="pixvs-theme-listado page-layout carded fullwidth inner-scroll"
+>
+
+	<!-- TOP BACKGROUND -->
+	<div class="top-bg accent"></div>
+	<!-- / TOP BACKGROUND -->
+
+	<!-- CENTER -->
+	<div class="center">
+
+		<!-- HEADER -->
+		<ficha-crud
+			*ngIf="config"
+			[historial]="historial"
+			[config]="config"
+			[mostrarAprobar]="pageType == 'alerta' && alertaEnProceso"
+            [mostrarRechazar]="pageType == 'alerta' && alertaEnProceso"
+            [ocultarGuardar]="pageType == 'alerta'"
+			[mostrarBorrar]="false"
+			[mostrarEditar]="false"
+			[mostrarEnviar]="false"
+			[titulo]="titulo"
+			[subTitulo]="subTitulo"
+			[form]="form"
+			[currentId]="currentId"
+			[currentFechaModificacion]="currentFechaModificacion"
+			[pageType]="pageType"
+			[dataService]="_cxpSolicitudPagoService"
+			[listadoAcciones]="acciones"
+			[isAprobarPersonalizado]="true"
+			(onActionClicked)="onActionClicked($event)"
+			(outputAprobar)="onAprobar()"
+			class="header accent"
+			fxLayout="column"
+			fxLayoutAlign="center center"
+			fxLayout.gt-sm="row"
+			fxLayoutAlign.gt-sm="space-between center"
+		>
+		</ficha-crud>
+		<!-- / HEADER -->
+
+		<!-- CONTENT CARD -->
+		<div class="content-card">
+			<mat-progress-bar
+				*ngIf="_cxpSolicitudPagoService?.cargando"
+				[color]="'primary'"
+				[mode]="'query'"
+			>
+			</mat-progress-bar>
+
+			<div style="height: 0px;">
+				<button
+					debounceClick
+					mat-mini-fab
+					class="boton-refresh"
+					(debounceClick)="recargar()"
+					matTooltip="{{ 'INTERFAZ.RECARGAR' | translate  }}"
+				>
+					<mat-icon class="s-16">refresh</mat-icon>
+				</button>
+			</div>
+
+			<!-- CONTENT -->
+			<div class="content">
+
+				<form *ngIf="!!form"
+					focusInvalidInput
+					name="form"
+					id="form"
+					[formGroup]="form"
+					class="product w-100-p"
+					fxLayout="column"
+					fxFlex
+				>
+
+					<mat-tab-group>
+
+						<mat-tab label="Datos Generales">
+
+							<div
+								class="tab-content p-24"
+								fusePerfectScrollbar
+							>
+
+								<div
+									fxLayout="row wrap"
+									fxLayoutGap="20px grid"
+								>
+									<div
+										fxLayout="column"
+										fxFlex="100"
+										fxFlex.gt-sm="100"
+										fxFlex.gt-md="100"
+									>
+										<div fxLayout="row" fxLayoutAlign="start center" class="pb-16">
+											<mat-icon class="m-0 mr-16">account_circle</mat-icon>
+											<div class="h2 secondary-text">Detalles de programación de pago</div>
+										</div>
+										
+										<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+											<table fxFlex="100%" class="tabla-encabezado">
+												<thead>
+													<tr>
+														<td>
+															<span class="h3 secondary-text">Folio</span>
+														</td>
+														<td>
+															<span class="h3 secondary-text">Fecha</span>
+														</td>
+														<td>
+															<span class="h3 secondary-text"># Proveedores</span>
+														</td>
+														<td>
+															<span class="h3 secondary-text">Monto programado</span>
+														</td>
+														<td>
+															<span class="h3 secondary-text"># Facturas</span>
+														</td>
+														<td>
+															<span class="h3 secondary-text">Enviado por</span>
+														</td>
+													</tr>
+												</thead>
+												<tbody>
+													<tr>
+														<td>
+															<span>{{ cxpSolicitudPago?.codigoSolicitud }}</span>
+														</td>
+														<td>
+															<span>{{ cxpSolicitudPago?.fechaCreacion | date : 'dd/MM/yyyy' }}</span>
+														</td>
+														<td>
+															<span>{{ totalProveedores }}</span>
+														</td>
+														<td>
+															<span>{{ montoProgramado | NumeroFormatoPipe }}</span>
+														</td>
+														<td>
+															<span>{{ totalFacturas }}</span>
+														</td>
+														<td>
+															<span>{{ cxpSolicitudPago?.creadoPor?.nombreCompleto }}</span>
+														</td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+
+										<div fxLayout="row" fxLayoutAlign="start center" class="pb-16 pt-80">
+											<mat-icon class="m-0 mr-16">insert_drive_file</mat-icon>
+											<div class="h2 secondary-text">Proveedores</div>
+											<div fxFlex="fill" class="text-right">
+												<span class="font-weight-900">Total monto a autorizar:</span> <span> {{ montoAutorizar | NumeroFormatoPipe }}</span>
+											</div>
+										</div>
+
+										<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+											<table fxFlex="100%" class="tabla-proveedores" *ngFor="let proveedor of proveedores">
+												<thead>
+													<tr>
+														<td colspan="9">
+															<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+																<div fxFlex="fill">
+																	<button *ngIf="proveedoresSeleccionados[proveedor.id] < 0" type="button" mat-icon-button matTooltip="Seleccionar proveedor"
+																		(click)="marcarProveedor(proveedor)">
+																		<mat-icon>crop_square</mat-icon>
+																	</button>
+																	<button *ngIf="proveedoresSeleccionados[proveedor.id] == 0" type="button" mat-icon-button matTooltip="Seleccionar proveedor"
+																		(click)="marcarProveedor(proveedor)">
+																		<mat-icon style="color: #039be5">indeterminate_check_box</mat-icon>
+																	</button>
+																	<button *ngIf="proveedoresSeleccionados[proveedor.id] > 0" type="button" mat-icon-button matTooltip="Deseleccionar proveedor"
+																		(click)="marcarProveedor(proveedor)">
+																		<mat-icon style="color: #039be5">check_box</mat-icon>
+																	</button>
+																</div>
+																<div fxFlex="auto">
+																	<span class="h3 secondary-text font-weight-900">({{ proveedor.rfc }}) {{ proveedor.nombre }}</span>
+																</div>
+																<div fxFlex="fill">
+																	<span class="font-weight-900">Monto a pagar:</span> <span> {{ montosProveedoresMap[proveedor.id] | NumeroFormatoPipe }}</span>
+																</div>
+															</div>
+														</td>
+													</tr>
+													<tr>
+														<td></td>
+														<td></td>
+														<td>
+															<span class="h3 secondary-text">{{!!proveedor?.rfc ? 'Número de documento': 'Beneficiario'}}</span>
+														</td>
+														<td class="text-right">
+															<span class="h3 secondary-text">Saldo</span>
+														</td>
+														<td class="text-right">
+															<span class="h3 secondary-text">Monto programado</span>
+														</td>
+														<td>
+															<span class="h3 secondary-text">Fecha de factura</span>
+														</td>
+														<td>
+															<span class="h3 secondary-text">Fecha de vencimiento</span>
+														</td>
+														<td>
+															<span class="h3 secondary-text">Folio</span>
+														</td>
+														<td>
+															<span class="h3 secondary-text">Documentos</span>
+														</td>
+													</tr>
+												</thead>
+												<tbody>
+													<tr *ngFor="let detalle of detallesMapProveedorId[proveedor.id]">
+														<td></td>
+														<td>
+															<button *ngIf="!cxpFacturasSeleccionadas[detalle.cxpFactura.id]" type="button" mat-icon-button matTooltip="Seleccionar factura"
+																(click)="marcarFactura(detalle.cxpFactura)">
+																<mat-icon>crop_square</mat-icon>
+															</button>
+															<button *ngIf="!!cxpFacturasSeleccionadas[detalle.cxpFactura.id]" type="button" mat-icon-button matTooltip="Deseleccionar factura"
+																(click)="marcarFactura(detalle.cxpFactura)">
+																<mat-icon style="color: #039be5">check_box</mat-icon>
+															</button>
+														</td>
+														<td>
+															<span>{{!!proveedor?.rfc ? detalle.cxpFactura.codigoRegistro: getBeneficiario(detalle.cxpFactura.id)}}</span>
+														</td>
+														<td class="text-right">
+															<span>{{ detalle.cxpFactura.montoRegistro | NumeroFormatoPipe }}</span>
+														</td>
+														<td class="text-right">
+															<span>{{ montosProgramadosMapFactura[detalle.cxpFactura.id] | NumeroFormatoPipe }}</span>
+														</td>
+														<td>
+															<span>{{ detalle.cxpFactura.fechaRegistro | date : 'dd/MM/yyyy' }}</span>
+														</td>
+														<td>
+															<span>{{ detalle.cxpFactura.fechaVencimiento | date : 'dd/MM/yyyy' }}</span>
+														</td>
+														<td>
+															<span>{{ foliosMap[detalle.cxpFactura.id] || '-' }}</span>
+														</td>
+														<td>
+															<ng-container *ngIf="cxpFacturasDocumentosMap[detalle.cxpFactura.id]?.evidencia?.length == 1">
+																<button mat-icon-button matTooltip="Descargar evidencia" (click)="onMostrarEvidencia(cxpFacturasDocumentosMap[detalle.cxpFactura.id]?.evidencia[0])">
+																	<mat-icon>attachment</mat-icon>
+																</button>
+															</ng-container>
+
+															<ng-container *ngIf="cxpFacturasDocumentosMap[detalle.cxpFactura.id]?.evidenciaRh?.length == 1">
+																<button mat-icon-button matTooltip="Descargar evidencia" (click)="onMostrarEvidencia(cxpFacturasDocumentosMap[detalle.cxpFactura.id]?.evidenciaRh[0])">
+																	<mat-icon>attachment</mat-icon>
+																</button>
+															</ng-container>
+							
+															<ng-container *ngIf="cxpFacturasDocumentosMap[detalle.cxpFactura.id]?.evidencia?.length > 1">
+																<button mat-icon-button matTooltip="Descargar evidencia" [matMenuTriggerFor]="listadoMenu">
+																	<mat-icon>attachment</mat-icon>
+																</button>
+																<mat-menu #listadoMenu="matMenu">
+																	<button *ngFor="let evidenciaArchivo of cxpFacturasDocumentosMap[detalle.cxpFactura.id]?.evidencia" mat-menu-item (click)="onMostrarEvidencia(evidenciaArchivo)">
+																		<span>{{evidenciaArchivo.nombreOriginal}}</span>
+																	</button>
+																	<button mat-menu-item (click)="onMostrarEvidencia(cxpFacturasDocumentosMap[detalle.cxpFactura.id]?.evidencia,cxpFacturasDocumentosMap[detalle.cxpFactura.id])">
+																		<span>Todo</span>
+																	</button>
+																</mat-menu>
+															</ng-container>
+
+															<ng-container *ngIf="cxpFacturasDocumentosMap[detalle.cxpFactura.id]?.evidenciaRh?.length > 1">
+																<button mat-icon-button matTooltip="Descargar evidencia" [matMenuTriggerFor]="listadoMenu">
+																	<mat-icon>attachment</mat-icon>
+																</button>
+																<mat-menu #listadoMenu="matMenu">
+																	<button *ngFor="let evidenciaArchivo of cxpFacturasDocumentosMap[detalle.cxpFactura.id]?.evidenciaRh" mat-menu-item (click)="onMostrarEvidencia(evidenciaArchivo)">
+																		<span>{{evidenciaArchivo.nombreOriginal}}</span>
+																	</button>
+																	<button mat-menu-item (click)="onMostrarEvidencia(cxpFacturasDocumentosMap[detalle.cxpFactura.id]?.evidenciaRh,cxpFacturasDocumentosMap[detalle.cxpFactura.id])">
+																		<span>Todo</span>
+																	</button>
+																</mat-menu>
+															</ng-container>
+							
+															<ng-container *ngIf="cxpFacturasDocumentosMap[detalle.cxpFactura.id]?.facturas?.length == 1">
+																<button mat-icon-button matTooltip="Descargar factura" (click)="onMostrarFactura(cxpFacturasDocumentosMap[detalle.cxpFactura.id]?.facturas[0])">
+																	<mat-icon>receipt</mat-icon>
+																</button>
+															</ng-container>
+							
+															<ng-container *ngIf="cxpFacturasDocumentosMap[detalle.cxpFactura.id]?.facturas?.length > 1">
+																<button mat-icon-button matTooltip="Descargar factura" [matMenuTriggerFor]="listadoMenuFactura">
+																	<mat-icon>receipt</mat-icon>
+																</button>
+																<mat-menu #listadoMenuFactura="matMenu">
+																	<button *ngFor="let facturaArchivo of cxpFacturasDocumentosMap[detalle.cxpFactura.id]?.facturas" mat-menu-item (click)="onMostrarFactura(facturaArchivo)">
+																		<span>{{facturaArchivo.nombreOriginal}}</span>
+																	</button>
+																	<button mat-menu-item (click)="onMostrarFactura(cxpFacturasDocumentosMap[detalle.cxpFactura.id]?.facturas,cxpFacturasDocumentosMap[detalle.cxpFactura.id])">
+																		<span>Todo</span>
+																	</button>
+																</mat-menu>
+															</ng-container>
+														</td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</div>
+
+
+							</div>
+
+						</mat-tab>
+
+					</mat-tab-group>
+
+				</form>
+
+
+			</div>
+			<!-- / CONTENT -->
+
+		</div>
+		<!-- / CONTENT CARD -->
+
+
+	</div>
+	<!-- / CENTER -->
+</div>

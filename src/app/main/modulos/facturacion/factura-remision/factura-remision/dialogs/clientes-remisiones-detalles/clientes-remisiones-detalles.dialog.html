@@ -1,0 +1,83 @@
+<h1 mat-dialog-title>
+	{{ codigoRemision }}
+</h1>
+<div mat-dialog-content>
+	<div class="w-100-p" fxLayout="column">
+		<mat-table #tableOC
+			fxFlex="fill"
+			[dataSource]="dataSourceDetalles"
+			matSort
+			[@animateStagger]="{value:'50'}"
+			id="tableOC"
+			fusePerfectScrollbar
+		>
+
+			<ng-container matColumnDef="articulo">
+				<mat-header-cell *matHeaderCellDef> Articulo </mat-header-cell>
+				<mat-cell *matCellDef="let detalle"> {{ detalle?.articuloNombre }} </mat-cell>
+			</ng-container>
+
+			<ng-container matColumnDef="um">
+				<mat-header-cell *matHeaderCellDef> UM </mat-header-cell>
+				<mat-cell *matCellDef="let detalle"> {{ detalle?.unidadMedidaNombre }} </mat-cell>
+			</ng-container>
+
+			<ng-container matColumnDef="cantidadRemision">
+				<mat-header-cell *matHeaderCellDef> Cantidad OC </mat-header-cell>
+				<mat-cell *matCellDef="let detalle"> {{ detalle?.cantidad }} </mat-cell>
+			</ng-container>
+
+			<ng-container matColumnDef="precioUnitarioRemision">
+				<mat-header-cell *matHeaderCellDef> Precio unitario OC </mat-header-cell>
+				<mat-cell *matCellDef="let detalle"> {{ detalle?.precioUnitario }} </mat-cell>
+			</ng-container>
+
+			<ng-container matColumnDef="cantidadRelacionar">
+				<mat-header-cell *matHeaderCellDef> Cantidad a relacionar </mat-header-cell>
+				<mat-cell *matCellDef="let detalle" fxLayout="row" fxLayoutAlign="center center">
+					<mat-form-field *ngIf="!!cantidadControls[detalle.id]"
+						appearance="outline"
+						floatLabel="auto"
+						fxFlex="90%"
+					>
+						<mat-label>Cantidad</mat-label>
+						<input
+							type="text"
+							matInput
+							[formControl]="cantidadControls[detalle.id]"
+							mask="separator.{{ detalle?.unidadMedida?.decimales }}" thousandSeparator=","
+						>
+						<!--<input
+							type="text"
+							matInput
+							[formControl]="cantidadControls[detalle.id]"
+							mask="separator.6" thousandSeparator=","
+						>-->
+						<mat-error *ngIf="(!!cantidadControls[detalle.id].errors)">
+							{{validatorService.getMessage(cantidadControls[detalle.id])}}
+						</mat-error>
+					</mat-form-field>
+				</mat-cell>
+			</ng-container>
+
+			<ng-container matColumnDef="cantidadRestante">
+				<mat-header-cell *matHeaderCellDef> Cantidad restante </mat-header-cell>
+				<mat-cell *matCellDef="let detalle"> {{ (detalle?.cantidad || 0) - (cantidadControls[detalle.id]?.value || 0) }} </mat-cell>
+			</ng-container>
+			
+			
+			<mat-header-row *matHeaderRowDef="displayedColumnsDetalles; sticky:true"></mat-header-row>
+			<mat-row *matRowDef="let row; columns: displayedColumnsDetalles;"></mat-row>
+		</mat-table>
+	</div>
+</div>
+<div mat-dialog-actions>
+	<button
+		mat-button
+		(click)="cancelar()"
+	>Cancelar</button>
+	<button
+		mat-button
+		(click)="aceptar()"
+	>Aceptar</button>
+</div>

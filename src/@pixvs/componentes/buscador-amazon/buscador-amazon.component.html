@@ -1,0 +1,12 @@
+<div id="buscador-amazon" class="w-100-p" fxLayout="row">
+	<pixvs-mat-select [matSelectCtrl]="opcionesControl" [datos]="opciones"
+		[appearance]="'outline'" [incluirItemVacio]="false"
+		[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+		[campoValor]="['nombre']" [label]="'Buscar en'" [required]="false"
+		fxFlex="auto">
+	</pixvs-mat-select>
+	<input fxFlex="fill" type="text" [(ngModel)]="textoBuscar" class="buscador" (keyup.enter)="buscar()">
+	<button type="button" mat-flat-button color="primary" class="btn-buscar" (click)="buscar()">
+		<mat-icon>search</mat-icon>
+	</button>
+</div>

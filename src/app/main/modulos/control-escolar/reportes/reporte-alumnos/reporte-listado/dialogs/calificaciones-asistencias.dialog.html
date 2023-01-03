@@ -1,0 +1,14 @@
+<div mat-dialog-content>
+	<div class="w-100-p" [style.height]="'calc(100% - 44px)'">
+		<ng-container *ngIf="mostrarCalificaciones && !mostrarAsistencias">
+			<tab-calificaciones [grupoId]="registro.grupoId" [alumnoId]="registro.alumnoId"></tab-calificaciones>
+		</ng-container>
+		<ng-container *ngIf="!mostrarCalificaciones && mostrarAsistencias">
+			<tab-asistencias [grupoId]="registro.grupoId" [alumnoId]="registro.alumnoId"></tab-asistencias>
+		</ng-container>
+	</div>
+</div>
+
+<div mat-dialog-actions align="end">
+	<button mat-button (click)="cerrar()">Cerrar</button>
+</div>

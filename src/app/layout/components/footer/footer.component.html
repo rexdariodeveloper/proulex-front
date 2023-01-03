@@ -1,0 +1,42 @@
+<mat-toolbar style="height: 100%">
+
+    <div fxLayout="row" fxLayoutAlign="center center" fxLayoutAlign.gt-xs="space-between baseline" fxFlex style="height: 100%">
+
+        <a mat-button href="http://www.pixvs.com"
+           target="_blank" fxFlex="0 0 auto" fxLayout="row"
+           fxLayoutAlign="start center">
+            <img class="logo-icon s-16 mr-sm-4" src="assets/images/logos/logo_pixvs_sm.png">
+            <span class="logo-text secondary-text">&copy;{{year}} PIXVS</span>
+        </a>
+
+        <div *ngIf="noRequireLogin" fxLayout="column" fxLayoutAlign="start center" fxHide fxShow.gt-xs> 
+            <div style="display: flex; align-items: center; justify-content: center; height: 100%;">
+                <a href="http://www.udg.mx/" target="_blank"><img src="/assets/images/logos/LogoUdg.png" style="width: 100px"></a>&nbsp;&nbsp;
+                <a href="http://www.cucea.udg.mx/" target="_blank"><img src="/assets/images/logos/LogoCucea.png" style="width: 100px"></a>
+                <a href="http://www.cucea.udg.mx/" target="_blank"><img src="/app/main/img/logos/Smart Campus blanco.png" style="width: 100px"></a>
+                <a href="http://www.cucea.udg.mx/" target="_blank"><img src="/app/main/img/logos/blanco plataforma.png" style="width: 100px"></a>
+            </div>
+            <div style="font-size: 12px;text-align: center; line-height: 14pt">
+                <p>CENTRO UNIVERSITARIO DE CIENCIAS ECONÓMICO ADMINISTRATIVAS<br> Periférico Norte N° 799, Núcleo Universitario Los Belenes, C.P. 45100, Zapopan, Jalisco, México.<br> Teléfono: +52 (33) 3770 3300 </p>
+            </div>
+            
+        </div>
+
+        
+        <div *ngIf="!noRequireLogin" fxLayout="row" fxLayoutAlign="start center" fxHide fxShow.gt-xs>            
+            <a mat-button><span>&bull;&nbsp;v20.03.08</span></a>
+        </div>
+
+        <a *ngIf="noRequireLogin" fxLayout="row" fxLayoutAlign="start center" fxShow.gt-xs>            
+            <a mat-button [routerLink]="'/app/avisoprivacidad'" style="color: white">&nbsp;Aviso de privacidad</a>
+        </a>
+
+        <!-- <div fxLayout="row" fxLayoutAlign="start center" fxHide fxShow.gt-xs>
+            <a mat-button href="http://www.pixvs.com/creditos" target="_blank">{{ 'CREDITOS_SITIO' | translate }}</a>
+            <span>&bull;</span>
+            <a mat-button href="http://www.pixvs.com/info/politica-de-privacidad-y-manejo-de-datos" target="_blank">{{ 'POLITICAS_SITIO' | translate }}</a>
+        </div> -->
+
+    </div>
+
+</mat-toolbar>

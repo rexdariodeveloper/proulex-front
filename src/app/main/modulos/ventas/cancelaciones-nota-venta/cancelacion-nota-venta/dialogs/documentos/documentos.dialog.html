@@ -1,0 +1,54 @@
+<h1 mat-dialog-title>
+	Agregar documento
+</h1>
+<div mat-dialog-content class="font-size-20 pb-12">
+    <div class="w-100-p" fxLayout="column">
+        <div fxLayout="row">
+            <pixvs-mat-select [matSelectCtrl]="tipoDocumentoControl" [datos]="tiposDocumentos"
+                [appearance]="'outline'"
+                [matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+                [campoValor]="['valor']" [label]="'Tipo de documento'"
+                [required]="false" fxFlex="100">
+            </pixvs-mat-select>
+        </div>
+        <div fxLayout="row" *ngIf="tipoDocumentoControl?.value?.id == CMM_OVC_TiposDocumento.COMPROBANTE_DE_PAGO || tipoDocumentoControl?.value?.id == CMM_OVC_TiposDocumento.IDENTIFICACION_OFICIAL_DE_LA_PERSONA_QUE_RECIBE_LA_TRANSFERENCIA">
+            <mat-form-field appearance="outline" floatLabel="auto" fxFlex="100%">
+                <mat-label>Valor</mat-label>
+                <input matInput name="valor" [formControl]="valorControl" required="{{ false }}">
+            </mat-form-field>
+        </div>
+        <div fxLayout="row">
+            <div class="attachment-list" fxFlex="1 0 80%">
+                <div class="attachment" (click)="archivoBtn.click(); $event.preventDefault()" style="cursor: pointer" matTooltip="Documento">
+                    <div fxFlex="1 0 80%" class="text-truncate">
+                        <span class="filename" dir="rtl">{{ archivo?.nombreOriginal || 'Subir documento'}}</span>
+                    </div>
+
+                    <div *ngIf="!!archivo?.nombreOriginal && !archivo?.id" fxFlex="1 0 20%" fxLayoutAlign="center center">
+                        <mat-spinner [diameter]="15"></mat-spinner>
+                    </div>
+                    <button *ngIf="!!archivo?.nombreOriginal && !!archivo?.id" mat-icon-button aria-label="Download attachment" fxFlex="1 0 20%" (click)="$event.preventDefault();$event.stopPropagation();borrarArchivo(archivoBtn);">
+                        <mat-icon class="s-16">close</mat-icon>
+                    </button>
+                </div>
+                <input #archivoBtn type="file" accept="*" (change)="archivoChangeEvent($event)" style="border: 0;clip: rect(0 0 0 0); height: 1px; margin: -1px;overflow: hidden;padding: 0;position: absolute; width: 1px;" />
+            </div>
+            <button mat-icon-button aria-label="Download attachment" fxFlex="1 0 20%" (click)="archivoBtn.click()">
+                <mat-icon class="s-16">attach_file</mat-icon>
+            </button>
+        </div>
+    </div>
+</div>
+<div mat-dialog-actions align="end" fxLayout="row" fxLayoutAlign="space-between center">
+	<button
+		mat-button
+		(click)="cancelar()"
+	>Cerrar</button>
+	<button
+		mat-raised-button
+        class="mat-primary"
+		(click)="onAceptar()"
+	>
+        Aceptar
+    </button>
+</div>

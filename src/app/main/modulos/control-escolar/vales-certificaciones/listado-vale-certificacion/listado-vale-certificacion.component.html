@@ -1,0 +1,2 @@
+<pixvs-bloqueo-pantalla [style.z-index]="10000" *ngIf="!!isLoading || _listadoService.cargando"></pixvs-bloqueo-pantalla>
+<ficha-listado #ficha class="page-layout carded fullwidth inner-scroll" [config]="config" [filtros]="regConfig" [filtrosOpciones]="[]" (outputEnviar)="onGenerarValesCertificacion()"></ficha-listado>

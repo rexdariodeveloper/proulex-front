@@ -1,0 +1,63 @@
+<div
+	id="menu-listados-generales"
+	class="page-layout carded left-sidebar fullwidth inner-scroll"
+>
+
+	<!-- TOP BACKGROUND -->
+	<div class="top-bg accent"></div>
+	<!-- / TOP BACKGROUND -->
+
+	<!-- SIDEBAR -->
+	<fuse-sidebar
+		class="sidebar"
+		name="modulos-sidebar"
+		position="left"
+		lockedOpen="gt-xs"
+	>
+		<modulos-sidebar #modulos [menu]="menuCatalogos">
+		</modulos-sidebar>
+	</fuse-sidebar>
+	<!-- / SIDEBAR -->
+
+	<!-- CENTER -->
+	<div class="center layout-pad0">
+
+		<!-- HEADER -->
+		<div
+			class="header accent"
+			fxLayout="column"
+			fxLayoutAlign="center center"
+			fxLayout.gt-sm="row"
+			fxLayoutAlign.gt-sm="space-between center"
+		></div>
+		<!-- / HEADER -->
+
+		<!-- CONTENT CARD -->
+        <div class="content-card px-40 py-20">
+			<ng-container *ngIf="!!catalogoSeleccionado">
+				<button mat-mini-fab class="btn-nuevo" (click)="nuevoRegistro()">
+					<mat-icon>add</mat-icon>
+				</button>
+				<div fxLayout="row" fxLayoutAlign="space-between start" class="h-100-p">
+					<div fxFlex="100" class="h-100-p">
+						<pixvs-tabla-simple
+							*ngIf="!!columnasTablaCatalogo?.length && !!displayedColumnsTablaCatalogo?.length && !!_catalogoService?.datos?.length"
+							[service]="_catalogoService"
+							[localeEN]="localeEN"
+							[localeES]="localeES"
+							[columnas]="columnasTablaCatalogo"
+							[columnasFechas]="columnasFechasTablaCatalogo"
+							[displayedColumns]="displayedColumnsTablaCatalogo"
+							[reordenamiento]="false"
+							[columnaId]="'id'"
+							(onSeleccionarRegistro)="onEditarRegistro($event)"
+						></pixvs-tabla-simple>
+						<span *ngIf="!_catalogoService?.cargando && !(!!columnasTablaCatalogo?.length && !!displayedColumnsTablaCatalogo?.length && !!_catalogoService?.datos?.length )">No se encontraron registros</span>
+					</div>
+				</div>
+			</ng-container>
+		</div>
+
+	</div>
+
+</div>

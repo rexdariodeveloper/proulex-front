@@ -1,0 +1,17 @@
+
+articulo-componente-nodo{
+	.icono-rotar{
+		transform: rotate(90deg);
+	}
+
+	.clickable{
+		cursor: pointer;
+		&:hover{
+			background-color: #F0F0F0;
+		}
+	}
+
+	.nodo{
+		border-bottom: solid 1px lightgray;
+	}
+}

@@ -1,0 +1,31 @@
+<fuse-sidebar class="sidebar w-100-p h-100-p m-0" position="left" lockedOpen="gt-md">
+
+    <!-- SIDEBAR CONTENT -->
+    <div class="content" fusePerfectScrollbar>
+
+        <div class="steps">
+
+            <div class="step"
+                 *ngFor="let paso of pasos; let i = index; let ultimo = last; let primero = first"
+                 (click)="cambiarPaso(i)"
+                 [ngClass]="{'current': pasoActual === i, 'completed': pasoActual > i, 'last': ultimo, 'first': primero}">
+                <div class="index">
+                    <span>{{i + 1}}</span>
+                </div>
+                <div class="title">{{paso}}</div>
+            </div>
+
+        </div>
+
+    </div>
+    <!-- / SIDEBAR CONTENT -->
+
+    <button #botonAnterior mat-fab color="primary" type="button" class="boton-stepper-anterior" style="display: none;" [disabled]="pasoActual <= 0" (click)="onAnterior()">
+        <mat-icon>chevron_left</mat-icon>
+    </button>
+
+    <button #botonSiguiente mat-fab color="primary" type="button" class="boton-stepper-siguiente" style="display: none;" [disabled]="pasoActual >= (pasos.length-1)" (click)="onSiguiente()">
+        <mat-icon>chevron_right</mat-icon>
+    </button>
+
+</fuse-sidebar>

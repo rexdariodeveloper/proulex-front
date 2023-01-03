@@ -1,0 +1,44 @@
+<!--<mat-toolbar color="primary">
+	<span>My Application</span>
+</mat-toolbar>
+<h1 mat-dialog-title *ngIf="codigoProveedor && nombreProveedor">
+	El RFC ya ha sido utilizado por <br><b>{{codigoProveedor}} {{nombreProveedor}}</b> 
+</h1>
+<h1 mat-dialog-title *ngIf="!codigoProveedor && !nombreProveedor">
+	El RFC ha sido utilizado por mas de un proveedor
+</h1>
+<h2>¿Deseas continuar?</h2>
+<div mat-dialog-actions>
+	<button
+		mat-button
+		(click)="cancelar()"
+	>Cerrar</button>
+	<button
+		mat-button
+		(click)="aceptar()"
+	>Aceptar</button>
+</div>-->
+<mat-toolbar color="primary">
+	<mat-toolbar-row>
+		<span class="title dialog-title">Información</span>
+	</mat-toolbar-row>
+</mat-toolbar>
+<div mat-dialog-content>
+	<h2 *ngIf="codigoProveedor && nombreProveedor">
+		El RFC ya ha sido utilizado por <br><b>{{codigoProveedor}}</b> {{nombreProveedor}} 
+	</h2>
+	<h2 *ngIf="!codigoProveedor && !nombreProveedor">
+		El RFC ha sido utilizado por mas de un proveedor
+	</h2>
+	<h2>¿Desea continuar?</h2>
+</div>
+<div mat-dialog-actions align="end">
+	<button
+		mat-button
+		(click)="cancelar()"
+	>Cerrar</button>
+	<button
+		mat-raised-button class="mat-accent mr-16"
+		(click)="aceptar()"
+	>Aceptar</button>
+</div>

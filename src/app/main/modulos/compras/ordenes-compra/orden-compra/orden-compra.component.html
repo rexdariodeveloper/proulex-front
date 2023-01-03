@@ -1,0 +1,779 @@
+<invoice-print></invoice-print>
+<div
+	id="ficha-CRUD"
+	class="pixvs-theme-listado page-layout carded fullwidth inner-scroll"
+>
+
+	<!-- TOP BACKGROUND -->
+	<div class="top-bg accent"></div>
+	<!-- / TOP BACKGROUND -->
+
+	<!-- CENTER -->
+	<div class="center">
+
+		<!-- HEADER -->
+		<ficha-crud
+			*ngIf="config"
+			[historial]="historial"
+			[config]="config"
+			[isGuardadoPersonalizado]="true"
+			[isEnviarPersonalizado]="true"
+			(output)="guardar()"
+			(outputEnviar)="guardar(true)"
+			[mostrarBorrar]="true"
+			[mostrarEditar]="mostrarEditar"
+			[mostrarEnviar]="true"
+			[titulo]="titulo"
+			[subTituloTraduccion]="pageType == 'nuevo' ? pageType : null" 
+			[form]="form"
+			[currentId]="currentId"
+			[pageType]="pageType"
+			[dataService]="_ordenCompraService"
+			[listadoAcciones]="acciones"
+			(onActionClicked)="onActionClicked($event)"
+			class="header accent"
+			fxLayout="column"
+			fxLayoutAlign="center center"
+			fxLayout.gt-sm="row"
+			fxLayoutAlign.gt-sm="space-between center"
+		>
+		</ficha-crud>
+		<!-- / HEADER -->
+
+		<!-- CONTENT CARD -->
+		<div class="content-card">
+			<mat-progress-bar
+				*ngIf="_ordenCompraService?.cargando"
+				[color]="'primary'"
+				[mode]="'query'"
+			>
+			</mat-progress-bar>
+
+			<div style="height: 0px;">
+				<button
+					debounceClick
+					mat-mini-fab
+					class="boton-refresh"
+					(debounceClick)="recargar()"
+					matTooltip="{{ 'INTERFAZ.RECARGAR' | translate  }}"
+				>
+					<mat-icon class="s-16">refresh</mat-icon>
+				</button>
+			</div>
+
+			<!-- CONTENT -->
+			<div class="content">
+
+				<form
+					focusInvalidInput
+					name="form"
+					id="form"
+					[formGroup]="form"
+					class="product w-100-p"
+					fxLayout="column"
+					fxFlex
+				>
+
+					<mat-tab-group>
+
+						<mat-tab label="Datos Generales">
+
+							<div
+								class="tab-content p-24"
+								fusePerfectScrollbar
+							>
+
+								<div
+									fxLayout="row wrap"
+									fxLayoutGap="20px grid"
+								>
+									<div
+										fxLayout="column"
+										fxFlex="100"
+										fxFlex.gt-sm="100"
+										fxFlex.gt-md="100"
+									>
+
+										<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+											<pixvs-mat-select [matSelectCtrl]="proveedorControl" [datos]="proveedores"
+												[appearance]="'outline'"
+												[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+												[campoValor]="'nombre'" [label]="'Proveedor'" [required]="isRequired('proveedor')"
+												[seleccionarUnicaOpcion]="!ordenCompra?.id"
+												fxFlex="3 0 auto">
+											</pixvs-mat-select>
+											<pixvs-mat-select [matSelectCtrl]="departamentoControl" [datos]="departamentos"
+												[appearance]="'outline'"
+												[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+												[campoValor]="'nombre'" [label]="'Departamento'" [required]="isRequired('departamento')"
+												[seleccionarUnicaOpcion]="!ordenCompra?.id"
+												fxFlex="3 0 auto">
+											</pixvs-mat-select>
+										</div>
+
+										<div
+											fxLayout="row wrap"
+											fxLayoutAlign="start center"
+											fxLayoutGap="10px grid"
+										>
+											<mat-form-field
+												appearance="outline"
+												floatLabel="auto"
+												fxFlex="1 0 auto"
+											>
+												<mat-label>Fecha OC</mat-label>
+												<input
+													matInput
+													[matDatepicker]="fechaOC"
+													name="fechaOC"
+													formControlName="fechaOC"
+													required="{{ isRequired('fechaOC') }}"
+													disabled
+												>
+												<mat-error *ngIf="(!!form.get('fechaOC').errors)">
+													{{validatorService.getMessage(form.get('fechaOC'))}}
+												</mat-error>
+												<mat-datepicker-toggle
+													matSuffix
+													[for]="fechaOC"
+												>
+												</mat-datepicker-toggle>
+												<mat-datepicker
+													#fechaOC
+													disabled="false"
+												></mat-datepicker>
+											</mat-form-field>
+											<mat-form-field
+												appearance="outline"
+												floatLabel="auto"
+												fxFlex="1 0 auto"
+											>
+												<mat-label>Fecha Requerida</mat-label>
+												<input
+													matInput
+													[matDatepicker]="fechaRequerida"
+													name="fechaRequerida"
+													formControlName="fechaRequerida"
+													required="{{ isRequired('fechaRequerida') }}"
+													disabled
+												>
+												<mat-error *ngIf="(!!form.get('fechaRequerida').errors)">
+													{{validatorService.getMessage(form.get('fechaRequerida'))}}
+												</mat-error>
+												<mat-datepicker-toggle
+													matSuffix
+													[for]="fechaRequerida"
+												>
+												</mat-datepicker-toggle>
+												<mat-datepicker
+													#fechaRequerida
+													disabled="false"
+												></mat-datepicker>
+											</mat-form-field>
+										</div>
+
+										<div
+											fxLayout="row wrap"
+											fxLayoutAlign="start center"
+											fxLayoutGap="10px grid"
+										>
+											<mat-form-field
+												appearance="outline"
+												floatLabel="auto"
+												fxFlex="1 0 auto"
+											>
+												<mat-label>Dirección OC</mat-label>
+												<input
+													type="text"
+													matInput
+													name="direccionOC"
+													formControlName="direccionOC"
+													required="{{ isRequired('direccionOC') }}"
+												>
+												<mat-error *ngIf="(!!form.get('direccionOC').errors)">
+													{{validatorService.getMessage(form.get('direccionOC'))}}
+												</mat-error>
+											</mat-form-field>
+											<mat-form-field
+												appearance="outline"
+												floatLabel="auto"
+												fxFlex="1 0 auto"
+											>
+												<mat-label>Remitir A</mat-label>
+												<input
+													type="text"
+													matInput
+													name="remitirA"
+													formControlName="remitirA"
+													required="{{ isRequired('remitirA') }}"
+												>
+												<mat-error *ngIf="(!!form.get('remitirA').errors)">
+													{{validatorService.getMessage(form.get('remitirA'))}}
+												</mat-error>
+											</mat-form-field>
+										</div>
+
+										<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px grid">
+											<pixvs-mat-select [matSelectCtrl]="recepcionArticuloAlmacenControl" [datos]="almacenes"
+												[appearance]="'outline'"
+												[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+												[campoValor]="'nombre'" [label]="'Recepción de artículos (Almacén)'" [required]="isRequired('recepcionArticulosAlmacen')"
+												[seleccionarUnicaOpcion]="!ordenCompra?.id"
+												fxFlex="50%">
+											</pixvs-mat-select>
+
+											<pixvs-mat-select [matSelectCtrl]="monedaControl" [datos]="monedas"
+												[appearance]="'outline'"
+												[matError]="'ERRORES_CAPTURA.CAMPO_REQUERIDO' | translate"
+												[campoValor]="'nombre'" [label]="'Moneda'" [required]="isRequired('moneda')"
+												[seleccionarUnicaOpcion]="!ordenCompra?.id"
+												fxFlex="25%">
+											</pixvs-mat-select>
+
+											<mat-form-field
+												appearance="outline"
+												floatLabel="auto"
+												fxFlex="25%"
+											>
+												<mat-label>Dias de crédito</mat-label>
+												<input
+													matInput
+													name="terminoPago"
+													formControlName="terminoPago"
+													required="{{ isRequired('terminoPago') }}"
+													mask="0*"
+												>
+												<mat-error *ngIf="(!!form.get('terminoPago').errors)">
+													{{validatorService.getMessage(form.get('terminoPago'))}}
+												</mat-error>
+											</mat-form-field>
+										</div>
+
+										<div
+											fxLayout="row wrap"
+											fxLayoutAlign="start center"
+											fxLayoutGap="10px grid"
+										>
+											
+											<!-- <mat-form-field
+												appearance="outline"
+												floatLabel="auto"
+												fxFlex="1 0 auto"
+											>
+												<mat-label>Descuento</mat-label>
+												<input
+													matInput
+													name="descuento"
+													formControlName="descuento"
+													required="{{ isRequired('descuento') }}"
+													prefix="% " mask="999"
+												>
+												<mat-error *ngIf="(!!form.get('descuento').errors)">
+													{{validatorService.getMessage(form.get('descuento'))}}
+												</mat-error>
+											</mat-form-field> -->
+										</div>
+
+										<div
+											fxLayout="row wrap"
+											fxLayoutAlign="start center"
+											fxLayoutGap="10px grid"
+										>
+											<mat-form-field
+												appearance="outline"
+												floatLabel="auto"
+												fxFlex="1 0 auto"
+											>
+												<mat-label>Comentario</mat-label>
+												<textarea
+													type="text"
+													matInput
+													name="comentario"
+													formControlName="comentario"
+													required="{{ isRequired('comentario') }}"
+												></textarea>
+												<mat-error *ngIf="(!!form.get('comentario').errors)">
+													{{validatorService.getMessage(form.get('comentario'))}}
+												</mat-error>
+											</mat-form-field>
+										</div>
+
+
+
+									</div>
+
+
+								</div>
+
+
+							</div>
+
+						</mat-tab>
+
+						<mat-tab label="Artículos">
+
+							<div
+								class="tab-content p-24"
+								fusePerfectScrollbar
+							>
+								<div>
+									<div
+										fxLayout="row wrap"
+										fxLayoutGap="20px grid"
+									>
+										<div fxFlex="100 0 auto">
+											<div
+												id="tabla-detalles"
+												class="w-100-p h-100-p"
+												fxLayout="column"
+											>
+												<button mat-mini-fab class="btn-nuevo" (click)="onNuevoArticulo()" type="button"  *ngIf="!!form?.enabled">
+													<mat-icon>add</mat-icon>
+												</button>
+												<mat-table
+													fxFlex="fill"
+													class="tabla-datos ficha-table"
+													#table
+													[dataSource]="dataSourceDetalles"
+													matSort
+													[@animateStagger]="{value:'50'}"
+													cdkDropList
+													id="table1"
+													fusePerfectScrollbar
+												>
+													<ng-container matColumnDef="articulo.codigoArticulo">
+														<mat-header-cell
+															*matHeaderCellDef
+															mat-sort-header
+															[ngClass]="['mat-column-flex']"
+														>Código</mat-header-cell>
+														<mat-cell
+															*matCellDef="let detalle"
+															[ngClass]="['mat-column-flex']"
+														>
+															<p
+																#container
+																class="text-truncate"
+																matTooltip="{{detalle.articulo.codigoArticulo}}"
+																[matTooltipDisabled]="container.offsetWidth >= container.scrollWidth"
+																[matTooltipPosition]="'below'"
+															>
+																{{ detalle.articulo.codigoArticulo }}
+															</p>
+														</mat-cell>
+													</ng-container>
+
+													<ng-container matColumnDef="articulo.nombreArticulo">
+														<mat-header-cell
+															*matHeaderCellDef
+															mat-sort-header
+															[ngClass]="['mat-column-flex']"
+														>Nombre</mat-header-cell>
+														<mat-cell
+															*matCellDef="let detalle"
+															[ngClass]="['mat-column-flex']"
+														>
+															<p
+																#container
+																class="text-truncate"
+																matTooltip="{{detalle.articulo.nombreArticulo}}"
+																[matTooltipDisabled]="container.offsetWidth >= container.scrollWidth"
+																[matTooltipPosition]="'below'"
+															>
+																{{ detalle.articulo.nombreArticulo }}
+															</p>
+														</mat-cell>
+													</ng-container>
+
+													<ng-container matColumnDef="unidadMedida.nombre">
+														<mat-header-cell
+															*matHeaderCellDef
+															mat-sort-header
+															[ngClass]="['mat-column-flex']"
+														>Unidad de medida</mat-header-cell>
+														<mat-cell
+															*matCellDef="let detalle"
+															[ngClass]="['mat-column-flex']"
+														>
+															<p
+																#container
+																class="text-truncate"
+																matTooltip="{{detalle.unidadMedida.nombre}}"
+																[matTooltipDisabled]="container.offsetWidth >= container.scrollWidth"
+																[matTooltipPosition]="'below'"
+															>
+																{{ detalle.unidadMedida.nombre }}
+															</p>
+														</mat-cell>
+													</ng-container>
+
+													<ng-container matColumnDef="cantidad">
+														<mat-header-cell
+															*matHeaderCellDef
+															mat-sort-header
+															[ngClass]="['mat-column-flex']"
+														>Cantidad</mat-header-cell>
+														<mat-cell
+															*matCellDef="let detalle"
+															[ngClass]="['mat-column-flex']"
+														>
+															<p
+																#container
+																class="text-truncate"
+																matTooltip="{{detalle.cantidad}}"
+																[matTooltipDisabled]="container.offsetWidth >= container.scrollWidth"
+																[matTooltipPosition]="'below'"
+															>
+																{{ detalle.cantidad }}
+															</p>
+														</mat-cell>
+													</ng-container>
+
+													<ng-container matColumnDef="precio">
+														<mat-header-cell
+															*matHeaderCellDef
+															mat-sort-header
+															[ngClass]="['mat-column-flex']"
+														>Precio unitario</mat-header-cell>
+														<mat-cell
+															*matCellDef="let detalle"
+															[ngClass]="['mat-column-flex']"
+														>
+															<p
+																#container
+																class="text-truncate"
+																matTooltip="{{detalle.precio}}"
+																[matTooltipDisabled]="container.offsetWidth >= container.scrollWidth"
+																[matTooltipPosition]="'below'"
+															>
+																{{ detalle.precio }}
+															</p>
+														</mat-cell>
+													</ng-container>
+
+													<ng-container matColumnDef="acciones">
+														<mat-header-cell
+															*matHeaderCellDef
+															mat-sort-header
+															[ngClass]="['mat-column-flex']"
+														></mat-header-cell>
+														<mat-cell
+															*matCellDef="let detalle"
+															[ngClass]="['mat-column-flex']"
+														>
+															<div>
+																<ng-container>
+																	<button
+																		mat-icon-button
+																		matTooltip="'Comentarios'"
+																		(click)="$event.stopPropagation(); onComentarios(detalle);"
+																	>
+																		<mat-icon>comment</mat-icon>
+																	</button>
+																</ng-container>
+																<ng-container *ngIf="detalle.imagenArticulo">
+																	<button
+																		mat-icon-button
+																		matTooltip="'Descargar imagen'"
+																		(click)="$event.stopPropagation(); onMostrarImagen(detalle.imagenArticulo);"
+																	>
+																		<mat-icon>image</mat-icon>
+																	</button>
+																</ng-container>
+																<ng-container>
+																	<button *ngIf="!!form?.enabled"
+																		mat-icon-button
+																		matTooltip="'Eliminar'"
+																		(click)="$event.stopPropagation(); onBorrarDetalle(detalle);"
+																	>
+																		<mat-icon>delete</mat-icon>
+																	</button>
+																</ng-container>
+															</div>
+														</mat-cell>
+													</ng-container>
+													
+													<mat-header-row *matHeaderRowDef="displayedColumnsTablaArticulos; sticky:true"></mat-header-row>
+													<mat-row
+														*matRowDef="let row; columns: displayedColumnsTablaArticulos;"
+														class="element"
+														matRipple
+														(click)="onEditarArticulo(row)"
+													>
+													</mat-row>
+
+												</mat-table>
+
+												<mat-paginator
+													#paginator
+													[length]="dataSourceDetalles?.filteredData?.length"
+													[pageIndex]="0"
+													[pageSize]="10"
+													[pageSizeOptions]="[10, 25, 100]"
+												>
+												</mat-paginator>
+											</div>
+										</div>
+										<div>
+											<mat-card>
+												<mat-card-content class="p-20">
+													<div fxLayout="column" fxLayoutGap="10px grid">
+														<div fxLayout="row" fxLayoutGap="10px grid">
+															<span class="font-weight-900" fxFlex="fill">Subtotal:</span>
+															<span class="text-nowrap" fxFlex="auto">$ {{ ordenCompra?.detalles | SubtotalOCPipe }}</span>
+														</div>
+														<div fxLayout="row" fxLayoutGap="10px grid">
+															<span class="font-weight-900" fxFlex="fill">IVA:</span>
+															<span class="text-nowrap" fxFlex="auto">$ {{ ordenCompra?.detalles | IvaOCPipe }}</span>
+														</div>
+														<div fxLayout="row" fxLayoutGap="10px grid">
+															<span class="font-weight-900" fxFlex="fill">IEPS:</span>
+															<span class="text-nowrap" fxFlex="auto">$ {{ ordenCompra?.detalles | IepsOCPipe }}</span>
+														</div>
+														<div fxLayout="row" fxLayoutGap="10px grid">
+															<span class="font-weight-900" fxFlex="fill">Descuento:</span>
+															<span class="text-nowrap" fxFlex="auto">$ {{ ordenCompra?.detalles | DescuentoOCPipe }}</span>
+														</div>
+														<div fxLayout="row" fxLayoutGap="10px grid">
+															<span class="font-weight-900" fxFlex="fill">Total:</span>
+															<span class="text-nowrap" fxFlex="auto">$ {{ ordenCompra?.detalles | TotalOCPipe }}</span>
+														</div>
+													</div>
+												</mat-card-content>
+											</mat-card>
+										</div>
+										<!--  -->
+									</div>
+								</div>
+							</div>
+						</mat-tab>
+
+						<mat-tab label="Movimientos" *ngIf="movimientos?.length">
+							<div
+								class="tab-content p-24"
+								fusePerfectScrollbar
+							>
+								<mat-table
+									fxFlex="fill"
+									[dataSource]="dataSourceMovimientos"
+									matSort
+									[@animateStagger]="{value:'50'}"
+									id="tableMovimientos"
+									fusePerfectScrollbar
+								>
+									<ng-container matColumnDef="fechaHora">
+										<mat-header-cell *matHeaderCellDef> Fecha y hora </mat-header-cell>
+										<mat-cell *matCellDef="let movimiento"> {{ movimiento.fechaCreacion | date:'dd/MM/yyyy hh:mm a' }} </mat-cell>
+									</ng-container>
+
+									<ng-container matColumnDef="tipoMovimiento">
+										<mat-header-cell *matHeaderCellDef> Tipo de movimiento </mat-header-cell>
+										<mat-cell *matCellDef="let movimiento"> {{ movimiento.tipoMovimiento }} </mat-cell>
+									</ng-container>
+
+									<ng-container matColumnDef="codigoArticulo">
+										<mat-header-cell *matHeaderCellDef> Código artículo </mat-header-cell>
+										<mat-cell *matCellDef="let movimiento"> {{ movimiento.articulo.codigoArticulo }} </mat-cell>
+									</ng-container>
+
+									<ng-container matColumnDef="nombreArticulo">
+										<mat-header-cell *matHeaderCellDef> Nombre artículo </mat-header-cell>
+										<mat-cell *matCellDef="let movimiento"> {{ movimiento.articulo.nombreArticulo }} </mat-cell>
+									</ng-container>
+
+									<ng-container matColumnDef="um">
+										<mat-header-cell *matHeaderCellDef> UM </mat-header-cell>
+										<mat-cell *matCellDef="let movimiento"> {{ movimiento.unidadMedida.nombre }} </mat-cell>
+									</ng-container>
+
+									<ng-container matColumnDef="cantidad">
+										<mat-header-cell *matHeaderCellDef> Cantidad </mat-header-cell>
+										<mat-cell *matCellDef="let movimiento"> {{ movimiento.cantidad }} </mat-cell>
+									</ng-container>
+
+									<ng-container matColumnDef="almacen">
+										<mat-header-cell *matHeaderCellDef> Almacén </mat-header-cell>
+										<mat-cell *matCellDef="let movimiento"> {{ movimiento.almacen.nombre }} </mat-cell>
+									</ng-container>
+
+									<ng-container matColumnDef="usuario">
+										<mat-header-cell *matHeaderCellDef> Usuario </mat-header-cell>
+										<mat-cell *matCellDef="let movimiento"> {{ movimiento.creadoPor.nombreCompleto }} </mat-cell>
+									</ng-container>
+
+									<ng-container matColumnDef="documentos">
+										<mat-header-cell *matHeaderCellDef> Documentos </mat-header-cell>
+										<mat-cell *matCellDef="let movimiento">
+											<button *ngIf="movimiento?.evidencia?.length" type="button" mat-icon-button matTooltip="Evidencia"
+												(click)="onMostrarEvidencia(movimiento)">
+												<mat-icon>attachment</mat-icon>
+											</button>
+
+											<button *ngIf="movimiento?.facturas?.length" type="button" mat-icon-button matTooltip="Factura"
+												(click)="onDescargarFactura(movimiento)">
+												<mat-icon>receipt</mat-icon>
+											</button>
+										</mat-cell>
+									</ng-container>
+
+									<mat-header-row *matHeaderRowDef="displayedColumnsMovimientos; sticky:true"></mat-header-row>
+									<mat-row *matRowDef="let row; columns: displayedColumnsMovimientos;"></mat-row>
+								</mat-table>
+							</div>
+						</mat-tab>
+
+					</mat-tab-group>
+
+				</form>
+
+
+			</div>
+			<!-- / CONTENT -->
+
+		</div>
+		<!-- / CONTENT CARD -->
+
+
+	</div>
+	<!-- / CENTER -->
+</div>
+<!--
+<div id="print-section">
+	<div fxLayout="column" class="w-100-p">
+		<div fxLayout="row">
+			<div fxFlex="25%" class="px-20">
+				<img src="/app/main/img/logos/logo_back_white.png">
+			</div>
+			<div fxFlex="50%" fxLayout="row" fxLayoutAlign="center start">
+				<span style="font-size: xx-large; color: #888888">Órden de compra</span>
+			</div>
+			<div fxFlex="25%" fxLayout="row" fxLayoutAlign="end start">
+				<span style="font-size: larger; color: #888888">{{ fechaActual | date : 'dd/MM/yyyy'}}</span>
+			</div>
+		</div>
+		<div fxLayout="row">
+			<div fxLayout="column" fxFlex="auto" class="pr-12">
+				<span class="text-nowrap font-weight-900">Código de OC:</span>
+				<span class="text-nowrap font-weight-900">Fecha de OC:</span>
+			</div>
+			<div fxLayout="column" fxFlex="fill">
+				<span>Pre-impresión</span>
+				<span>{{ (ordenCompra?.fechaOC || fechaActual) | date : 'dd/MM/yyyy'}}</span>
+			</div>
+		</div>
+		<div fxLayout="row" class="pt-12">
+			<table class="tabla-imprimir-proveedor w-100-p">
+				<thead>
+					<tr>
+						<th class="font-weight-900" style="width: 50%;">Datos del proveedor</th>
+						<th class="font-weight-900" style="width: 50%;">Datos de envío</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>
+							<div class="w-100-p" fxLayout="row">
+								<div fxLayout="column" fxFlex="auto" class="pr-12">
+									<span class="font-weight-900">{{ proveedorControl?.value?.codigo }}</span>
+									<span>Domicilio:</span>
+									<span class="text-nowrap">Codigo postal:</span>
+									<span>Teléfono:</span>
+								</div>
+								<div fxLayout="column" fxFlex="fill">
+									<span>{{ proveedorControl?.value?.nombre }}</span>
+									<span>{{ proveedorControl?.value?.domicilio }}</span>
+									<span>{{ proveedorControl?.value?.cp }}</span>
+									<span>{{ proveedorControl?.value?.telefono }}</span>
+								</div>
+							</div>
+						</td>
+						<td>
+							<div class="w-100-p" fxLayout="row">
+								<div fxLayout="column" fxFlex="auto" class="pr-12">
+									<span>Sede:</span>
+									<span>Almacén:</span>
+									<span>Domicilio:</span>
+									<span class="text-nowrap">Código postal:</span>
+								</div>
+								<div fxLayout="column" fxFlex="fill">
+									<span>{{ recepcionArticuloAlmacenControl?.value?.sucursal?.nombre }}</span>
+									<span>{{ recepcionArticuloAlmacenControl?.value?.nombre }}</span>
+									<span>{{ recepcionArticuloAlmacenControl?.value?.domicilio }}</span>
+									<span>{{ recepcionArticuloAlmacenControl?.value?.cp }}</span>
+								</div>
+							</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div fxLayout="row" fxLayoutAlign="start center" class="pt-12 pl-80">
+			<div>
+				<span class="font-weight-900">Términos de pago: </span> <span>{{ form.get('terminoPago')?.value }}</span>
+			</div>
+			<div class="pl-40">
+				<span class="font-weight-900">Tipo de moneda: </span> <span>{{ monedaControl?.value?.nombre }}</span>
+			</div>
+		</div>
+		<div fxLayout="row" class="pt-12">
+			<table class="tabla-imprimir w-100-p">
+				<thead>
+					<tr>
+						<th class="font-size-8 font-weight-900 text-center w-60">N° Partida</th>
+						<th class="font-size-8 font-weight-900" >Código</th>
+						<th class="font-size-8 font-weight-900 text-center w-60"  rowspan="2">Fecha requerida</th>
+						<th class="font-size-8 font-weight-900 text-center w-60"  rowspan="2">UM</th>
+						<th class="font-size-8 font-weight-900 text-center w-60"  rowspan="2">Cant. requerida</th>
+						<th class="font-size-8 font-weight-900 text-center w-60"  rowspan="2">Cant. pendiente</th>
+						<th class="font-size-8 font-weight-900 text-right w-60"  rowspan="2">Precio</th>
+						<th class="font-size-8 font-weight-900 text-right w-60"  rowspan="2">Subtotal</th>
+						<th class="font-size-8 font-weight-900 text-right w-60"  rowspan="2">IEPS</th>
+						<th class="font-size-8 font-weight-900 text-right w-60"  rowspan="2">IVA</th>
+						<th class="font-size-8 font-weight-900 text-right w-60"  rowspan="2">Total partida</th>
+					</tr>
+					<tr>
+						<th class="font-size-8 font-weight-900 text-center">Requisición</th>
+						<th class="font-size-8 font-weight-900">Descripción</th>
+					</tr>
+				</thead>
+				<tbody>
+					<ng-container *ngFor="let detalle of (ordenCompra?.detalles || []) ; index as i">
+						<tr>
+							<td class="font-size-8 no-border text-center">{{i+1}}</td>
+							<td class="font-size-8 no-border">{{ detalle.articulo.codigoArticulo }}</td>
+							<td class="font-size-8 text-center" rowspan="2">{{ detalle.fechaRequerida | date : 'dd/MM/yyyy' }}</td>
+							<td class="font-size-8 text-center" rowspan="2">{{ detalle.unidadMedida.nombre }}</td>
+							<td class="font-size-8 text-center" rowspan="2">{{ detalle.cantidad }}</td>
+							<td class="font-size-8 text-center" rowspan="2">-</td>
+							<td class="font-size-8 text-right text-nowrap" rowspan="2">$ {{ detalle.precio || 0 }}</td>
+							<td class="font-size-8 text-right text-nowrap" rowspan="2">$ {{ detalle.subtotal || 0 }}</td>
+							<td class="font-size-8 text-right text-nowrap" rowspan="2">$ {{ detalle.iepsTotal || 0 }}</td>
+							<td class="font-size-8 text-right text-nowrap" rowspan="2">$ {{ detalle.ivaTotal || 0 }}</td>
+							<td class="font-size-8 text-right text-nowrap" rowspan="2">$ {{ detalle.total || 0 }}</td>
+						</tr>
+						<tr>
+							<td class="font-size-8">{{ detalle.codigoRequisicion }}</td>
+							<td class="font-size-8">{{ detalle.articulo.nombreArticulo }}</td>
+						</tr>
+					</ng-container>
+				</tbody>
+			</table>
+		</div>
+		<div fxFlex="fill"></div>
+		<div><span class="font-weight-900">Comentarios generales</span></div>
+		<div class="px-20 py-12" style="border: solid 2px; border-radius: 1rem">{{ form?.controls['comentario']?.value }}</div>
+		<div fxLayout="row" fxLayoutAlign="space-around end" class="pt-80">
+			<div fxFlex="200px" fxLayout="column">
+				<div class="divisor" fxLayout="row" fxLayoutAlign="center center">{{ ordenCompra?.creadoPor?.nombreCompleto || usuarioActual?.nombreCompleto }}</div>
+				<div fxLayout="row" fxLayoutAlign="center center"><span class="font-weight-900">Realizó</span></div>
+			</div>
+			<div fxFlex="200px" fxLayout="column">
+				<div class="divisor" fxLayout="row" fxLayoutAlign="center center">{{ ordenCompra?.autorizadoPor?.nombreCompleto || '' }}</div>
+				<div fxLayout="row" fxLayoutAlign="center center"><span class="font-weight-900">Autorizó</span></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<button #printBtn type="button" [useExistingCss]="true" printSectionId="print-section" ngxPrint class="d-none"></button>
+-->

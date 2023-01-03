@@ -1,0 +1,64 @@
+programacion-pagos-detalle{
+
+	$borderColor: gray;
+
+	table.tabla-encabezado{
+		border-spacing: 0;
+		td{
+			padding: 1rem;
+		}
+		thead{
+			td{
+				border: solid 1px $borderColor;
+				border-left: none;
+				border-right: none;
+			}
+		}
+		tbody{
+			td{
+				border-bottom: solid 1px $borderColor;
+			}
+		}
+	}
+
+	table.tabla-proveedores{
+		border-spacing: 0;
+		td{
+			padding: 1rem;
+		}
+		thead{
+			td{
+				border: solid 1px $borderColor;
+				border-left: none;
+				border-right: none;
+			}
+			tr:first-child{
+				td{
+					border-bottom: none;
+				}
+			}
+			tr:last-child{
+				td{
+					border-top: none;
+					&:first-child{
+						border: none;
+					}
+				}
+			}
+		}
+		tbody{
+			td{
+				border-bottom: solid 1px $borderColor;
+				&:first-child{
+					border: none;
+				}
+			}
+			tr:last-child{
+				td{
+					border: none;
+				}
+			}
+		}
+	}
+
+}

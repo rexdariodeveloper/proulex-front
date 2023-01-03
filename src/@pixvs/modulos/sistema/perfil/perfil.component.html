@@ -1,0 +1,33 @@
+<div id="perfil" class="page-layout simple tabbed">
+
+    <!-- HEADER -->
+    <div class="header p-24" fxLayout="column" fxLayoutAlign="center center" fxLayout.gt-sm="row"
+        fxLayoutAlign.gt-sm="space-between end">
+
+        <div class="user-info" fxLayout="column" fxLayoutAlign="center center" fxLayout.gt-sm="row"
+            fxLayoutAlign.gt-sm="start center">
+            <img class="perfil-image avatar huge"
+                src="{{usuario?.img != null ? usuario?.img : 'assets/images/avatars/profile.jpg' }}"
+                [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
+            <div class="name" [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+                {{usuario?.nombre + ' ' + usuario?.primerApellido + ' ' + ( usuario?.segundoApellido ? usuario?.segundoApellido : '') }}
+            </div>
+        </div>
+
+    </div>
+    <!-- / HEADER -->
+
+    <!-- CONTENT -->
+    <div class="content">
+
+        <mat-tab-group dynamicHeight="true">
+            <mat-tab label="About">
+                <perfil-about></perfil-about>
+            </mat-tab>
+
+        </mat-tab-group>
+
+    </div>
+    <!-- / CONTENT -->
+
+</div>

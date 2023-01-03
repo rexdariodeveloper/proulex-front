@@ -1,0 +1,16 @@
+@import "@fuse/scss/fuse";
+
+#buscador-amazon {
+
+	input.buscador{
+		border: solid 1px lightgray;
+		margin: 4px 0 25px -5px;
+		border-left: none;
+		height: 43px;
+	}
+
+	button.btn-buscar{
+		margin: 4px 0 25px -5px;
+	}
+
+}
